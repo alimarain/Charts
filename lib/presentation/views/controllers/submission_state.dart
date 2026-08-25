@@ -1,15 +1,7 @@
-enum SubmissionStatus {
-  idle,
-  submitting,
-  success,
-  failure,
-}
+enum SubmissionStatus { idle, submitting, success, failure }
 
 class SubmissionProgress {
-  const SubmissionProgress({
-    required this.progress,
-    required this.message,
-  });
+  const SubmissionProgress({required this.progress, required this.message});
 
   final double progress; // 0.0 to 1.0
   final String message;

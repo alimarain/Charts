@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 // --- Mock Data Definitions ---
@@ -107,64 +108,78 @@ class MockHttpAdapter implements HttpClientAdapter {
           'name': 'Classic Hoodie',
           'category': 'Apparel',
           'price': 49.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2',
-          'description': 'Heavyweight fleece hooded sweatshirt for daily comfort.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1556905055-8f358a7a47b2',
+          'description':
+              'Heavyweight fleece hooded sweatshirt for daily comfort.',
         },
         {
           'id': 'p2',
           'name': 'Oversized T-Shirt',
           'category': 'Apparel',
           'price': 24.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518',
-          'description': 'Relaxed drop-shoulder fit made from 100% organic cotton.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1521572267360-ee0c2909d518',
+          'description':
+              'Relaxed drop-shoulder fit made from 100% organic cotton.',
         },
         {
           'id': 'p3',
           'name': 'Denim Jacket',
           'category': 'Outerwear',
           'price': 89.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0',
-          'description': 'Vintage washed denim jacket with metal button closures.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1576995853123-5a10305d93c0',
+          'description':
+              'Vintage washed denim jacket with metal button closures.',
         },
         {
           'id': 'p4',
           'name': 'Cargo Pants',
           'category': 'Bottoms',
           'price': 59.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1517445312882-bc9910d016b7',
-          'description': 'Utility trousers with multi-pocket storage and taper fit.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1517445312882-bc9910d016b7',
+          'description':
+              'Utility trousers with multi-pocket storage and taper fit.',
         },
         {
           'id': 'p5',
           'name': 'Running Sneakers',
           'category': 'Footwear',
           'price': 119.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
-          'description': 'Lightweight responsive foam runners with breathable mesh.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
+          'description':
+              'Lightweight responsive foam runners with breathable mesh.',
         },
         {
           'id': 'p6',
           'name': 'Casual Shirt',
           'category': 'Apparel',
           'price': 39.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c',
-          'description': 'Breathable button-down shirt ideal for casual outings.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1596755094514-f87e34085b2c',
+          'description':
+              'Breathable button-down shirt ideal for casual outings.',
         },
         {
           'id': 'p7',
           'name': 'Cotton Joggers',
           'category': 'Bottoms',
           'price': 44.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea',
-          'description': 'Slim tapered athletic pants with elasticized cuffs.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1552902865-b72c031ac5ea',
+          'description': 'Slim tapered athletic pants with elasticized cuffs.',
         },
         {
           'id': 'p8',
           'name': 'Summer Dress',
           'category': 'Apparel',
           'price': 64.99,
-          'imageUrl': 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446',
-          'description': 'Lightweight floral dress crafted for warm climates.'
+          'imageUrl':
+              'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446',
+          'description': 'Lightweight floral dress crafted for warm climates.',
         },
       ];
 
@@ -183,9 +198,12 @@ class MockHttpAdapter implements HttpClientAdapter {
 
       try {
         if (options.data is List<int>) {
-          requestBody = jsonDecode(utf8.decode(options.data as List<int>)) as Map<String, dynamic>;
+          requestBody = jsonDecode(
+            utf8.decode(options.data as List<int>),
+          ) as Map<String, dynamic>;
         } else if (options.data is String) {
-          requestBody = jsonDecode(options.data as String) as Map<String, dynamic>;
+          requestBody =
+              jsonDecode(options.data as String) as Map<String, dynamic>;
         } else if (options.data is Map) {
           requestBody = Map<String, dynamic>.from(options.data as Map);
         } else if (options.data is FormData) {
@@ -198,7 +216,8 @@ class MockHttpAdapter implements HttpClientAdapter {
         requestBody = {};
       }
 
-      final basicInfo = requestBody['basic_information'] as Map<String, dynamic>?;
+      final basicInfo =
+          requestBody['basic_information'] as Map<String, dynamic>?;
       final fullName = basicInfo?['fullName'] ?? requestBody['fullName'];
 
       // Simulated failure condition
@@ -255,10 +274,7 @@ class MockHttpAdapter implements HttpClientAdapter {
       final forms = mockMakerFormsData[productId] ?? [];
 
       return ResponseBody.fromString(
-        jsonEncode({
-          'success': true,
-          'data': forms,
-        }),
+        jsonEncode({'success': true, 'data': forms}),
         200,
         headers: {
           Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -271,22 +287,21 @@ class MockHttpAdapter implements HttpClientAdapter {
     if (formFieldsRegex.hasMatch(path) && method == 'GET') {
       final match = formFieldsRegex.firstMatch(path);
       final formId = match?.group(1) ?? '';
-      final fields = mockDynamicFieldsData[formId] ?? [
-        {
-          "id": "gen-1",
-          "key": "applicantComments",
-          "label": "Additional Case Comments",
-          "type": "text",
-          "required": true,
-          "placeholder": "Enter generic notes..."
-        }
-      ];
+      final fields =
+          mockDynamicFieldsData[formId] ??
+          [
+            {
+              "id": "gen-1",
+              "key": "applicantComments",
+              "label": "Additional Case Comments",
+              "type": "text",
+              "required": true,
+              "placeholder": "Enter generic notes...",
+            },
+          ];
 
       return ResponseBody.fromString(
-        jsonEncode({
-          'success': true,
-          'data': fields,
-        }),
+        jsonEncode({'success': true, 'data': fields}),
         200,
         headers: {
           Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -307,7 +322,7 @@ class MockHttpAdapter implements HttpClientAdapter {
             'referenceNumber': 'REF-${(now.millisecondsSinceEpoch % 1000000)}',
             'status': 'PENDING_CHECKER_REVIEW',
             'submittedAt': now.toIso8601String(),
-          }
+          },
         }),
         200,
         headers: {

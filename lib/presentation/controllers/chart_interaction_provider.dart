@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/chart_interaction.dart';
 
 class ChartInteractionState {
-  const ChartInteractionState({
-    this.selectedItem,
-  });
+  const ChartInteractionState({this.selectedItem});
 
   final SelectedChartItem? selectedItem;
 
@@ -26,8 +25,8 @@ class ChartInteractionState {
 
 final chartInteractionProvider =
     NotifierProvider<ChartInteractionNotifier, ChartInteractionState>(
-  ChartInteractionNotifier.new,
-);
+      ChartInteractionNotifier.new,
+    );
 
 class ChartInteractionNotifier extends Notifier<ChartInteractionState> {
   @override

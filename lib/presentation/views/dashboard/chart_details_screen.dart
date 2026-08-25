@@ -1,32 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/app/app_theme.dart';
+
 import '../../../domain/entities/chart_interaction.dart';
 import '../../controllers/chart_interaction_provider.dart';
 
 class ChartDetailsScreen extends ConsumerWidget {
-  const ChartDetailsScreen({
-    this.item,
-    super.key,
-  });
+  const ChartDetailsScreen({this.item, super.key});
 
   static const routeName = 'chart_details';
-  static const routeSubPath = 'chart-details';
-  static const routePath = '/dashboard/chart-details';
+  static const routeSubPath = 'details';
+  static const routePath = '/charts/details';
 
   final SelectedChartItem? item;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final activeItem =
-        item ?? ref.watch(chartInteractionProvider).selectedItem;
+    final activeItem = item ?? ref.watch(chartInteractionProvider).selectedItem;
 
     if (activeItem == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Chart Telemetry')),
-        body: const Center(
-          child: Text('No chart point selected.'),
-        ),
+        body: const Center(child: Text('No chart point selected.')),
       );
     }
 
@@ -54,9 +49,7 @@ class ChartDetailsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: Text(screenTitle),
-      ),
+      appBar: AppBar(title: Text(screenTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -171,7 +164,7 @@ class ChartDetailsScreen extends ConsumerWidget {
             ElevatedButton.icon(
               onPressed: () => Navigator.of(context).pop(),
               icon: const Icon(Icons.arrow_back_rounded, size: 18),
-              label: const Text('Return to Dashboard'),
+              label: const Text('Return to Charts'),
             ),
           ],
         ),

@@ -1,11 +1,6 @@
 import 'package:new_app/domain/entities/user.dart';
 
-
-enum AuthStatus {
-  unauthenticated,
-  loading,
-  authenticated,
-}
+enum AuthStatus { unauthenticated, loading, authenticated }
 
 class AuthState {
   const AuthState({
@@ -20,7 +15,8 @@ class AuthState {
   final String? token;
   final String? errorMessage;
 
-  bool get isAuthenticated => status == AuthStatus.authenticated && token != null;
+  bool get isAuthenticated =>
+      status == AuthStatus.authenticated && token != null;
   bool get isLoading => status == AuthStatus.loading;
 
   AuthState copyWith({

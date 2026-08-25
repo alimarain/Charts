@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/core/errors/exceptions.dart';
 import 'package:new_app/data/datasources/auth/auth_service.dart';
+
 import 'auth_state.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
@@ -18,10 +19,7 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> login(String email, String password) async {
-    state = state.copyWith(
-      status: AuthStatus.loading,
-      clearError: true,
-    );
+    state = state.copyWith(status: AuthStatus.loading, clearError: true);
 
     try {
       final authService = ref.read(authServiceProvider);

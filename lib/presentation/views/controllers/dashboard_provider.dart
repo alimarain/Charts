@@ -1,13 +1,16 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'dashboard_state.dart';
 import 'product_provider.dart';
 
 // Non-autoDispose notifier preserves state across navigation pushes and pops
-final dashboardProvider =
-    NotifierProvider<DashboardNotifier, DashboardState>(() {
-  return DashboardNotifier();
-});
+final dashboardProvider = NotifierProvider<DashboardNotifier, DashboardState>(
+  () {
+    return DashboardNotifier();
+  },
+);
 
 class DashboardNotifier extends Notifier<DashboardState> {
   StreamSubscription<List<dynamic>>? _subscription;

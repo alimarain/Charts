@@ -84,7 +84,8 @@ class DynamicFormField {
       label: json['label'] as String? ?? '',
       type: json['type'] as String? ?? 'text',
       required: json['required'] as bool? ?? false,
-      options: (json['options'] as List<dynamic>?)
+      options:
+          (json['options'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],

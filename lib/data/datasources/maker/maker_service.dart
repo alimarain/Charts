@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
+
 import '../../../core/errors/api_exception.dart';
 import '../../../domain/entities/maker_models.dart';
 import '../../../domain/repositories/maker_repository.dart';
@@ -30,7 +32,8 @@ class MakerService implements MakerRepository {
       decoded = jsonDecode(decoded);
     }
     if (decoded is Map<String, dynamic>) {
-      if (decoded.containsKey('data') && decoded['data'] is Map<String, dynamic>) {
+      if (decoded.containsKey('data') &&
+          decoded['data'] is Map<String, dynamic>) {
         return decoded['data'] as Map<String, dynamic>;
       }
       return decoded;
@@ -44,7 +47,9 @@ class MakerService implements MakerRepository {
       final response = await _dio.get('/maker/products');
       final list = _extractList(response.data);
       return list
-          .map((e) => MakerProduct.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) => MakerProduct.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
           .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
@@ -74,7 +79,10 @@ class MakerService implements MakerRepository {
       final response = await _dio.get('/maker/forms/$formId/fields');
       final list = _extractList(response.data);
       return list
-          .map((e) => DynamicFormField.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map(
+            (e) =>
+                DynamicFormField.fromJson(Map<String, dynamic>.from(e as Map)),
+          )
           .toList();
     } on DioException catch (e) {
       throw ApiException.fromDioException(e);
@@ -91,10 +99,7 @@ class MakerService implements MakerRepository {
     try {
       final response = await _dio.post(
         '/maker/forms/$formId/submit',
-        data: jsonEncode({
-          'formId': formId,
-          'answers': answers,
-        }),
+        data: jsonEncode({'formId': formId, 'answers': answers}),
       );
       final map = _extractMap(response.data);
       return ApplicationSubmissionResponse.fromJson(map);

@@ -1,7 +1,6 @@
 import 'package:new_app/domain/entities/basic_info.dart';
 import 'package:new_app/domain/entities/career_info.dart';
 
-
 class MultiStepFormState {
   const MultiStepFormState({
     this.currentStep = 0,

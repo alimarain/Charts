@@ -1,16 +1,8 @@
 import '../../domain/entities/analytics.dart';
 
-enum AnalyticsPeriod {
-  sevenDays,
-  thirtyDays,
-  ninetyDays,
-}
+enum AnalyticsPeriod { sevenDays, thirtyDays, ninetyDays }
 
-enum AnalyticsStatus {
-  loading,
-  ready,
-  error,
-}
+enum AnalyticsStatus { loading, ready, error }
 
 class AnalyticsState {
   const AnalyticsState({
@@ -30,7 +22,8 @@ class AnalyticsState {
   bool get isError => status == AnalyticsStatus.error;
 
   double get totalRevenue =>
-      data?.categorySales.fold(0.0, (acc, item) => (acc ?? 0.0) + item.sales) ?? 0.0;
+      data?.categorySales.fold(0.0, (acc, item) => (acc ?? 0.0) + item.sales) ??
+      0.0;
 
   int get totalInventoryCount =>
       data?.distribution.fold(0, (acc, item) => (acc ?? 0) + item.count) ?? 0;

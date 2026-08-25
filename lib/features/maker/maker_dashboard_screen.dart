@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../domain/entities/maker_models.dart';
 import '../../presentation/controllers/auth_provider.dart';
 import '../../presentation/controllers/maker/maker_providers.dart';
@@ -38,7 +39,11 @@ class MakerDashboardScreen extends ConsumerWidget {
           children: [
             const Text(
               'Welcome Back',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+              ),
             ),
             Text(
               'Logged in as ${authState.user?.name ?? "applicant"}',
@@ -64,9 +69,15 @@ class MakerDashboardScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(color: Color(0xFF4F46E5), strokeWidth: 2.5),
+              CircularProgressIndicator(
+                color: Color(0xFF4F46E5),
+                strokeWidth: 2.5,
+              ),
               SizedBox(height: 12),
-              Text('Fetching enterprise product endpoints...', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+              Text(
+                'Fetching enterprise product endpoints...',
+                style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+              ),
             ],
           ),
         ),
@@ -76,12 +87,20 @@ class MakerDashboardScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.cloud_off_rounded, color: Color(0xFFDC2626), size: 48),
+                const Icon(
+                  Icons.cloud_off_rounded,
+                  color: Color(0xFFDC2626),
+                  size: 48,
+                ),
                 const SizedBox(height: 12),
-                Text('Could not load products: $err', textAlign: TextAlign.center),
+                Text(
+                  'Could not load products: $err',
+                  textAlign: TextAlign.center,
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => ref.read(makerProductsProvider.notifier).refresh(),
+                  onPressed: () =>
+                      ref.read(makerProductsProvider.notifier).refresh(),
                   child: const Text('Retry Connection'),
                 ),
               ],
@@ -90,7 +109,9 @@ class MakerDashboardScreen extends ConsumerWidget {
         ),
         data: (products) {
           if (products.isEmpty) {
-            return const Center(child: Text('No active underwriting products available.'));
+            return const Center(
+              child: Text('No active underwriting products available.'),
+            );
           }
 
           return ListView.separated(
@@ -104,7 +125,12 @@ class MakerDashboardScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'AVAILABLE WORKFLOWS',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF94A3B8), letterSpacing: 1.1),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF94A3B8),
+                        letterSpacing: 1.1,
+                      ),
                     ),
                     SizedBox(height: 4),
                     Text(
@@ -177,18 +203,29 @@ class _MakerProductCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             product.name,
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF0F172A),
+                            ),
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFECFDF5),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             product.status.toUpperCase(),
-                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Color(0xFF059669)),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF059669),
+                            ),
                           ),
                         ),
                       ],
@@ -196,7 +233,11 @@ class _MakerProductCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       product.description,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF64748B),
+                        height: 1.4,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -205,12 +246,20 @@ class _MakerProductCard extends StatelessWidget {
                           label: Text(product.category),
                           backgroundColor: const Color(0xFFF1F5F9),
                           padding: EdgeInsets.zero,
-                          labelStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
+                          labelStyle: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF475569),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         Text(
                           '${product.formCount} Application Forms',
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF4F46E5)),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF4F46E5),
+                          ),
                         ),
                       ],
                     ),
@@ -218,7 +267,11 @@ class _MakerProductCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Color(0xFF94A3B8)),
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: Color(0xFF94A3B8),
+              ),
             ],
           ),
         ),

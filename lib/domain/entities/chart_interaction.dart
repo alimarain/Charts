@@ -1,8 +1,4 @@
-enum ChartType {
-  salesOverview,
-  categoryPerformance,
-  productDistribution,
-}
+enum ChartType { salesOverview, categoryPerformance, productDistribution }
 
 class SelectedChartItem {
   const SelectedChartItem({
@@ -25,9 +21,8 @@ class SelectedChartItem {
   final String? secondaryMetric;
   final String? description;
 
-  String get formattedValue => unit == 'PKR'
-      ? 'Rs. ${value.toStringAsFixed(0)}'
-      : '$value $unit';
+  String get formattedValue =>
+      unit == 'PKR' ? 'Rs. ${value.toStringAsFixed(0)}' : '$value $unit';
 
   SelectedChartItem copyWith({
     String? chartId,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/utils/validators.dart';
 import '../../controllers/auth_provider.dart';
 
@@ -48,7 +49,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _handleLogin() {
     if (_formKey.currentState?.validate() ?? false) {
-      ref.read(authProvider.notifier).login(
+      ref
+          .read(authProvider.notifier)
+          .login(
             _emailController.text,
             _passwordController.text,
             selectedRole: _selectedRole,
@@ -85,13 +88,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+                            color: const Color(0xFF6366F1)
+                                .withValues(alpha: 0.3),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.bolt_rounded, color: Colors.white, size: 24),
+                      child: const Icon(
+                        Icons.bolt_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     const Text(
@@ -165,7 +173,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline_rounded, color: Color(0xFFDC2626), size: 20),
+                        const Icon(
+                          Icons.error_outline_rounded,
+                          color: Color(0xFFDC2626),
+                          size: 20,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -184,7 +196,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ],
                 const Text(
                   'Email Address',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF334155),
+                  ),
                 ),
                 const SizedBox(height: 6),
                 TextFormField(
@@ -194,7 +210,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   validator: Validators.validateEmail,
                   decoration: const InputDecoration(
                     hintText: 'name@company.com',
-                    prefixIcon: Icon(Icons.mail_outline_rounded, size: 20, color: Color(0xFF94A3B8)),
+                    prefixIcon: Icon(
+                      Icons.mail_outline_rounded,
+                      size: 20,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 18),
@@ -203,13 +223,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     const Text(
                       'Password',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF334155),
+                      ),
                     ),
                     GestureDetector(
                       onTap: () {},
                       child: const Text(
                         'Forgot?',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF4F46E5)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4F46E5),
+                        ),
                       ),
                     ),
                   ],
@@ -222,7 +250,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   validator: Validators.validatePassword,
                   decoration: const InputDecoration(
                     hintText: '••••••••',
-                    prefixIcon: Icon(Icons.lock_outline_rounded, size: 20, color: Color(0xFF94A3B8)),
+                    prefixIcon: Icon(
+                      Icons.lock_outline_rounded,
+                      size: 20,
+                      color: Color(0xFF94A3B8),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 28),
@@ -247,18 +279,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                       minimumSize: const Size.fromHeight(56),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                     onPressed: authState.isLoading ? null : _handleLogin,
                     child: authState.isLoading
                         ? const SizedBox(
                             height: 22,
                             width: 22,
-                            child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text(
                             'Sign In',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
                           ),
                   ),
                 ),
@@ -271,7 +312,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       children: [
                         TextSpan(
                           text: 'Sign up for free',
-                          style: TextStyle(color: Color(0xFF4F46E5), fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Color(0xFF4F46E5),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -281,7 +325,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const Center(
                   child: Text(
                     '© 2026 VIBEFLOW ENTERPRISE APIS',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFFCBD5E1), letterSpacing: 1.2),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFCBD5E1),
+                      letterSpacing: 1.2,
+                    ),
                   ),
                 ),
               ],
@@ -319,7 +368,9 @@ class _RoleCard extends StatelessWidget {
           color: isSelected ? const Color(0xFFF5F3FF) : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF6366F1) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? const Color(0xFF6366F1)
+                : const Color(0xFFE2E8F0),
             width: isSelected ? 2 : 1.5,
           ),
           boxShadow: isSelected
@@ -343,7 +394,9 @@ class _RoleCard extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                color: isSelected ? const Color(0xFF6366F1) : const Color(0xFF94A3B8),
+                color: isSelected
+                    ? const Color(0xFF6366F1)
+                    : const Color(0xFF94A3B8),
                 size: 24,
               ),
             ),
@@ -353,7 +406,9 @@ class _RoleCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
-                color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFF334155),
+                color: isSelected
+                    ? const Color(0xFF4F46E5)
+                    : const Color(0xFF334155),
               ),
             ),
             const SizedBox(height: 2),
@@ -361,7 +416,9 @@ class _RoleCard extends StatelessWidget {
               subtitle,
               style: TextStyle(
                 fontSize: 10,
-                color: isSelected ? const Color(0xFF6366F1) : const Color(0xFF94A3B8),
+                color: isSelected
+                    ? const Color(0xFF6366F1)
+                    : const Color(0xFF94A3B8),
                 fontWeight: FontWeight.w500,
               ),
             ),

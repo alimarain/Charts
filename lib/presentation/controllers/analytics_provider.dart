@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/datasources/analytics/analytics_service.dart';
 import 'analytics_state.dart';
 
@@ -7,10 +9,11 @@ final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
   return AnalyticsService();
 });
 
-final analyticsProvider =
-    NotifierProvider<AnalyticsNotifier, AnalyticsState>(() {
-  return AnalyticsNotifier();
-});
+final analyticsProvider = NotifierProvider<AnalyticsNotifier, AnalyticsState>(
+  () {
+    return AnalyticsNotifier();
+  },
+);
 
 class AnalyticsNotifier extends Notifier<AnalyticsState> {
   StreamSubscription<dynamic>? _subscription;
@@ -33,21 +36,23 @@ class AnalyticsNotifier extends Notifier<AnalyticsState> {
 
     final service = ref.read(analyticsServiceProvider);
 
-    _subscription = service.watchAnalytics(state.period).listen(
-      (analyticsData) {
-        state = state.copyWith(
-          status: AnalyticsStatus.ready,
-          data: analyticsData,
-          clearError: true,
+    _subscription = service
+        .watchAnalytics(state.period)
+        .listen(
+          (analyticsData) {
+            state = state.copyWith(
+              status: AnalyticsStatus.ready,
+              data: analyticsData,
+              clearError: true,
+            );
+          },
+          onError: (dynamic error) {
+            state = state.copyWith(
+              status: AnalyticsStatus.error,
+              errorMessage: 'Unable to connect to live telemetry: $error',
+            );
+          },
         );
-      },
-      onError: (dynamic error) {
-        state = state.copyWith(
-          status: AnalyticsStatus.error,
-          errorMessage: 'Unable to connect to live telemetry: $error',
-        );
-      },
-    );
   }
 
   void setPeriod(AnalyticsPeriod period) {

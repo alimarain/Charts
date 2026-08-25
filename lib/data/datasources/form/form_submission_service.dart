@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:new_app/presentation/views/controllers/form_state.dart';
 import 'package:new_app/presentation/views/controllers/submission_state.dart';
-import '../../../core/errors/api_exception.dart';
 
+import '../../../core/errors/api_exception.dart';
 
 class FormSubmissionService {
   FormSubmissionService(this._dio);
 
   final Dio _dio;
 
-  Stream<SubmissionProgress> submitFormStream(MultiStepFormState formState) async* {
+  Stream<SubmissionProgress> submitFormStream(
+    MultiStepFormState formState,
+  ) async* {
     yield const SubmissionProgress(
       progress: 0.0,
       message: 'Preparing submission...',
@@ -48,10 +51,7 @@ class FormSubmissionService {
       };
 
       // Dio request with JWT automatically attached via AuthInterceptor
-      await _dio.post(
-        '/submit-form',
-        data: utf8.encode(jsonEncode(payload)),
-      );
+      await _dio.post('/submit-form', data: utf8.encode(jsonEncode(payload)));
 
       yield const SubmissionProgress(
         progress: 1.0,

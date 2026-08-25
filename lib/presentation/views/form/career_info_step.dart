@@ -26,7 +26,7 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
     'Intermediate / A-Levels',
     'Bachelors',
     'Masters',
-    'PhD'
+    'PhD',
   ];
 
   @override
@@ -34,9 +34,13 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
     super.initState();
     final careerInfo = ref.read(formProvider).careerInfo;
     _universityController = TextEditingController(text: careerInfo.university);
-    _jobTitleController = TextEditingController(text: careerInfo.currentJobTitle);
+    _jobTitleController = TextEditingController(
+      text: careerInfo.currentJobTitle,
+    );
     _companyController = TextEditingController(text: careerInfo.company);
-    _experienceController = TextEditingController(text: careerInfo.yearsOfExperience);
+    _experienceController = TextEditingController(
+      text: careerInfo.yearsOfExperience,
+    );
     _salaryController = TextEditingController(text: careerInfo.expectedSalary);
     _skillsController = TextEditingController(text: careerInfo.skills);
     _goalController = TextEditingController(text: careerInfo.careerGoal);
@@ -76,17 +80,31 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
               initialValue: careerInfo.highestEducation,
-              decoration: const InputDecoration(labelText: 'Highest Education *', prefixIcon: Icon(Icons.school_outlined)),
-              items: _educationLevels.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
-              onChanged: isLocked ? null : (val) => val != null ? notifier.updateHighestEducation(val) : null,
+              decoration: const InputDecoration(
+                labelText: 'Highest Education *',
+                prefixIcon: Icon(Icons.school_outlined),
+              ),
+              items: _educationLevels
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: isLocked
+                  ? null
+                  : (val) => val != null
+                        ? notifier.updateHighestEducation(val)
+                        : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _universityController,
               enabled: !isLocked,
-              decoration: const InputDecoration(labelText: 'University / Institute *', prefixIcon: Icon(Icons.account_balance_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'University / Institute *',
+                prefixIcon: Icon(Icons.account_balance_outlined),
+              ),
               onChanged: notifier.updateUniversity,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'University is required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'University is required'
+                  : null,
             ),
             const SizedBox(height: 12),
             Row(
@@ -95,7 +113,10 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                   child: TextFormField(
                     controller: _jobTitleController,
                     enabled: !isLocked,
-                    decoration: const InputDecoration(labelText: 'Current Job Title', prefixIcon: Icon(Icons.work_outline)),
+                    decoration: const InputDecoration(
+                      labelText: 'Current Job Title',
+                      prefixIcon: Icon(Icons.work_outline),
+                    ),
                     onChanged: notifier.updateCurrentJobTitle,
                   ),
                 ),
@@ -104,7 +125,10 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                   child: TextFormField(
                     controller: _companyController,
                     enabled: !isLocked,
-                    decoration: const InputDecoration(labelText: 'Company Name', prefixIcon: Icon(Icons.business_outlined)),
+                    decoration: const InputDecoration(
+                      labelText: 'Company Name',
+                      prefixIcon: Icon(Icons.business_outlined),
+                    ),
                     onChanged: notifier.updateCompany,
                   ),
                 ),
@@ -118,11 +142,15 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                     controller: _experienceController,
                     enabled: !isLocked,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Experience (Years) *', prefixIcon: Icon(Icons.timelapse_outlined)),
+                    decoration: const InputDecoration(
+                      labelText: 'Experience (Years) *',
+                      prefixIcon: Icon(Icons.timelapse_outlined),
+                    ),
                     onChanged: notifier.updateYearsOfExperience,
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) return 'Required';
-                      if (double.tryParse(v.trim()) == null) return 'Must be a number';
+                      if (double.tryParse(v.trim()) == null)
+                        return 'Must be a number';
                       return null;
                     },
                   ),
@@ -133,11 +161,15 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                     controller: _salaryController,
                     enabled: !isLocked,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Exp. Salary (PKR) *', prefixIcon: Icon(Icons.payments_outlined)),
+                    decoration: const InputDecoration(
+                      labelText: 'Exp. Salary (PKR) *',
+                      prefixIcon: Icon(Icons.payments_outlined),
+                    ),
                     onChanged: notifier.updateExpectedSalary,
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) return 'Required';
-                      if (double.tryParse(v.trim()) == null) return 'Must be a number';
+                      if (double.tryParse(v.trim()) == null)
+                        return 'Must be a number';
                       return null;
                     },
                   ),
@@ -153,7 +185,9 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                 prefixIcon: Icon(Icons.star_outline),
               ),
               onChanged: notifier.updateSkills,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Skills are required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Skills are required'
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -165,7 +199,9 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                 prefixIcon: Icon(Icons.flag_outlined),
               ),
               onChanged: notifier.updateCareerGoal,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Career goal is required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Career goal is required'
+                  : null,
             ),
             if (submissionState.isSubmitting || submissionState.isSuccess) ...[
               const SizedBox(height: 20),
@@ -184,11 +220,17 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                       children: [
                         Text(
                           submissionState.message,
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
                         ),
                         Text(
                           '${(submissionState.progress * 100).toInt()}%',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2563EB),
+                          ),
                         ),
                       ],
                     ),
@@ -196,7 +238,9 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                     LinearProgressIndicator(
                       value: submissionState.progress,
                       backgroundColor: Colors.blue.shade100,
-                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF2563EB)),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Color(0xFF2563EB),
+                      ),
                       minHeight: 8,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -204,7 +248,8 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                 ),
               ),
             ],
-            if (submissionState.isFailure && submissionState.errorMessage != null) ...[
+            if (submissionState.isFailure &&
+                submissionState.errorMessage != null) ...[
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(14),

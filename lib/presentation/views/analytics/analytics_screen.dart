@@ -1,156 +1,231 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/app/app_theme.dart';
+import '../../../app/app_theme.dart';
+import '../../../core/services/analytics_export_service.dart';
 import '../../controllers/analytics_provider.dart';
-import '../../controllers/analytics_state.dart';
+import '../../controllers/chart_filter_provider.dart';
 import '../../widgets/charts/category_sales_chart.dart';
+import '../../widgets/charts/chart_filter_bar.dart';
+import '../../widgets/charts/chart_kpi_cards.dart';
 import '../../widgets/charts/product_distribution_chart.dart';
 import '../../widgets/charts/sales_overview_chart.dart';
 
-class AnalyticsScreen extends ConsumerWidget {
+class AnalyticsScreen extends ConsumerStatefulWidget {
   const AnalyticsScreen({super.key});
 
-  static const routeName = 'analytics';
-  static const routePath = '/analytics';
+  static const routeName = 'charts';
+  static const routePath = '/charts';
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final analyticsState = ref.watch(analyticsProvider);
-    final notifier = ref.read(analyticsProvider.notifier);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Store Analytics & Telemetry'),
-      ),
-      body: analyticsState.isLoading && analyticsState.data == null
-          ? const Center(child: CircularProgressIndicator())
-          : analyticsState.isError && analyticsState.data == null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, color: Color(0xFFDC2626), size: 48),
-                      const SizedBox(height: 12),
-                      Text(analyticsState.errorMessage ?? 'Analytics offline'),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: notifier.retry,
-                        child: const Text('Retry Connection'),
-                      ),
-                    ],
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Time Filter Switcher
-                      SegmentedButton<AnalyticsPeriod>(
-                        segments: const [
-                          ButtonSegment(value: AnalyticsPeriod.sevenDays, label: Text('7 Days')),
-                          ButtonSegment(value: AnalyticsPeriod.thirtyDays, label: Text('30 Days')),
-                          ButtonSegment(value: AnalyticsPeriod.ninetyDays, label: Text('90 Days')),
-                        ],
-                        selected: {analyticsState.period},
-                        onSelectionChanged: (set) => notifier.setPeriod(set.first),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Metric Summary Cards
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final isWide = constraints.maxWidth > 600;
-                          return GridView.count(
-                            crossAxisCount: isWide ? 4 : 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 12,
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            childAspectRatio: isWide ? 1.6 : 1.4,
-                            children: [
-                              _SummaryMetricCard(
-                                title: 'Total Revenue',
-                                value: 'Rs. ${analyticsState.totalRevenue.toStringAsFixed(0)}',
-                                icon: Icons.payments_rounded,
-                                color: AppTheme.primaryColor,
-                              ),
-                              const _SummaryMetricCard(
-                                title: 'Total Orders',
-                                value: '1,428',
-                                icon: Icons.shopping_bag_rounded,
-                                color: AppTheme.secondaryColor,
-                              ),
-                              _SummaryMetricCard(
-                                title: 'Active Inventory',
-                                value: '${analyticsState.totalInventoryCount} SKUs',
-                                icon: Icons.inventory_2_rounded,
-                                color: const Color(0xFFF59E0B),
-                              ),
-                              const _SummaryMetricCard(
-                                title: 'Avg Basket',
-                                value: 'Rs. 4,850',
-                                icon: Icons.receipt_long_rounded,
-                                color: Color(0xFF06B6D4),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Chart Sections
-                      SalesOverviewChart(data: analyticsState.data!.weeklySales),
-                      const SizedBox(height: 16),
-                      CategorySalesChart(data: analyticsState.data!.categorySales),
-                      const SizedBox(height: 16),
-                      ProductDistributionChart(data: analyticsState.data!.distribution),
-                    ],
-                  ),
-                ),
-    );
-  }
+  ConsumerState<AnalyticsScreen> createState() => _AnalyticsScreenState();
 }
 
-class _SummaryMetricCard extends StatelessWidget {
-  const _SummaryMetricCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-    required this.color,
-  });
+class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
+  late final ScrollController _scrollController;
 
-  final String title;
-  final String value;
-  final IconData icon;
-  final Color color;
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleGlobalExport(String type, BuildContext context) async {
+    final scaffold = ScaffoldMessenger.of(context);
+    final filteredResult = ref.read(filteredAnalyticsProvider);
+    final filter = ref.read(chartFilterProvider);
+
+    if (filteredResult == null || !filteredResult.hasData) {
+      scaffold.showSnackBar(
+        const SnackBar(content: Text('No data available to export.')),
+      );
+      return;
+    }
+
+    try {
+      if (type == 'pdf') {
+        scaffold.showSnackBar(
+          const SnackBar(content: Text('Generating executive PDF report...')),
+        );
+        await AnalyticsExportService.exportAndSharePdf(
+          result: filteredResult,
+          filter: filter,
+        );
+      } else if (type == 'csv') {
+        scaffold.showSnackBar(
+          const SnackBar(content: Text('Exporting analytics CSV data...')),
+        );
+        await AnalyticsExportService.exportAndShareCsv(
+          result: filteredResult,
+          filter: filter,
+        );
+      }
+    } catch (e) {
+      scaffold.showSnackBar(
+        SnackBar(content: Text('Export error: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
+    final analyticsState = ref.watch(analyticsProvider);
+    final filteredResult = ref.watch(filteredAnalyticsProvider);
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textSecondary),
-                ),
-                Icon(icon, size: 16, color: color),
-              ],
-            ),
-            const SizedBox(height: 6),
             Text(
-              value,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textPrimary),
+              'Charts & Telemetry',
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+              ),
+            ),
+            Text(
+              'Interactive multi-period telemetry & category comparisons',
+              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
             ),
           ],
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.ios_share_rounded, color: AppTheme.primaryColor),
+            tooltip: 'Share & Export Reports',
+            onSelected: (val) => _handleGlobalExport(val, context),
+            itemBuilder: (ctx) => const [
+              PopupMenuItem(
+                value: 'pdf',
+                child: Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf_outlined, color: Colors.red, size: 18),
+                    SizedBox(width: 8),
+                    Text('Export PDF Executive Report'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.table_chart_outlined, color: Colors.green, size: 18),
+                    SizedBox(width: 8),
+                    Text('Export Clean CSV Data'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: Builder(
+        builder: (context) {
+          if (analyticsState.isLoading && analyticsState.data == null) {
+            return const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    color: AppTheme.primaryColor,
+                    strokeWidth: 2.5,
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Connecting to telemetry stream...',
+                    style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (analyticsState.errorMessage != null && analyticsState.data == null) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.cloud_off_rounded,
+                      color: Color(0xFFDC2626),
+                      size: 48,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Could not load telemetry: ${analyticsState.errorMessage}',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => ref.refresh(analyticsProvider),
+                      child: const Text('Retry Connection'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (filteredResult == null || !filteredResult.hasData) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.filter_alt_off_rounded, size: 48, color: Color(0xFF94A3B8)),
+                  const SizedBox(height: 12),
+                  const Text('No data available for the selected filters.'),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () => ref.read(chartFilterProvider.notifier).reset(),
+                    child: const Text('Reset Filters'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return SingleChildScrollView(
+            key: const PageStorageKey('charts_analytics_scroll_key'),
+            controller: _scrollController,
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ChartFilterBar(availableCategories: filteredResult.categories),
+                const SizedBox(height: 16),
+                ChartKpiGrid(kpis: filteredResult.kpis),
+                const SizedBox(height: 20),
+                SalesOverviewChart(
+                  data: filteredResult.currentSales,
+                  previousData: filteredResult.previousSales,
+                  enableNavigation: true,
+                ),
+                const SizedBox(height: 20),
+                CategorySalesChart(
+                  data: filteredResult.categorySales,
+                  enableNavigation: true,
+                ),
+                const SizedBox(height: 20),
+                ProductDistributionChart(
+                  data: filteredResult.distribution,
+                  enableNavigation: true,
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

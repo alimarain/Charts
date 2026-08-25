@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/core/network/dio_client.dart';
 import 'package:new_app/data/datasources/form/form_submission_service.dart';
+
 import 'form_provider.dart';
 import 'submission_state.dart';
 
@@ -12,8 +14,8 @@ final formSubmissionServiceProvider = Provider<FormSubmissionService>((ref) {
 
 final submissionProvider =
     NotifierProvider<SubmissionNotifier, SubmissionState>(() {
-  return SubmissionNotifier();
-});
+      return SubmissionNotifier();
+    });
 
 class SubmissionNotifier extends Notifier<SubmissionState> {
   StreamSubscription<SubmissionProgress>? _subscription;
@@ -57,7 +59,11 @@ class SubmissionNotifier extends Notifier<SubmissionState> {
       },
       onError: (dynamic error) {
         final errorMessage = error is Exception
-            ? error.toString().replaceFirst('ApiException', '').replaceAll(RegExp(r'[\[\]:]'), '').trim()
+            ? error
+                  .toString()
+                  .replaceFirst('ApiException', '')
+                  .replaceAll(RegExp(r'[\[\]:]'), '')
+                  .trim()
             : 'Submission failed. Please try again.';
 
         state = state.copyWith(

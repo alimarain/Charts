@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../domain/entities/maker_models.dart';
 import '../../presentation/controllers/maker/maker_providers.dart';
 import 'dynamic_form_screen.dart';
@@ -24,17 +25,17 @@ class MakerFormsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: Text(productName ?? 'Available Form Templates'),
-      ),
+      appBar: AppBar(title: Text(productName ?? 'Available Form Templates')),
       body: formsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF4F46E5))),
-        error: (err, _) => Center(
-          child: Text('Failed to load forms: $err'),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF4F46E5)),
         ),
+        error: (err, _) => Center(child: Text('Failed to load forms: $err')),
         data: (forms) {
           if (forms.isEmpty) {
-            return const Center(child: Text('No forms associated with this product.'));
+            return const Center(
+              child: Text('No forms associated with this product.'),
+            );
           }
 
           return ListView.separated(
@@ -62,10 +63,7 @@ class MakerFormsScreen extends ConsumerWidget {
 }
 
 class _MakerFormCard extends StatelessWidget {
-  const _MakerFormCard({
-    required this.form,
-    required this.onTap,
-  });
+  const _MakerFormCard({required this.form, required this.onTap});
 
   final MakerForm form;
   final VoidCallback onTap;
@@ -87,18 +85,29 @@ class _MakerFormCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       form.title,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF0F172A)),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                      ),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFEEF2FF),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       '${form.fieldCount} Fields',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF4F46E5)),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF4F46E5),
+                      ),
                     ),
                   ),
                 ],
@@ -106,15 +115,30 @@ class _MakerFormCard extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 form.description,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF64748B),
+                  height: 1.4,
+                ),
               ),
               const SizedBox(height: 14),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text('Open Dynamic Form', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF4F46E5))),
+                  Text(
+                    'Open Dynamic Form',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4F46E5),
+                    ),
+                  ),
                   SizedBox(width: 4),
-                  Icon(Icons.arrow_forward_rounded, size: 14, color: Color(0xFF4F46E5)),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 14,
+                    color: Color(0xFF4F46E5),
+                  ),
                 ],
               ),
             ],

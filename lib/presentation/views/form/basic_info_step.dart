@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/presentation/views/controllers/form_provider.dart';
+
 import '../../../core/utils/validators.dart';
 
 class BasicInfoStep extends ConsumerStatefulWidget {
@@ -20,7 +21,14 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
   late final TextEditingController _addressController;
 
   static const List<String> _genders = ['Male', 'Female', 'Other'];
-  static const List<String> _cities = ['Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Peshawar', 'Quetta'];
+  static const List<String> _cities = [
+    'Karachi',
+    'Lahore',
+    'Islamabad',
+    'Rawalpindi',
+    'Peshawar',
+    'Quetta',
+  ];
 
   @override
   void initState() {
@@ -44,7 +52,8 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
   }
 
   Future<void> _pickDate(BuildContext context) async {
-    final currentDob = ref.read(formProvider).basicInfo.dateOfBirth ?? DateTime(2000, 1, 1);
+    final currentDob =
+        ref.read(formProvider).basicInfo.dateOfBirth ?? DateTime(2000, 1, 1);
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: currentDob,
@@ -77,22 +86,35 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _fullNameController,
-              decoration: const InputDecoration(labelText: 'Full Name *', prefixIcon: Icon(Icons.person_outline)),
+              decoration: const InputDecoration(
+                labelText: 'Full Name *',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
               onChanged: notifier.updateFullName,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Full name is required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Full name is required'
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _fatherNameController,
-              decoration: const InputDecoration(labelText: 'Father Name *', prefixIcon: Icon(Icons.badge_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'Father Name *',
+                prefixIcon: Icon(Icons.badge_outlined),
+              ),
               onChanged: notifier.updateFatherName,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Father name is required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Father name is required'
+                  : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Email Address *', prefixIcon: Icon(Icons.email_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'Email Address *',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
               onChanged: notifier.updateEmail,
               validator: Validators.validateEmail,
             ),
@@ -100,10 +122,14 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Phone Number *', prefixIcon: Icon(Icons.phone_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'Phone Number *',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
               onChanged: notifier.updatePhone,
               validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Phone number is required';
+                if (v == null || v.trim().isEmpty)
+                  return 'Phone number is required';
                 if (v.trim().length < 10) return 'Enter a valid phone number';
                 return null;
               },
@@ -122,7 +148,9 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                       ? '${basicInfo.dateOfBirth!.day}/${basicInfo.dateOfBirth!.month}/${basicInfo.dateOfBirth!.year}'
                       : 'Select Date of Birth',
                   style: TextStyle(
-                    color: basicInfo.dateOfBirth != null ? Colors.black87 : Colors.grey.shade600,
+                    color: basicInfo.dateOfBirth != null
+                        ? Colors.black87
+                        : Colors.grey.shade600,
                   ),
                 ),
               ),
@@ -134,8 +162,11 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                   child: DropdownButtonFormField<String>(
                     initialValue: basicInfo.gender,
                     decoration: const InputDecoration(labelText: 'Gender'),
-                    items: _genders.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
-                    onChanged: (val) => val != null ? notifier.updateGender(val) : null,
+                    items: _genders
+                        .map((g) => DropdownMenuItem(value: g, child: Text(g)))
+                        .toList(),
+                    onChanged: (val) =>
+                        val != null ? notifier.updateGender(val) : null,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -143,8 +174,11 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                   child: DropdownButtonFormField<String>(
                     initialValue: basicInfo.city,
                     decoration: const InputDecoration(labelText: 'City'),
-                    items: _cities.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                    onChanged: (val) => val != null ? notifier.updateCity(val) : null,
+                    items: _cities
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
+                    onChanged: (val) =>
+                        val != null ? notifier.updateCity(val) : null,
                   ),
                 ),
               ],
@@ -153,9 +187,14 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
             TextFormField(
               controller: _addressController,
               maxLines: 2,
-              decoration: const InputDecoration(labelText: 'Residential Address *', prefixIcon: Icon(Icons.home_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'Residential Address *',
+                prefixIcon: Icon(Icons.home_outlined),
+              ),
               onChanged: notifier.updateAddress,
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Address is required' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Address is required'
+                  : null,
             ),
           ],
         ),

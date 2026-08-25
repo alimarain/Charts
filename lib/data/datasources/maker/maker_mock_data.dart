@@ -6,7 +6,7 @@ const mockMakerProductsData = [
     "category": "Corporate Finance",
     "status": "active",
     "formCount": 2,
-    "iconName": "account_balance"
+    "iconName": "account_balance",
   },
   {
     "id": "prod-ins-002",
@@ -15,7 +15,7 @@ const mockMakerProductsData = [
     "category": "Underwriting",
     "status": "active",
     "formCount": 2,
-    "iconName": "shield"
+    "iconName": "shield",
   },
   {
     "id": "prod-ops-003",
@@ -24,8 +24,8 @@ const mockMakerProductsData = [
     "category": "Compliance",
     "status": "active",
     "formCount": 1,
-    "iconName": "verified_user"
-  }
+    "iconName": "verified_user",
+  },
 ];
 
 const mockMakerFormsData = {
@@ -35,15 +35,15 @@ const mockMakerFormsData = {
       "productId": "prod-fin-001",
       "title": "Business Entity & Loan Profiling",
       "description": "Capture legal trading structure, turnover metrics and requested principal limits.",
-      "fieldCount": 8
+      "fieldCount": 8,
     },
     {
       "id": "form-sme-collateral",
       "productId": "prod-fin-001",
       "title": "Collateral & Guarantee Schedule",
       "description": "Collateral asset registry, personal director guarantees and audit declarations.",
-      "fieldCount": 5
-    }
+      "fieldCount": 5,
+    },
   ],
   "prod-ins-002": [
     {
@@ -51,15 +51,16 @@ const mockMakerFormsData = {
       "productId": "prod-ins-002",
       "title": "Physical Property Valuation",
       "description": "Structure location, built square footage, fire suppression and security protocols.",
-      "fieldCount": 7
+      "fieldCount": 7,
     },
     {
       "id": "form-ins-liability",
       "productId": "prod-ins-002",
       "title": "Third-Party Liability Cover",
-      "description": "Public indemnity limits, claims history and operational exposure.",
-      "fieldCount": 4
-    }
+      "description":
+          "Public indemnity limits, claims history and operational exposure.",
+      "fieldCount": 4,
+    },
   ],
   "prod-ops-003": [
     {
@@ -67,9 +68,9 @@ const mockMakerFormsData = {
       "productId": "prod-ops-003",
       "title": "Beneficial Ownership Registry",
       "description": "Direct shareholder split, NTN/Tax identity and anti-money laundering records.",
-      "fieldCount": 6
-    }
-  ]
+      "fieldCount": 6,
+    },
+  ],
 };
 
 const mockDynamicFieldsData = {
@@ -80,7 +81,7 @@ const mockDynamicFieldsData = {
       "label": "Registered Legal Entity Name",
       "type": "text",
       "required": true,
-      "placeholder": "e.g. Apex Industrial Solutions (Pvt) Ltd."
+      "placeholder": "e.g. Apex Industrial Solutions (Pvt) Ltd.",
     },
     {
       "id": "f-2",
@@ -88,7 +89,7 @@ const mockDynamicFieldsData = {
       "label": "Official Accounts Email",
       "type": "email",
       "required": true,
-      "placeholder": "accounts@company.com"
+      "placeholder": "accounts@company.com",
     },
     {
       "id": "f-3",
@@ -96,14 +97,14 @@ const mockDynamicFieldsData = {
       "label": "Requested Facility Limit (PKR)",
       "type": "number",
       "required": true,
-      "placeholder": "5000000"
+      "placeholder": "5000000",
     },
     {
       "id": "f-4",
       "key": "incorporationDate",
       "label": "Date of Incorporation",
       "type": "date",
-      "required": true
+      "required": true,
     },
     {
       "id": "f-5",
@@ -111,7 +112,12 @@ const mockDynamicFieldsData = {
       "label": "Credit Facility Type",
       "type": "dropdown",
       "required": true,
-      "options": ["Running Finance (Revolving)", "Term Loan", "Letter of Credit (LC)", "Bank Guarantee"]
+      "options": [
+        "Running Finance (Revolving)",
+        "Term Loan",
+        "Letter of Credit (LC)",
+        "Bank Guarantee",
+      ],
     },
     {
       "id": "f-6",
@@ -119,14 +125,14 @@ const mockDynamicFieldsData = {
       "label": "Active Active Taxpayer Status (ATL Filer)",
       "type": "radio",
       "required": true,
-      "options": ["Verified Active", "Non-Filer", "Exempt Entity"]
+      "options": ["Verified Active", "Non-Filer", "Exempt Entity"],
     },
     {
       "id": "f-7",
       "key": "requiresMoratorium",
       "label": "Request 6-Month Principal Grace Period",
       "type": "checkbox",
-      "required": false
+      "required": false,
     },
     {
       "id": "f-8",
@@ -134,8 +140,8 @@ const mockDynamicFieldsData = {
       "label": "Operational Loan Purpose Summary",
       "type": "multiline",
       "required": true,
-      "placeholder": "Describe working capital allocation, machinery procurement or cashflow expansion goals..."
-    }
+      "placeholder": "Describe working capital allocation, machinery procurement or cashflow expansion goals...",
+    },
   ],
   "form-sme-collateral": [
     {
@@ -144,7 +150,11 @@ const mockDynamicFieldsData = {
       "label": "Primary Security Class",
       "type": "dropdown",
       "required": true,
-      "options": ["Commercial Real Estate Mortgage", "Hypothecation of Plant & Stocks", "Cash Margin / TDR"]
+      "options": [
+        "Commercial Real Estate Mortgage",
+        "Hypothecation of Plant & Stocks",
+        "Cash Margin / TDR",
+      ],
     },
     {
       "id": "f-c2",
@@ -152,7 +162,7 @@ const mockDynamicFieldsData = {
       "label": "Estimated Fair Market Value (PKR)",
       "type": "number",
       "required": true,
-      "placeholder": "7500000"
+      "placeholder": "7500000",
     },
     {
       "id": "f-c3",
@@ -160,7 +170,7 @@ const mockDynamicFieldsData = {
       "label": "Primary Guarantor Phone Number",
       "type": "phone",
       "required": true,
-      "placeholder": "03001234567"
+      "placeholder": "03001234567",
     },
     {
       "id": "f-c4",
@@ -168,14 +178,19 @@ const mockDynamicFieldsData = {
       "label": "Existing Charges with Other Banks",
       "type": "radio",
       "required": true,
-      "options": ["Pari-Passu Charge", "First Exclusive Charge", "Second Subordinate Charge", "Clean / No Prior Liens"]
+      "options": [
+        "Pari-Passu Charge",
+        "First Exclusive Charge",
+        "Second Subordinate Charge",
+        "Clean / No Prior Liens",
+      ],
     },
     {
       "id": "f-c5",
       "key": "undertakingAffidavit",
       "label": "Directors provide personal unencumbered surety",
       "type": "checkbox",
-      "required": true
-    }
-  ]
+      "required": true,
+    },
+  ],
 };

@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:dio/dio.dart';
+
 import '../../../core/errors/api_exception.dart';
 import '../../models/product_model.dart';
 import 'product_mock_data.dart';
@@ -36,8 +38,9 @@ class ProductService {
 
   /// Simulates a live product stream with periodic updates (used in Dashboard)
   Stream<List<ProductModel>> watchProducts() async* {
-    List<ProductModel> currentProducts =
-        List<ProductModel>.from(initialMockProducts);
+    List<ProductModel> currentProducts = List<ProductModel>.from(
+      initialMockProducts,
+    );
 
     // Initial load delay
     await Future.delayed(const Duration(milliseconds: 600));
@@ -72,10 +75,8 @@ class ProductService {
           name: 'Limited Edition Technical Overshirt #$tick',
           category: 'Jackets',
           price: 98.00,
-          imageUrl:
-              'https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=800&q=80',
-          description:
-              'Special seasonal live drop released straight to the storefront telemetry feed.',
+          imageUrl: 'https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=800&q=80',
+          description: 'Special seasonal live drop released straight to the storefront telemetry feed.',
         );
 
         if (!currentProducts.any((p) => p.id == dropId)) {
@@ -90,8 +91,8 @@ class ProductService {
   Future<ProductModel?> getProductById(String id) async {
     final products = initialMockProducts;
     return products.cast<ProductModel?>().firstWhere(
-          (p) => p?.id == id,
-          orElse: () => null,
-        );
+      (p) => p?.id == id,
+      orElse: () => null,
+    );
   }
 }

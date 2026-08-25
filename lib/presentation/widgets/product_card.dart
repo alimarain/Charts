@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:new_app/app/app_theme.dart';
+
 import '../../domain/entities/product.dart';
 
 class ProductCard extends StatefulWidget {
-  const ProductCard({
-    required this.product,
-    required this.onTap,
-    super.key,
-  });
+  const ProductCard({required this.product, required this.onTap, super.key});
 
   final Product product;
   final VoidCallback onTap;
@@ -41,7 +38,11 @@ class _ProductCardState extends State<ProductCard> {
                     errorBuilder: (context, error, stackTrace) => Container(
                       color: const Color(0xFFF1F5F9),
                       child: const Center(
-                        child: Icon(Icons.checkroom, color: AppTheme.textSecondary, size: 36),
+                        child: Icon(
+                          Icons.checkroom,
+                          color: AppTheme.textSecondary,
+                          size: 36,
+                        ),
                       ),
                     ),
                   ),
@@ -57,9 +58,13 @@ class _ProductCardState extends State<ProductCard> {
                         child: Padding(
                           padding: const EdgeInsets.all(6.0),
                           child: Icon(
-                            _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            _isFavorite
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
                             size: 16,
-                            color: _isFavorite ? const Color(0xFFEF4444) : AppTheme.textPrimary,
+                            color: _isFavorite
+                                ? const Color(0xFFEF4444)
+                                : AppTheme.textPrimary,
                           ),
                         ),
                       ),
@@ -107,9 +112,19 @@ class _ProductCardState extends State<ProductCard> {
                       ),
                       const Row(
                         children: [
-                          Icon(Icons.star_rounded, size: 14, color: Color(0xFFF59E0B)),
+                          Icon(
+                            Icons.star_rounded,
+                            size: 14,
+                            color: Color(0xFFF59E0B),
+                          ),
                           SizedBox(width: 2),
-                          Text('4.8', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
+                          Text(
+                            '4.8',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ],

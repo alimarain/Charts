@@ -1,11 +1,14 @@
 import 'dart:developer' as developer;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'form_state.dart';
 
 // Non-autoDispose notifier ensures session-scoped retention across UI rebuilds/navigation
-final formProvider = NotifierProvider<MultiStepFormNotifier, MultiStepFormState>(() {
-  return MultiStepFormNotifier();
-});
+final formProvider =
+    NotifierProvider<MultiStepFormNotifier, MultiStepFormState>(() {
+      return MultiStepFormNotifier();
+    });
 
 class MultiStepFormNotifier extends Notifier<MultiStepFormState> {
   @override
@@ -34,11 +37,15 @@ class MultiStepFormNotifier extends Notifier<MultiStepFormState> {
 
   // Step 1: Basic Information Setters
   void updateFullName(String value) {
-    state = state.copyWith(basicInfo: state.basicInfo.copyWith(fullName: value));
+    state = state.copyWith(
+      basicInfo: state.basicInfo.copyWith(fullName: value),
+    );
   }
 
   void updateFatherName(String value) {
-    state = state.copyWith(basicInfo: state.basicInfo.copyWith(fatherName: value));
+    state = state.copyWith(
+      basicInfo: state.basicInfo.copyWith(fatherName: value),
+    );
   }
 
   void updateEmail(String value) {
@@ -50,7 +57,9 @@ class MultiStepFormNotifier extends Notifier<MultiStepFormState> {
   }
 
   void updateDateOfBirth(DateTime? value) {
-    state = state.copyWith(basicInfo: state.basicInfo.copyWith(dateOfBirth: value));
+    state = state.copyWith(
+      basicInfo: state.basicInfo.copyWith(dateOfBirth: value),
+    );
   }
 
   void updateGender(String value) {
@@ -67,35 +76,51 @@ class MultiStepFormNotifier extends Notifier<MultiStepFormState> {
 
   // Step 2: Career Information Setters
   void updateHighestEducation(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(highestEducation: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(highestEducation: value),
+    );
   }
 
   void updateUniversity(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(university: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(university: value),
+    );
   }
 
   void updateCurrentJobTitle(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(currentJobTitle: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(currentJobTitle: value),
+    );
   }
 
   void updateCompany(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(company: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(company: value),
+    );
   }
 
   void updateYearsOfExperience(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(yearsOfExperience: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(yearsOfExperience: value),
+    );
   }
 
   void updateExpectedSalary(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(expectedSalary: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(expectedSalary: value),
+    );
   }
 
   void updateSkills(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(skills: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(skills: value),
+    );
   }
 
   void updateCareerGoal(String value) {
-    state = state.copyWith(careerInfo: state.careerInfo.copyWith(careerGoal: value));
+    state = state.copyWith(
+      careerInfo: state.careerInfo.copyWith(careerGoal: value),
+    );
   }
 
   // Data Submission

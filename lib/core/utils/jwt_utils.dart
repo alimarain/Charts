@@ -9,17 +9,16 @@ class JwtUtils {
     required String email,
     required String role,
   }) {
-    final header = {
-      'alg': 'HS256',
-      'typ': 'JWT',
-    };
+    final header = {'alg': 'HS256', 'typ': 'JWT'};
 
     final payload = {
       'sub': userId,
       'email': email,
       'role': role,
       'iat': DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      'exp': DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/ 1000,
+      'exp':
+          DateTime.now().add(const Duration(hours: 1)).millisecondsSinceEpoch ~/
+          1000,
     };
 
     final encodedHeader = _base64UrlEncode(jsonEncode(header));

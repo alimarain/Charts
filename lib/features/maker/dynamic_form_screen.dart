@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/maker_models.dart';
 import '../../presentation/controllers/maker/maker_providers.dart';
 
 class DynamicFormScreen extends ConsumerStatefulWidget {
-  const DynamicFormScreen({
-    required this.formId,
-    this.formTitle,
-    super.key,
-  });
+  const DynamicFormScreen({required this.formId, this.formTitle, super.key});
 
   static const routeName = 'dynamic_form';
   static const routeSubPath = 'forms/:formId';
@@ -25,11 +22,15 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
 
   Future<void> _handleSubmit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final notifier = ref.read(dynamicFormControllerProvider(widget.formId).notifier);
+      final notifier = ref.read(
+        dynamicFormControllerProvider(widget.formId).notifier,
+      );
       final success = await notifier.submit(widget.formId);
 
       if (success && mounted) {
-        final result = ref.read(dynamicFormControllerProvider(widget.formId)).submissionResult;
+        final result = ref
+            .read(dynamicFormControllerProvider(widget.formId))
+            .submissionResult;
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -74,15 +75,17 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
   Widget build(BuildContext context) {
     final fieldsAsync = ref.watch(dynamicFieldsProvider(widget.formId));
     final formState = ref.watch(dynamicFormControllerProvider(widget.formId));
-    final notifier = ref.read(dynamicFormControllerProvider(widget.formId).notifier);
+    final notifier = ref.read(
+      dynamicFormControllerProvider(widget.formId).notifier,
+    );
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: Text(widget.formTitle ?? 'Dynamic Form'),
-      ),
+      appBar: AppBar(title: Text(widget.formTitle ?? 'Dynamic Form')),
       body: fieldsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF4F46E5))),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Color(0xFF4F46E5)),
+        ),
         error: (err, _) => Center(child: Text('Error generating fields: $err')),
         data: (fields) {
           return Form(
@@ -100,7 +103,10 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
                     ),
                     child: Text(
                       formState.errorMessage!,
-                      style: const TextStyle(color: Color(0xFFDC2626), fontSize: 13),
+                      style: const TextStyle(
+                        color: Color(0xFFDC2626),
+                        fontSize: 13,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -108,7 +114,11 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
                 ...fields.map((field) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 18.0),
-                    child: _buildDynamicWidget(field, formState.answers[field.key], notifier),
+                    child: _buildDynamicWidget(
+                      field,
+                      formState.answers[field.key],
+                      notifier,
+                    ),
                   );
                 }),
                 const SizedBox(height: 20),
@@ -118,7 +128,10 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
                         )
                       : const Text('Submit Application Payload'),
                 ),
@@ -149,7 +162,9 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
               .toList(),
           onChanged: (val) => notifier.updateField(field.key, val),
           validator: isRequired
-              ? (val) => (val == null || val.isEmpty) ? '${field.label} is required' : null
+              ? (val) => (val == null || val.isEmpty)
+                    ? '${field.label} is required'
+                    : null
               : null,
         );
 
@@ -168,13 +183,20 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
                 onTap: () => notifier.updateField(field.key, opt),
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6.0,
+                    horizontal: 4.0,
+                  ),
                   child: Row(
                     children: [
                       Icon(
-                        isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                        isSelected
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
                         size: 20,
-                        color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFF94A3B8),
+                        color: isSelected
+                            ? const Color(0xFF4F46E5)
+                            : const Color(0xFF94A3B8),
                       ),
                       const SizedBox(width: 8),
                       Text(opt, style: const TextStyle(fontSize: 13)),
@@ -188,7 +210,10 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
 
       case 'checkbox':
         return CheckboxListTile(
-          title: Text('${field.label}${isRequired ? " *" : ""}', style: const TextStyle(fontSize: 13)),
+          title: Text(
+            '${field.label}${isRequired ? " *" : ""}',
+            style: const TextStyle(fontSize: 13),
+          ),
           value: (currentValue as bool?) ?? false,
           dense: true,
           contentPadding: EdgeInsets.zero,
@@ -206,7 +231,10 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
               lastDate: DateTime.now(),
             );
             if (picked != null) {
-              notifier.updateField(field.key, picked.toIso8601String().split('T').first);
+              notifier.updateField(
+                field.key,
+                picked.toIso8601String().split('T').first,
+              );
             }
           },
           child: InputDecorator(
@@ -217,7 +245,9 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
             child: Text(
               currentValue != null ? currentValue.toString() : 'Select date',
               style: TextStyle(
-                color: currentValue != null ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
+                color: currentValue != null
+                    ? const Color(0xFF0F172A)
+                    : const Color(0xFF94A3B8),
               ),
             ),
           ),
@@ -231,10 +261,12 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
             labelText: '${field.label}${isRequired ? " *" : ""}',
             hintText: field.placeholder,
           ),
-          onChanged: (val) => notifier.updateField(field.key, num.tryParse(val) ?? val),
+          onChanged: (val) =>
+              notifier.updateField(field.key, num.tryParse(val) ?? val),
           validator: isRequired
               ? (val) {
-                  if (val == null || val.trim().isEmpty) return '${field.label} is required';
+                  if (val == null || val.trim().isEmpty)
+                    return '${field.label} is required';
                   if (num.tryParse(val) == null) return 'Enter a valid number';
                   return null;
                 }
@@ -251,7 +283,9 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
           ),
           onChanged: (val) => notifier.updateField(field.key, val),
           validator: isRequired
-              ? (val) => (val == null || val.trim().isEmpty) ? '${field.label} is required' : null
+              ? (val) => (val == null || val.trim().isEmpty)
+                    ? '${field.label} is required'
+                    : null
               : null,
         );
 
@@ -267,7 +301,9 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
           ),
           onChanged: (val) => notifier.updateField(field.key, val),
           validator: isRequired
-              ? (val) => (val == null || val.trim().isEmpty) ? '${field.label} is required' : null
+              ? (val) => (val == null || val.trim().isEmpty)
+                    ? '${field.label} is required'
+                    : null
               : null,
         );
     }

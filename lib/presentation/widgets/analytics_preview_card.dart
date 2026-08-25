@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/app/app_theme.dart';
+
 import '../controllers/analytics_provider.dart';
 
 class AnalyticsPreviewCard extends ConsumerWidget {
@@ -27,7 +28,11 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                   color: AppTheme.primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.insights_rounded, color: AppTheme.primaryColor, size: 26),
+                child: const Icon(
+                  Icons.insights_rounded,
+                  color: AppTheme.primaryColor,
+                  size: 26,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -45,7 +50,10 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                           ),
                         ),
                         SizedBox(width: 6),
-                        CircleAvatar(radius: 3, backgroundColor: AppTheme.secondaryColor),
+                        CircleAvatar(
+                          radius: 3,
+                          backgroundColor: AppTheme.secondaryColor,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -62,7 +70,11 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                     const SizedBox(height: 2),
                     const Text(
                       '+14.8% vs last cycle',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.secondaryColor),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: AppTheme.secondaryColor,
+                      ),
                     ),
                   ],
                 ),
@@ -78,7 +90,11 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                     ),
                   ),
                   SizedBox(width: 4),
-                  Icon(Icons.arrow_forward_rounded, size: 16, color: AppTheme.primaryColor),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: AppTheme.primaryColor,
+                  ),
                 ],
               ),
             ],

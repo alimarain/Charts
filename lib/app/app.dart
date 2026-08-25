@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/app/app_theme.dart';
+
 import 'router.dart';
 
 class MainApp extends ConsumerWidget {

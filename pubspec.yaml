@@ -38,6 +38,11 @@ dependencies:
   dio: ^5.11.0
   go_router: ^17.5.0
   syncfusion_flutter_charts: ^34.2.4
+  pdf: ^3.13.0
+  printing: ^5.15.0
+  csv: ^8.0.0
+  share_plus: ^13.3.0
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+
 import '../../../domain/entities/analytics.dart';
 import '../../../presentation/controllers/analytics_state.dart';
 
@@ -30,12 +31,30 @@ class AnalyticsService {
           : (period == AnalyticsPeriod.thirtyDays ? 1.6 : 1.0);
 
       return [
-        CategorySalesData(category: 'T-Shirts', sales: (42000 + random.nextInt(4000)) * mult),
-        CategorySalesData(category: 'Hoodies', sales: (58000 + random.nextInt(5000)) * mult),
-        CategorySalesData(category: 'Jackets', sales: (64000 + random.nextInt(6000)) * mult),
-        CategorySalesData(category: 'Jeans', sales: (49000 + random.nextInt(4000)) * mult),
-        CategorySalesData(category: 'Sneakers', sales: (71000 + random.nextInt(7000)) * mult),
-        CategorySalesData(category: 'Accessories', sales: (23000 + random.nextInt(2000)) * mult),
+        CategorySalesData(
+          category: 'T-Shirts',
+          sales: (42000 + random.nextInt(4000)) * mult,
+        ),
+        CategorySalesData(
+          category: 'Hoodies',
+          sales: (58000 + random.nextInt(5000)) * mult,
+        ),
+        CategorySalesData(
+          category: 'Jackets',
+          sales: (64000 + random.nextInt(6000)) * mult,
+        ),
+        CategorySalesData(
+          category: 'Jeans',
+          sales: (49000 + random.nextInt(4000)) * mult,
+        ),
+        CategorySalesData(
+          category: 'Sneakers',
+          sales: (71000 + random.nextInt(7000)) * mult,
+        ),
+        CategorySalesData(
+          category: 'Accessories',
+          sales: (23000 + random.nextInt(2000)) * mult,
+        ),
       ];
     }
 
@@ -48,20 +67,25 @@ class AnalyticsService {
       ProductDistributionData(category: 'Accessories', count: 10),
     ];
 
+    AnalyticsData createSnapshot() {
+      final sales = generateSales();
+      final total = sales.fold<double>(0.0, (sum, item) => sum + item.value);
+
+      return AnalyticsData(
+        salesData: sales,
+        categorySales: generateCategorySales(),
+        distribution: initialDistribution,
+        totalSales: total,
+        totalOrders: 142 + random.nextInt(15),
+      );
+    }
+
     await Future.delayed(const Duration(milliseconds: 400));
-    yield AnalyticsData(
-      weeklySales: generateSales(),
-      categorySales: generateCategorySales(),
-      distribution: initialDistribution,
-    );
+    yield createSnapshot();
 
     while (true) {
       await Future.delayed(const Duration(seconds: 10));
-      yield AnalyticsData(
-        weeklySales: generateSales(),
-        categorySales: generateCategorySales(),
-        distribution: initialDistribution,
-      );
+      yield createSnapshot();
     }
   }
 }

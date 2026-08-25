@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/network/dio_client.dart';
 import '../../../data/datasources/maker/maker_service.dart';
 import '../../../domain/entities/maker_models.dart';
@@ -12,8 +13,8 @@ final makerRepositoryProvider = Provider<MakerRepository>((ref) {
 // 1. Maker Products Provider
 final makerProductsProvider =
     AsyncNotifierProvider<MakerProductsNotifier, List<MakerProduct>>(
-  MakerProductsNotifier.new,
-);
+      MakerProductsNotifier.new,
+    );
 
 class MakerProductsNotifier extends AsyncNotifier<List<MakerProduct>> {
   @override
@@ -31,8 +32,10 @@ class MakerProductsNotifier extends AsyncNotifier<List<MakerProduct>> {
 }
 
 // 2. Maker Forms Family Provider
-final makerFormsProvider =
-    FutureProvider.family<List<MakerForm>, String>((ref, productId) async {
+final makerFormsProvider = FutureProvider.family<List<MakerForm>, String>((
+  ref,
+  productId,
+) async {
   final repository = ref.watch(makerRepositoryProvider);
   return repository.getMakerForms(productId);
 });
@@ -40,9 +43,9 @@ final makerFormsProvider =
 // 3. Dynamic Fields Family Provider
 final dynamicFieldsProvider =
     FutureProvider.family<List<DynamicFormField>, String>((ref, formId) async {
-  final repository = ref.watch(makerRepositoryProvider);
-  return repository.getFormFields(formId);
-});
+      final repository = ref.watch(makerRepositoryProvider);
+      return repository.getFormFields(formId);
+    });
 
 // 4. Dynamic Form State Model
 class DynamicFormState {
@@ -77,8 +80,8 @@ class DynamicFormState {
 // 5. Dynamic Form Notifier Provider (Family-scoped per formId)
 final dynamicFormControllerProvider =
     NotifierProvider.family<DynamicFormNotifier, DynamicFormState, String>(
-  (arg) => DynamicFormNotifier(),
-);
+      (arg) => DynamicFormNotifier(),
+    );
 
 class DynamicFormNotifier extends Notifier<DynamicFormState> {
   @override
@@ -100,16 +103,10 @@ class DynamicFormNotifier extends Notifier<DynamicFormState> {
         formId: formId,
         answers: state.answers,
       );
-      state = state.copyWith(
-        isSubmitting: false,
-        submissionResult: response,
-      );
+      state = state.copyWith(isSubmitting: false, submissionResult: response);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isSubmitting: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isSubmitting: false, errorMessage: e.toString());
       return false;
     }
   }

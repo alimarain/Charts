@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/presentation/views/controllers/auth_state.dart';
+
 import '../../core/errors/exceptions.dart';
 import '../../data/datasources/auth/auth_service.dart';
 
@@ -17,15 +18,20 @@ class AuthNotifier extends Notifier<AuthState> {
     return const AuthState(status: AuthStatus.unauthenticated);
   }
 
-  Future<void> login(String email, String password, {String selectedRole = 'user'}) async {
-    state = state.copyWith(
-      status: AuthStatus.loading,
-      clearError: true,
-    );
+  Future<void> login(
+    String email,
+    String password, {
+    String selectedRole = 'user',
+  }) async {
+    state = state.copyWith(status: AuthStatus.loading, clearError: true);
 
     try {
       final authService = ref.read(authServiceProvider);
-      final response = await authService.login(email, password, selectedRole: selectedRole);
+      final response = await authService.login(
+        email,
+        password,
+        selectedRole: selectedRole,
+      );
 
       state = AuthState(
         status: AuthStatus.authenticated,

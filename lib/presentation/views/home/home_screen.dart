@@ -1,9 +1,12 @@
 import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/views/controllers/product_provider.dart';
+
 import '../../controllers/auth_provider.dart';
+import '../analytics/analytics_screen.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../form/form_screen.dart';
 
@@ -22,7 +25,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _isLoading = false;
   bool _hasError = false;
 
-  // Dark editorial theme tokens
   static const Color voidColor = Color(0xFF050308);
   static const Color shellColor = Color(0xFF0D0A15);
   static const Color panelColor = Color(0xFF161224);
@@ -90,7 +92,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: voidColor,
       body: Stack(
         children: [
-          // Ambient Layer Gradients
           Positioned(
             top: -100,
             left: -100,
@@ -125,8 +126,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
           ),
-
-          // Main Layout
           Row(
             children: [
               _buildSidebar(context, userName, userRole),
@@ -180,8 +179,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildSidebar(
-      BuildContext context, String userName, String userRole) {
+  Widget _buildSidebar(BuildContext context, String userName, String userRole) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = MediaQuery.of(context).size.width > 900;
@@ -211,8 +209,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         border: Border.all(color: lineColor),
                       ),
                       child: const Center(
-                        child: Icon(Icons.bolt_rounded,
-                            size: 18, color: cyanAccent),
+                        child: Icon(
+                          Icons.bolt_rounded,
+                          size: 18,
+                          color: cyanAccent,
+                        ),
                       ),
                     ),
                     if (isWide) ...[
@@ -233,7 +234,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: ListView(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 16),
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
                   children: [
                     _SidebarNavItem(
                       icon: Icons.home_rounded,
@@ -249,9 +252,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       label: 'Dashboard',
                       isActive: false,
                       isWide: isWide,
+                      activeColor: cyanAccent,
+                      onTap: () => context.pushNamed(DashboardScreen.routeName),
+                    ),
+                    const SizedBox(height: 4),
+                    _SidebarNavItem(
+                      icon: Icons.insights_rounded,
+                      label: 'Charts & Telemetry',
+                      isActive: false,
+                      isWide: isWide,
                       activeColor: violetAccent,
-                      onTap: () =>
-                          context.pushNamed(DashboardScreen.routeName),
+                      onTap: () => context.pushNamed(AnalyticsScreen.routeName),
                     ),
                     const SizedBox(height: 4),
                     _SidebarNavItem(
@@ -314,8 +325,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.logout_rounded,
-                            size: 16, color: ink500),
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          size: 16,
+                          color: ink500,
+                        ),
                         tooltip: 'Sign Out',
                         onPressed: () =>
                             ref.read(authProvider.notifier).logout(),
@@ -342,13 +356,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Fixed overflow: Wrapped inside Expanded with single-line truncation
           Expanded(
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: panelColor.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(20),
@@ -384,8 +399,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: hasToken
                       ? const Color(0xFF052E16)
@@ -411,8 +425,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(width: 8),
               IconButton(
-                icon: const Icon(Icons.logout_rounded,
-                    size: 18, color: ink500),
+                icon: const Icon(Icons.logout_rounded, size: 18, color: ink500),
                 tooltip: 'Sign Out',
                 onPressed: () => ref.read(authProvider.notifier).logout(),
               ),
@@ -485,16 +498,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   foregroundColor: voidColor,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 22, vertical: 12),
+                    horizontal: 22,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                onPressed: () =>
-                    context.pushNamed(DashboardScreen.routeName),
-                icon: const Icon(Icons.play_arrow_rounded, size: 18),
+                onPressed: () => context.pushNamed(DashboardScreen.routeName),
+                icon: const Icon(Icons.storefront_rounded, size: 18),
                 label: const Text(
-                  'Continue to Dashboard',
+                  'Open Dashboard',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -504,15 +518,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   side: const BorderSide(color: lineSoftColor),
                   backgroundColor: panelColor.withValues(alpha: 0.4),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                onPressed: () => context.pushNamed(FormScreen.routeName),
-                icon: const Icon(Icons.assignment_outlined, size: 16),
+                onPressed: () => context.pushNamed(AnalyticsScreen.routeName),
+                icon: const Icon(Icons.insights_rounded, size: 16),
                 label: const Text(
-                  'Open Onboarding Form',
+                  'Open Charts & Telemetry',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -559,10 +575,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             TextButton(
-              onPressed: () =>
-                  context.pushNamed(DashboardScreen.routeName),
+              onPressed: () => context.pushNamed(DashboardScreen.routeName),
               child: const Text(
-                'View catalog →',
+                'Open Dashboard →',
                 style: TextStyle(
                   color: cyanAccent,
                   fontSize: 12,
@@ -586,11 +601,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 _SecondaryActionTile(
                   icon: Icons.storefront_rounded,
                   accentColor: cyanAccent,
-                  title: 'Live Product Stream',
-                  subtitle: 'Real-time clothing telemetry feed',
-                  tag: 'STREAMING',
-                  onTap: () =>
-                      context.pushNamed(DashboardScreen.routeName),
+                  title: 'Live Catalog & Filters',
+                  subtitle: 'Full scroll preservation & telemetry',
+                  tag: 'DASHBOARD',
+                  onTap: () => context.pushNamed(DashboardScreen.routeName),
                 ),
                 const SizedBox(height: 12),
                 _SecondaryActionTile(
@@ -599,15 +613,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   title: 'Store Analytics',
                   subtitle: 'Syncfusion Cartesian & circular charts',
                   tag: 'ANALYTICS',
-                  onTap: () => context.push('/analytics'),
+                  onTap: () => context.pushNamed(AnalyticsScreen.routeName),
                 ),
                 const SizedBox(height: 12),
                 _SecondaryActionTile(
                   icon: Icons.assignment_rounded,
                   accentColor: cyanAccent,
                   title: 'Multi-Step Onboarding',
-                  subtitle: '2-step state preservation uploader',
-                  tag: 'ACTIVE SESSION',
+                  subtitle: '2-step state preservation form',
+                  tag: 'FORM',
                   onTap: () => context.pushNamed(FormScreen.routeName),
                 ),
               ],
@@ -667,8 +681,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ],
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: panelColor,
                   borderRadius: BorderRadius.circular(6),
@@ -688,9 +701,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               color: voidColor,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: _hasError
-                    ? const Color(0xFF7F1D1D)
-                    : lineSoftColor,
+                color: _hasError ? const Color(0xFF7F1D1D) : lineSoftColor,
               ),
             ),
             child: Text(
@@ -728,8 +739,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         )
                       : const Icon(Icons.cloud_download_rounded, size: 16),
-                  label: const Text('Test 200 GET',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  label: const Text(
+                    'Test 200 GET',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -746,8 +759,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   onPressed: _isLoading ? null : _triggerError,
                   icon: const Icon(Icons.warning_amber_rounded, size: 16),
-                  label: const Text('Test 404 Error',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                  label: const Text(
+                    'Test 404 Error',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],
@@ -790,13 +805,12 @@ class _SidebarNavItem extends StatelessWidget {
               ? const Color(0xFF161224).withValues(alpha: 0.8)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
-          border: isActive
-              ? Border.all(color: const Color(0xFF251D3A))
-              : null,
+          border: isActive ? Border.all(color: const Color(0xFF251D3A)) : null,
         ),
         child: Row(
-          mainAxisAlignment:
-              isWide ? MainAxisAlignment.start : MainAxisAlignment.center,
+          mainAxisAlignment: isWide
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
           children: [
             Icon(
               icon,
@@ -810,8 +824,7 @@ class _SidebarNavItem extends StatelessWidget {
                 style: TextStyle(
                   color: isActive ? Colors.white : const Color(0xFF8F8A9F),
                   fontSize: 13,
-                  fontWeight:
-                      isActive ? FontWeight.w600 : FontWeight.w500,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 ),
               ),
             ],
@@ -849,7 +862,9 @@ class _PrimaryFeatureCard extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF00F2FE).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -858,7 +873,7 @@ class _PrimaryFeatureCard extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      'IN PROGRESS',
+                      'ACTIVE WORKSPACE',
                       style: TextStyle(
                         color: Color(0xFF00F2FE),
                         fontSize: 9,
@@ -868,11 +883,8 @@ class _PrimaryFeatureCard extends StatelessWidget {
                     ),
                   ),
                   const Text(
-                    '78% complete',
-                    style: TextStyle(
-                      color: Color(0xFF6E6980),
-                      fontSize: 11,
-                    ),
+                    'Full Catalog',
+                    style: TextStyle(color: Color(0xFF6E6980), fontSize: 11),
                   ),
                 ],
               ),
@@ -886,15 +898,15 @@ class _PrimaryFeatureCard extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Icon(
-                    Icons.mobile_friendly_rounded,
+                    Icons.storefront_rounded,
                     size: 48,
-                    color: Color(0xFF4C475A),
+                    color: Color(0xFF00F2FE),
                   ),
                 ),
               ),
               const SizedBox(height: 20),
               const Text(
-                'VibeFlow — Mobile Experience',
+                'Live Storefront & Telemetry',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -907,20 +919,17 @@ class _PrimaryFeatureCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Updated recently · Creative workspace',
+                      'Search, category filters, and product details',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Color(0xFF6E6980),
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Color(0xFF6E6980), fontSize: 12),
                     ),
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Continue',
+                        'Open',
                         style: TextStyle(
                           color: Color(0xFF00F2FE),
                           fontSize: 12,
@@ -928,8 +937,11 @@ class _PrimaryFeatureCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_rounded,
-                          size: 14, color: Color(0xFF00F2FE)),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 14,
+                        color: Color(0xFF00F2FE),
+                      ),
                     ],
                   ),
                 ],

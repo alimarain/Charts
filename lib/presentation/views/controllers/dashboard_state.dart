@@ -1,11 +1,6 @@
 import 'package:new_app/data/models/product_model.dart';
 
-
-enum DashboardStatus {
-  loading,
-  ready,
-  error,
-}
+enum DashboardStatus { loading, ready, error }
 
 class DashboardState {
   const DashboardState({
@@ -31,11 +26,13 @@ class DashboardState {
   /// Pure computation for combined search query + category filtering
   List<ProductModel> get filteredProducts {
     return products.where((product) {
-      final matchesCategory = selectedCategory == 'All' ||
+      final matchesCategory =
+          selectedCategory == 'All' ||
           product.category.toLowerCase() == selectedCategory.toLowerCase();
 
       final cleanQuery = searchQuery.trim().toLowerCase();
-      final matchesSearch = cleanQuery.isEmpty ||
+      final matchesSearch =
+          cleanQuery.isEmpty ||
           product.name.toLowerCase().contains(cleanQuery) ||
           product.category.toLowerCase().contains(cleanQuery) ||
           product.description.toLowerCase().contains(cleanQuery);

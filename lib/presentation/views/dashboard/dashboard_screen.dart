@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/views/controllers/dashboard_provider.dart';
+
 import '../../controllers/auth_provider.dart';
-import '../../widgets/analytics_preview_card.dart';
 import '../../widgets/product_card.dart';
-import '../analytics/analytics_screen.dart';
 import '../form/form_screen.dart';
 import 'product_details_screen.dart';
 
@@ -97,7 +96,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       _searchController.value = _searchController.value.copyWith(
         text: dashboardState.searchQuery,
         selection: TextSelection.collapsed(
-            offset: dashboardState.searchQuery.length),
+          offset: dashboardState.searchQuery.length,
+        ),
       );
     }
 
@@ -128,8 +128,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ],
               ),
-              child: const Icon(Icons.wind_power_rounded,
-                  color: inkBg, size: 20),
+              child: const Icon(
+                Icons.storefront_rounded,
+                color: inkBg,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -138,7 +141,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'VIBEFLOW',
+                    'STORE CATALOG',
                     style: TextStyle(
                       fontFamily: 'Satoshi',
                       fontSize: 16,
@@ -148,7 +151,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     ),
                   ),
                   Text(
-                    'Workspace · ${authUser?.name ?? "Mara Chen"}',
+                    'Browse Products · ${authUser?.name ?? "Member"}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -165,14 +168,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.assignment_outlined,
-                color: faintText, size: 20),
+            icon: const Icon(
+              Icons.assignment_outlined,
+              color: faintText,
+              size: 20,
+            ),
             tooltip: 'Onboarding Form',
             onPressed: () => context.pushNamed(FormScreen.routeName),
           ),
           IconButton(
-            icon: const Icon(Icons.logout_rounded,
-                color: faintText, size: 20),
+            icon: const Icon(Icons.logout_rounded, color: faintText, size: 20),
             tooltip: 'Sign Out',
             onPressed: () => ref.read(authProvider.notifier).logout(),
           ),
@@ -186,7 +191,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               : (constraints.maxWidth > 700 ? 3 : 2);
 
           return CustomScrollView(
-            key: const PageStorageKey('main_vibeflow_dashboard_key'),
+            key: const PageStorageKey('main_store_dashboard_key'),
             controller: _scrollController,
             slivers: [
               // Search Input Box
@@ -205,15 +210,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       style: const TextStyle(color: brightText, fontSize: 13),
                       decoration: InputDecoration(
                         filled: false,
-                        hintText: 'Search synapses, products, or nodes...',
-                        hintStyle:
-                            const TextStyle(color: faintText, fontSize: 13),
-                        prefixIcon: const Icon(Icons.search_rounded,
-                            size: 20, color: faintText),
+                        hintText: 'Search clothing, sneakers, jackets...',
+                        hintStyle: const TextStyle(
+                          color: faintText,
+                          fontSize: 13,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          size: 20,
+                          color: faintText,
+                        ),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
-                                icon: const Icon(Icons.clear,
-                                    size: 18, color: faintText),
+                                icon: const Icon(
+                                  Icons.clear,
+                                  size: 18,
+                                  color: faintText,
+                                ),
                                 onPressed: () {
                                   _searchController.clear();
                                   notifier.updateSearchQuery('');
@@ -223,15 +236,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
 
-              // Horizontal Category Chips
+              // Horizontal Category Filter Chips
               SliverToBoxAdapter(
                 child: SizedBox(
                   height: 44,
@@ -242,15 +256,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     separatorBuilder: (_, _) => const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       final cat = _categories[index];
-                      final isSelected =
-                          dashboardState.selectedCategory == cat;
+                      final isSelected = dashboardState.selectedCategory == cat;
 
                       return GestureDetector(
                         onTap: () => notifier.selectCategory(cat),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 8),
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? tealAccent.withValues(alpha: 0.15)
@@ -280,7 +295,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
 
-              // Active Workspace Header Card (Velocity / Streak Summary)
+              // Summary Metric Banner (Products & Category count only, no chart widgets)
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -299,7 +314,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           children: [
                             const Flexible(
                               child: Text(
-                                'Active Workspace',
+                                'Store Inventory',
                                 style: TextStyle(
                                   fontFamily: 'Satoshi',
                                   fontSize: 20,
@@ -310,15 +325,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 4),
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: limeAccent.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                    color: limeAccent.withValues(alpha: 0.3)),
+                                  color: limeAccent.withValues(alpha: 0.3),
+                                ),
                               ),
                               child: const Text(
-                                'LIVE STREAM',
+                                'ACTIVE STREAM',
                                 style: TextStyle(
                                   fontSize: 9,
                                   fontWeight: FontWeight.w800,
@@ -331,7 +349,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         ),
                         const SizedBox(height: 4),
                         const Text(
-                          'You have 8 synced nodes and active telemetry streams.',
+                          'Showing active items from our store catalog stream.',
                           style: TextStyle(fontSize: 12, color: faintText),
                         ),
                         const SizedBox(height: 16),
@@ -339,35 +357,25 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           children: [
                             Expanded(
                               child: _MetricBadge(
-                                icon: Icons.bolt_rounded,
+                                icon: Icons.checkroom_rounded,
                                 iconColor: tealAccent,
                                 value: '${dashboardState.products.length}',
-                                label: 'Total Catalog',
+                                label: 'Total Products',
                               ),
                             ),
                             const SizedBox(width: 10),
-                            const Expanded(
+                            Expanded(
                               child: _MetricBadge(
-                                icon: Icons.local_fire_department_rounded,
+                                icon: Icons.filter_alt_rounded,
                                 iconColor: purpleAccent,
-                                value: '12-Day',
-                                label: 'Focus Streak',
+                                value: dashboardState.selectedCategory,
+                                label: 'Selected Category',
                               ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-
-              // Telemetry & Analytics Preview Banner
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
-                  child: AnalyticsPreviewCard(
-                    onTap: () => context.pushNamed(AnalyticsScreen.routeName),
                   ),
                 ),
               ),
@@ -388,7 +396,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
 
-              // Product Grid / Empty State
+              // Product Grid / Loading / Empty State
               if (dashboardState.isLoading && dashboardState.products.isEmpty)
                 const SliverFillRemaining(
                   hasScrollBody: false,
@@ -406,12 +414,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.search_off_rounded,
-                            size: 48, color: faintText),
+                        const Icon(
+                          Icons.search_off_rounded,
+                          size: 48,
+                          color: faintText,
+                        ),
                         const SizedBox(height: 10),
                         Text(
                           'No items matching "${dashboardState.searchQuery}"',
-                          style: const TextStyle(color: faintText, fontSize: 13),
+                          style: const TextStyle(
+                            color: faintText,
+                            fontSize: 13,
+                          ),
                         ),
                       ],
                     ),
@@ -427,21 +441,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                     ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final item = filteredItems[index];
-                        return ProductCard(
-                          product: item,
-                          onTap: () {
-                            context.pushNamed(
-                              ProductDetailsScreen.routeName,
-                              pathParameters: {'id': item.id},
-                            );
-                          },
-                        );
-                      },
-                      childCount: filteredItems.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final item = filteredItems[index];
+                      return ProductCard(
+                        product: item,
+                        onTap: () {
+                          context.pushNamed(
+                            ProductDetailsScreen.routeName,
+                            pathParameters: {'id': item.id},
+                          );
+                        },
+                      );
+                    }, childCount: filteredItems.length),
                   ),
                 ),
             ],
@@ -492,8 +503,10 @@ class _MetricBadge extends StatelessWidget {
               children: [
                 Text(
                   value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFFECE8FF),
                   ),

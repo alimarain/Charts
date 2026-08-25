@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/views/controllers/form_provider.dart';
 import 'package:new_app/presentation/views/controllers/submission_provider.dart';
 import 'package:new_app/presentation/views/controllers/submission_state.dart';
+
 import '../dashboard/dashboard_screen.dart';
 import 'basic_info_step.dart';
 import 'career_info_step.dart';
@@ -87,20 +88,34 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                 children: [
                   Row(
                     children: [
-                      const _StepCircle(stepNumber: 1, isActive: true, label: 'Basic Info'),
+                      const _StepCircle(
+                        stepNumber: 1,
+                        isActive: true,
+                        label: 'Basic Info',
+                      ),
                       Expanded(
                         child: Container(
                           height: 3,
-                          color: currentStep >= 1 ? const Color(0xFF2563EB) : Colors.grey.shade300,
+                          color: currentStep >= 1
+                              ? const Color(0xFF2563EB)
+                              : Colors.grey.shade300,
                         ),
                       ),
-                      _StepCircle(stepNumber: 2, isActive: currentStep >= 1, label: 'Career Info'),
+                      _StepCircle(
+                        stepNumber: 2,
+                        isActive: currentStep >= 1,
+                        label: 'Career Info',
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
                     'Step ${currentStep + 1} of 2',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -155,7 +170,9 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                           : Text(
                               currentStep == 0
                                   ? 'Next'
-                                  : (submissionState.isFailure ? 'Retry Submission' : 'Submit'),
+                                  : (submissionState.isFailure
+                                        ? 'Retry Submission'
+                                        : 'Submit'),
                             ),
                     ),
                   ),

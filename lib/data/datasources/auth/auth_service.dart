@@ -3,10 +3,7 @@ import '../../../core/utils/jwt_utils.dart';
 import '../../../domain/entities/user.dart';
 
 class AuthResponse {
-  const AuthResponse({
-    required this.user,
-    required this.token,
-  });
+  const AuthResponse({required this.user, required this.token});
 
   final User user;
   final String token;
@@ -19,7 +16,11 @@ class AuthService {
   static const String _makerEmail = 'applicant@example.com';
   static const String _makerPassword = 'applicant@123';
 
-  Future<AuthResponse> login(String email, String password, {String selectedRole = 'user'}) async {
+  Future<AuthResponse> login(
+    String email,
+    String password, {
+    String selectedRole = 'user',
+  }) async {
     await Future.delayed(const Duration(milliseconds: 700));
 
     final cleanEmail = email.trim().toLowerCase();
@@ -41,7 +42,9 @@ class AuthService {
 
         return AuthResponse(user: user, token: token);
       }
-      throw const AuthException('Invalid Maker credentials. Use applicant@example.com / applicant@123');
+      throw const AuthException(
+        'Invalid Maker credentials. Use applicant@example.com / applicant@123',
+      );
     } else {
       if (cleanEmail == _userEmail && password == _userPassword) {
         const user = User(
@@ -59,7 +62,9 @@ class AuthService {
 
         return AuthResponse(user: user, token: token);
       }
-      throw const AuthException('Invalid User credentials. Use demo@gmail.com / 123456');
+      throw const AuthException(
+        'Invalid User credentials. Use demo@gmail.com / 123456',
+      );
     }
   }
 }
