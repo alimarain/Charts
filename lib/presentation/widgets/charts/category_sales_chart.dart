@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:new_app/app/app_theme.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../domain/entities/analytics.dart';
+import '../../../domain/entities/chart_interaction.dart';
+import '../../controllers/chart_interaction_provider.dart';
+import '../../views/dashboard/chart_details_screen.dart';
 
-class CategorySalesChart extends StatelessWidget {
+class CategorySalesChart extends ConsumerWidget {
   const CategorySalesChart({
     required this.data,
-    this.onCategorySelected,
+    this.chartId = 'category_sales_chart',
+    this.enableNavigation = true,
     super.key,
   });
 
   final List<CategorySalesData> data;
-  final ValueChanged<String>? onCategorySelected;
+  final String chartId;
+  final bool enableNavigation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final interactionState = ref.watch(chartInteractionProvider);
+final selectedItem = interactionState.selectedItem;
+final activeIndex = (selectedItem != null && selectedItem.chartId == chartId)
+    ? selectedItem.dataIndex
+    : -1;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -44,7 +57,7 @@ class CategorySalesChart extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Tap a bar to filter store items',
+                      'Tap bars to view department telemetry',
                       style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                     ),
                   ],
@@ -55,7 +68,11 @@ class CategorySalesChart extends StatelessWidget {
                     color: AppTheme.secondaryLight,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.bar_chart_rounded, size: 20, color: AppTheme.secondaryColor),
+                  child: const Icon(
+                    Icons.bar_chart_rounded,
+                    size: 20,
+                    color: AppTheme.secondaryColor,
+                  ),
                 ),
               ],
             ),
@@ -65,7 +82,7 @@ class CategorySalesChart extends StatelessWidget {
               child: SfCartesianChart(
                 plotAreaBorderWidth: 0,
                 margin: EdgeInsets.zero,
-                enableAxisAnimation: true, // Smooth transition on data updates
+                enableAxisAnimation: true,
                 primaryXAxis: const CategoryAxis(
                   majorGridLines: MajorGridLines(width: 0),
                   axisLine: AxisLine(width: 0.5, color: AppTheme.borderColor),
@@ -87,7 +104,11 @@ class CategorySalesChart extends StatelessWidget {
                   header: '',
                   format: 'point.x: Rs.point.y',
                   color: AppTheme.textPrimary,
-                  textStyle: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                   animationDuration: 150,
                 ),
                 series: <CartesianSeries<CategorySalesData, String>>[
@@ -97,22 +118,35 @@ class CategorySalesChart extends StatelessWidget {
                     xValueMapper: (CategorySalesData item, _) => item.category,
                     yValueMapper: (CategorySalesData item, _) => item.sales,
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                    animationDuration: 500, // Shorter duration stops UI stutter
+                    animationDuration: 400,
+                    pointColorMapper: (CategorySalesData item, int index) {
+                      if (activeIndex == index) {
+                        return AppTheme.accentColor; // Highlighted color on selection
+                      }
+                      return const Color(0xFF059669);
+                    },
                     onPointTap: (ChartPointDetails details) {
                       if (details.pointIndex != null && details.pointIndex! < data.length) {
                         HapticFeedback.lightImpact();
-                        final tappedCat = data[details.pointIndex!].category;
-                        onCategorySelected?.call(tappedCat);
+                        final tapped = data[details.pointIndex!];
+                        final item = SelectedChartItem(
+                          chartId: chartId,
+                          chartType: ChartType.categoryPerformance,
+                          dataIndex: details.pointIndex!,
+                          label: tapped.category,
+                          value: tapped.sales,
+                          unit: 'PKR',
+                          secondaryMetric: 'Active Stock Share',
+                          description: 'Gross department order flow for ${tapped.category}',
+                        );
+
+                        ref.read(chartInteractionProvider.notifier).selectItem(item);
+
+                        if (enableNavigation) {
+                          context.pushNamed(ChartDetailsScreen.routeName, extra: item);
+                        }
                       }
                     },
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF059669),
-                        Color(0xFF34D399),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
                   ),
                 ],
               ),

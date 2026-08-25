@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../domain/entities/chart_interaction.dart';
 import '../features/maker/dynamic_form_screen.dart';
 import '../features/maker/maker_dashboard_screen.dart';
 import '../features/maker/maker_forms_screen.dart';
 import '../presentation/controllers/auth_provider.dart';
 import '../presentation/views/analytics/analytics_screen.dart';
 import '../presentation/views/auth/login_screen.dart';
+import '../presentation/views/dashboard/chart_details_screen.dart';
 import '../presentation/views/dashboard/dashboard_screen.dart';
 import '../presentation/views/dashboard/product_details_screen.dart';
 import '../presentation/views/form/form_screen.dart';
@@ -31,7 +33,9 @@ class RouterNotifier extends ChangeNotifier {
     }
 
     if (isLoggingIn) {
-      return userRole == 'maker' ? MakerDashboardScreen.routePath : HomeScreen.routePath;
+      return userRole == 'maker'
+          ? MakerDashboardScreen.routePath
+          : HomeScreen.routePath;
     }
 
     final isMakerRoute = state.matchedLocation.startsWith('/maker');
@@ -85,6 +89,14 @@ final routerProvider = Provider<GoRouter>((ref) {
               return ProductDetailsScreen(productId: productId);
             },
           ),
+          GoRoute(
+            path: ChartDetailsScreen.routeSubPath,
+            name: ChartDetailsScreen.routeName,
+            builder: (context, state) {
+              final item = state.extra as SelectedChartItem?;
+              return ChartDetailsScreen(item: item);
+            },
+          ),
         ],
       ),
       GoRoute(
@@ -108,7 +120,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) {
               final productId = state.pathParameters['productId'] ?? '';
               final productName = state.extra as String?;
-              return MakerFormsScreen(productId: productId, productName: productName);
+              return MakerFormsScreen(
+                  productId: productId, productName: productName);
             },
           ),
           GoRoute(

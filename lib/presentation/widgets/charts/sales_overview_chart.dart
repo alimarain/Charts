@@ -1,15 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:new_app/app/app_theme.dart';
+import 'package:new_app/presentation/views/dashboard/chart_details_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../domain/entities/analytics.dart';
+import '../../../domain/entities/chart_interaction.dart';
+import '../../controllers/chart_interaction_provider.dart';
 
-class SalesOverviewChart extends StatelessWidget {
-  const SalesOverviewChart({required this.data, super.key});
+class SalesOverviewChart extends ConsumerWidget {
+  const SalesOverviewChart({
+    required this.data,
+    this.chartId = 'sales_overview_chart',
+    this.enableNavigation = true,
+    super.key,
+  });
 
   final List<SalesData> data;
+  final String chartId;
+  final bool enableNavigation;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+   final interactionState = ref.watch(chartInteractionProvider);
+final selectedItem = interactionState.selectedItem;
+final activeIndex = (selectedItem != null && selectedItem.chartId == chartId)
+    ? selectedItem.dataIndex
+    : -1;
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -38,7 +57,7 @@ class SalesOverviewChart extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Daily gross sales performance',
+                      'Tap points to inspect day telemetry',
                       style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                     ),
                   ],
@@ -49,7 +68,11 @@ class SalesOverviewChart extends StatelessWidget {
                     color: AppTheme.primaryLight,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.trending_up_rounded, size: 20, color: AppTheme.primaryColor),
+                  child: const Icon(
+                    Icons.trending_up_rounded,
+                    size: 20,
+                    color: AppTheme.primaryColor,
+                  ),
                 ),
               ],
             ),
@@ -59,6 +82,7 @@ class SalesOverviewChart extends StatelessWidget {
               child: SfCartesianChart(
                 plotAreaBorderWidth: 0,
                 margin: EdgeInsets.zero,
+                enableAxisAnimation: true,
                 primaryXAxis: const CategoryAxis(
                   majorGridLines: MajorGridLines(width: 0),
                   axisLine: AxisLine(width: 0.5, color: AppTheme.borderColor),
@@ -80,8 +104,12 @@ class SalesOverviewChart extends StatelessWidget {
                   canShowMarker: true,
                   format: 'point.x: Rs.point.y',
                   color: AppTheme.textPrimary,
-                  textStyle: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                  animationDuration: 300,
+                  textStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  animationDuration: 200,
                 ),
                 series: <CartesianSeries<SalesData, String>>[
                   SplineAreaSeries<SalesData, String>(
@@ -91,8 +119,7 @@ class SalesOverviewChart extends StatelessWidget {
                     yValueMapper: (SalesData sales, _) => sales.value,
                     borderColor: AppTheme.primaryColor,
                     borderWidth: 2.5,
-                    animationDuration: 1200,
-                    animationDelay: 100,
+                    animationDuration: 400,
                     gradient: LinearGradient(
                       colors: [
                         AppTheme.primaryColor.withValues(alpha: 0.35),
@@ -101,15 +128,37 @@ class SalesOverviewChart extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
-                    markerSettings: const MarkerSettings(
+                    markerSettings: MarkerSettings(
                       isVisible: true,
-                      height: 6,
-                      width: 6,
+                      height: 8,
+                      width: 8,
                       shape: DataMarkerType.circle,
-                      color: AppTheme.primaryColor,
+                      color: activeIndex >= 0 ? AppTheme.accentColor : AppTheme.primaryColor,
                       borderColor: Colors.white,
                       borderWidth: 2,
                     ),
+                    onPointTap: (ChartPointDetails details) {
+                      if (details.pointIndex != null && details.pointIndex! < data.length) {
+                        HapticFeedback.lightImpact();
+                        final tappedData = data[details.pointIndex!];
+                        final item = SelectedChartItem(
+                          chartId: chartId,
+                          chartType: ChartType.salesOverview,
+                          dataIndex: details.pointIndex!,
+                          label: tappedData.label,
+                          value: tappedData.value,
+                          unit: 'PKR',
+                          secondaryMetric: '+14% vs last cycle',
+                          description: 'Daily gross checkout run rate for ${tappedData.label}',
+                        );
+
+                        ref.read(chartInteractionProvider.notifier).selectItem(item);
+
+                        if (enableNavigation) {
+                          context.pushNamed(ChartDetailsScreen.routeName, extra: item);
+                        }
+                      }
+                    },
                   ),
                 ],
               ),
