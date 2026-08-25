@@ -95,8 +95,8 @@ class SalesOverviewChart extends StatelessWidget {
                     animationDelay: 100,
                     gradient: LinearGradient(
                       colors: [
-                        AppTheme.primaryColor.withOpacity(0.35),
-                        AppTheme.primaryColor.withOpacity(0.0),
+                        AppTheme.primaryColor.withValues(alpha: 0.35),
+                        AppTheme.primaryColor.withValues(alpha: 0.0),
                       ],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,

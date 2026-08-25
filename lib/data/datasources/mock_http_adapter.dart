@@ -2,6 +2,89 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 
+// --- Mock Data Definitions ---
+
+final List<Map<String, dynamic>> mockMakerProductsData = [
+  {
+    'id': 'prod-loan-01',
+    'code': 'SME_TERM_LOAN',
+    'name': 'SME Term Loan',
+    'category': 'Commercial Lending',
+    'status': 'ACTIVE',
+  },
+  {
+    'id': 'prod-card-02',
+    'code': 'CORP_CREDIT_CARD',
+    'name': 'Corporate Credit Card',
+    'category': 'Cards',
+    'status': 'ACTIVE',
+  },
+];
+
+final Map<String, List<Map<String, dynamic>>> mockMakerFormsData = {
+  'prod-loan-01': [
+    {
+      'formId': 'form-sme-app',
+      'title': 'SME Credit Underwriting Application',
+      'version': '1.2.0',
+      'requiredRole': 'MAKER',
+    },
+    {
+      'formId': 'form-kyc-doc',
+      'title': 'Business Entity KYC & UBO Verification',
+      'version': '2.0.0',
+      'requiredRole': 'MAKER',
+    },
+  ],
+  'prod-card-02': [
+    {
+      'formId': 'form-corp-card',
+      'title': 'Corporate Card Issuance Requisition',
+      'version': '1.0.1',
+      'requiredRole': 'MAKER',
+    },
+  ],
+};
+
+final Map<String, List<Map<String, dynamic>>> mockDynamicFieldsData = {
+  'form-sme-app': [
+    {
+      'id': 'f-1',
+      'key': 'businessName',
+      'label': 'Registered Business Name',
+      'type': 'text',
+      'required': true,
+      'placeholder': 'Enter legal entity name',
+    },
+    {
+      'id': 'f-2',
+      'key': 'loanAmountRequested',
+      'label': 'Requested Loan Amount (USD)',
+      'type': 'number',
+      'required': true,
+      'placeholder': 'e.g. 250000',
+    },
+    {
+      'id': 'f-3',
+      'key': 'loanTenureMonths',
+      'label': 'Tenure (Months)',
+      'type': 'select',
+      'required': true,
+      'options': [12, 24, 36, 48, 60],
+    },
+  ],
+  'form-kyc-doc': [
+    {
+      'id': 'f-4',
+      'key': 'taxIdentificationNumber',
+      'label': 'Tax Identification Number (TIN/EIN)',
+      'type': 'text',
+      'required': true,
+      'placeholder': 'XX-XXXXXXX',
+    },
+  ],
+};
+
 /// Simulates a remote HTTP server inside Dio without making actual network calls.
 class MockHttpAdapter implements HttpClientAdapter {
   @override
@@ -149,7 +232,91 @@ class MockHttpAdapter implements HttpClientAdapter {
       );
     }
 
-    // 3. GET /simulate-error
+    // 3. GET /maker/products
+    if (path.endsWith('/maker/products') && method == 'GET') {
+      return ResponseBody.fromString(
+        jsonEncode({
+          'success': true,
+          'message': 'Maker catalog fetched successfully',
+          'data': mockMakerProductsData,
+        }),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    }
+
+    // 4. GET /maker/products/{productId}/forms
+    final productFormsRegex = RegExp(r'/maker/products/([^/]+)/forms$');
+    if (productFormsRegex.hasMatch(path) && method == 'GET') {
+      final match = productFormsRegex.firstMatch(path);
+      final productId = match?.group(1) ?? '';
+      final forms = mockMakerFormsData[productId] ?? [];
+
+      return ResponseBody.fromString(
+        jsonEncode({
+          'success': true,
+          'data': forms,
+        }),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    }
+
+    // 5. GET /maker/forms/{formId}/fields
+    final formFieldsRegex = RegExp(r'/maker/forms/([^/]+)/fields$');
+    if (formFieldsRegex.hasMatch(path) && method == 'GET') {
+      final match = formFieldsRegex.firstMatch(path);
+      final formId = match?.group(1) ?? '';
+      final fields = mockDynamicFieldsData[formId] ?? [
+        {
+          "id": "gen-1",
+          "key": "applicantComments",
+          "label": "Additional Case Comments",
+          "type": "text",
+          "required": true,
+          "placeholder": "Enter generic notes..."
+        }
+      ];
+
+      return ResponseBody.fromString(
+        jsonEncode({
+          'success': true,
+          'data': fields,
+        }),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    }
+
+    // 6. POST /maker/forms/{formId}/submit
+    final submitRegex = RegExp(r'/maker/forms/([^/]+)/submit$');
+    if (submitRegex.hasMatch(path) && method == 'POST') {
+      final now = DateTime.now();
+      return ResponseBody.fromString(
+        jsonEncode({
+          'success': true,
+          'message': 'Application underwritten and assigned successfully',
+          'data': {
+            'applicationId': 'APP-MKR-${now.millisecondsSinceEpoch}',
+            'referenceNumber': 'REF-${(now.millisecondsSinceEpoch % 1000000)}',
+            'status': 'PENDING_CHECKER_REVIEW',
+            'submittedAt': now.toIso8601String(),
+          }
+        }),
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    }
+
+    // 7. GET /simulate-error
     if (path.endsWith('/simulate-error')) {
       return ResponseBody.fromString(
         jsonEncode({'error': 'Resource not found'}),

@@ -2,8 +2,8 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_app/presentation/views/controllers/auth_provider.dart';
 import 'package:new_app/presentation/views/controllers/product_provider.dart';
+import '../../controllers/auth_provider.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../form/form_screen.dart';
 
@@ -96,7 +96,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // User Profile Card
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -105,7 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 border: Border.all(color: const Color(0xFFE2E8F0)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
+                    color: Colors.black.withValues(alpha: 0.02),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -115,7 +114,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: const Color(0xFF2563EB).withOpacity(0.1),
+                    backgroundColor: const Color(0xFF2563EB).withValues(alpha: 0.1),
                     child: const Icon(Icons.person_rounded, size: 30, color: Color(0xFF2563EB)),
                   ),
                   const SizedBox(width: 16),
@@ -173,8 +172,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             const SizedBox(height: 24),
-
-            // Main Actions Section
             const Text(
               'APPLICATION FLOW',
               style: TextStyle(
@@ -185,8 +182,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Open Live Dashboard Card Button
             _ActionCard(
               title: 'Open Live Dashboard',
               subtitle: 'Stream catalog, scroll preservation & category filters',
@@ -196,8 +191,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onTap: () => context.pushNamed(DashboardScreen.routeName),
             ),
             const SizedBox(height: 12),
-
-            // Open Multi-Step Onboarding Form Card Button
             _ActionCard(
               title: 'Open Multi-Step Form',
               subtitle: 'Two-step flow with session state & stream submission',
@@ -207,8 +200,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onTap: () => context.pushNamed(FormScreen.routeName),
             ),
             const SizedBox(height: 24),
-
-            // Network Diagnostics Section
             const Text(
               'NETWORK & DIO DIAGNOSTICS',
               style: TextStyle(
@@ -219,8 +210,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
-            // Diagnostic Output Log Console
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -254,7 +243,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             const SizedBox(height: 12),
-
             Row(
               children: [
                 Expanded(
@@ -297,8 +285,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
             const SizedBox(height: 32),
-
-            // Clean Sign Out Button
             Center(
               child: TextButton.icon(
                 style: TextButton.styleFrom(

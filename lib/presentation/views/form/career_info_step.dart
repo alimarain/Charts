@@ -75,7 +75,7 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: careerInfo.highestEducation,
+              initialValue: careerInfo.highestEducation,
               decoration: const InputDecoration(labelText: 'Highest Education *', prefixIcon: Icon(Icons.school_outlined)),
               items: _educationLevels.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
               onChanged: isLocked ? null : (val) => val != null ? notifier.updateHighestEducation(val) : null,
@@ -167,8 +167,6 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
               onChanged: notifier.updateCareerGoal,
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Career goal is required' : null,
             ),
-
-            // Live Stream Progress & Error Display
             if (submissionState.isSubmitting || submissionState.isSuccess) ...[
               const SizedBox(height: 20),
               Container(
@@ -206,7 +204,6 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                 ),
               ),
             ],
-
             if (submissionState.isFailure && submissionState.errorMessage != null) ...[
               const SizedBox(height: 20),
               Container(

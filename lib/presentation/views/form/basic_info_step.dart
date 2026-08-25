@@ -132,7 +132,7 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: basicInfo.gender,
+                    initialValue: basicInfo.gender,
                     decoration: const InputDecoration(labelText: 'Gender'),
                     items: _genders.map((g) => DropdownMenuItem(value: g, child: Text(g))).toList(),
                     onChanged: (val) => val != null ? notifier.updateGender(val) : null,
@@ -141,7 +141,7 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: basicInfo.city,
+                    initialValue: basicInfo.city,
                     decoration: const InputDecoration(labelText: 'City'),
                     items: _cities.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                     onChanged: (val) => val != null ? notifier.updateCity(val) : null,

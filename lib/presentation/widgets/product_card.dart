@@ -36,7 +36,9 @@ class _ProductCardState extends State<ProductCard> {
                   Image.network(
                     widget.product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    cacheWidth: 400,
+                    cacheHeight: 500,
+                    errorBuilder: (context, error, stackTrace) => Container(
                       color: const Color(0xFFF1F5F9),
                       child: const Center(
                         child: Icon(Icons.checkroom, color: AppTheme.textSecondary, size: 36),
@@ -47,7 +49,7 @@ class _ProductCardState extends State<ProductCard> {
                     top: 8,
                     right: 8,
                     child: Material(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       shape: const CircleBorder(),
                       child: InkWell(
                         customBorder: const CircleBorder(),

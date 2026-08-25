@@ -62,7 +62,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                 child: Image.network(
                   product.imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (context, error, stackTrace) => Container(
                     color: const Color(0xFFF1F5F9),
                     child: const Icon(Icons.checkroom, size: 60, color: AppTheme.textSecondary),
                   ),
@@ -100,8 +100,6 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary, height: 1.5),
             ),
             const SizedBox(height: 24),
-
-            // Quantity Selector
             Row(
               children: [
                 const Text('Quantity:', style: TextStyle(fontWeight: FontWeight.w600)),

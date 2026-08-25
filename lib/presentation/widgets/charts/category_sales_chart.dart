@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:new_app/app/app_theme.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../domain/entities/analytics.dart';
 
 class CategorySalesChart extends StatelessWidget {
-  const CategorySalesChart({required this.data, super.key});
+  const CategorySalesChart({
+    required this.data,
+    this.onCategorySelected,
+    super.key,
+  });
 
   final List<CategorySalesData> data;
+  final ValueChanged<String>? onCategorySelected;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +44,7 @@ class CategorySalesChart extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Gross volume per department',
+                      'Tap a bar to filter store items',
                       style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
                     ),
                   ],
@@ -59,6 +65,7 @@ class CategorySalesChart extends StatelessWidget {
               child: SfCartesianChart(
                 plotAreaBorderWidth: 0,
                 margin: EdgeInsets.zero,
+                enableAxisAnimation: true, // Smooth transition on data updates
                 primaryXAxis: const CategoryAxis(
                   majorGridLines: MajorGridLines(width: 0),
                   axisLine: AxisLine(width: 0.5, color: AppTheme.borderColor),
@@ -81,7 +88,7 @@ class CategorySalesChart extends StatelessWidget {
                   format: 'point.x: Rs.point.y',
                   color: AppTheme.textPrimary,
                   textStyle: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                  animationDuration: 250,
+                  animationDuration: 150,
                 ),
                 series: <CartesianSeries<CategorySalesData, String>>[
                   ColumnSeries<CategorySalesData, String>(
@@ -90,8 +97,14 @@ class CategorySalesChart extends StatelessWidget {
                     xValueMapper: (CategorySalesData item, _) => item.category,
                     yValueMapper: (CategorySalesData item, _) => item.sales,
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                    animationDuration: 1000,
-                    animationDelay: 200,
+                    animationDuration: 500, // Shorter duration stops UI stutter
+                    onPointTap: (ChartPointDetails details) {
+                      if (details.pointIndex != null && details.pointIndex! < data.length) {
+                        HapticFeedback.lightImpact();
+                        final tappedCat = data[details.pointIndex!].category;
+                        onCategorySelected?.call(tappedCat);
+                      }
+                    },
                     gradient: const LinearGradient(
                       colors: [
                         Color(0xFF059669),

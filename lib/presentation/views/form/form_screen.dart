@@ -44,15 +44,13 @@ class _FormScreenState extends ConsumerState<FormScreen> {
     final submissionState = ref.watch(submissionProvider);
     final isSubmitting = submissionState.isSubmitting;
 
-    // React to submission completion
     ref.listen<SubmissionState>(submissionProvider, (previous, next) {
       if (next.isSuccess) {
         Future.delayed(const Duration(milliseconds: 600), () {
-          if (mounted) {
-            ref.read(submissionProvider.notifier).reset();
-            ref.read(formProvider.notifier).resetForm();
-            context.goNamed(DashboardScreen.routeName);
-          }
+          if (!context.mounted) return;
+          ref.read(submissionProvider.notifier).reset();
+          ref.read(formProvider.notifier).resetForm();
+          context.goNamed(DashboardScreen.routeName);
         });
       }
     });
@@ -89,7 +87,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                 children: [
                   Row(
                     children: [
-                      _StepCircle(stepNumber: 1, isActive: true, label: 'Basic Info'),
+                      const _StepCircle(stepNumber: 1, isActive: true, label: 'Basic Info'),
                       Expanded(
                         child: Container(
                           height: 3,
@@ -123,7 +121,7 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     offset: const Offset(0, -2),
                     blurRadius: 6,
                   ),

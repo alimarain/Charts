@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/app/app_theme.dart';
-import 'package:new_app/presentation/views/controllers/auth_provider.dart';
 import 'package:new_app/presentation/views/controllers/dashboard_provider.dart';
+import '../../controllers/auth_provider.dart';
 import '../../widgets/analytics_preview_card.dart';
 import '../../widgets/product_card.dart';
 import '../analytics/analytics_screen.dart';
@@ -93,7 +93,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           children: [
             CircleAvatar(
               radius: 18,
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.1),
+              backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
               child: const Icon(Icons.person_rounded, color: AppTheme.primaryColor, size: 20),
             ),
             const SizedBox(width: 12),
@@ -135,7 +135,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             key: const PageStorageKey('main_dashboard_scroll_key'),
             controller: _scrollController,
             slivers: [
-              // Search Input
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
@@ -158,8 +157,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
               ),
-
-              // Horizontal Category Filter
               SliverToBoxAdapter(
                 child: SizedBox(
                   height: 48,
@@ -167,7 +164,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     scrollDirection: Axis.horizontal,
                     itemCount: _categories.length,
-                    separatorBuilder: (_, __) => const SizedBox(width: 8),
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
                     itemBuilder: (context, index) {
                       final cat = _categories[index];
                       final isSelected = dashboardState.selectedCategory == cat;
@@ -183,15 +180,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
               ),
-
-              // Featured Horizontal Carousel
-              if (featuredProducts.isNotEmpty && dashboardState.searchQuery.isEmpty && dashboardState.selectedCategory == 'All') ...[
+              if (featuredProducts.isNotEmpty &&
+                  dashboardState.searchQuery.isEmpty &&
+                  dashboardState.selectedCategory == 'All') ...[
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text(
                       'FEATURED DROPS',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary, letterSpacing: 1.1),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.textSecondary,
+                        letterSpacing: 1.1,
+                      ),
                     ),
                   ),
                 ),
@@ -202,7 +204,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       scrollDirection: Axis.horizontal,
                       itemCount: featuredProducts.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                      separatorBuilder: (_, _) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
                         final product = featuredProducts[index];
                         return SizedBox(
@@ -222,8 +224,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
               ],
-
-              // Compact Analytics Hub Banner
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -232,19 +232,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
               ),
-
-              // Catalog Header
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(16, 12, 16, 8),
                   child: Text(
                     'RECOMMENDED FOR YOU',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.textSecondary, letterSpacing: 1.1),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textSecondary,
+                      letterSpacing: 1.1,
+                    ),
                   ),
                 ),
               ),
-
-              // Responsive Product Grid
               if (dashboardState.isLoading && dashboardState.products.isEmpty)
                 const SliverFillRemaining(
                   hasScrollBody: false,
