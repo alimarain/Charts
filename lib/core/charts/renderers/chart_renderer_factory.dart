@@ -18,6 +18,7 @@ class ChartRendererFactory {
   }) {
     switch (type) {
       case UniversalChartType.line:
+      case UniversalChartType.stepLine:
       case UniversalChartType.column:
       case UniversalChartType.bar:
       case UniversalChartType.area:
@@ -178,6 +179,37 @@ class ChartRendererFactory {
               width: 8,
               shape: DataMarkerType.circle,
               color: activeIndex >= 0 ? accentColor : primaryColor,
+            ),
+            onPointTap: handleTap,
+          ),
+        );
+        break;
+      case UniversalChartType.stepLine:
+        seriesList.add(
+          StepLineSeries<ChartDataPoint, String>(
+            name: config.title ?? 'Horizon',
+            dataSource: dataPoints,
+            xValueMapper: (ChartDataPoint p, _) => p.label,
+            yValueMapper: (ChartDataPoint p, _) => p.value,
+            color: primaryColor,
+            width: 3.5,
+            markerSettings: MarkerSettings(
+              isVisible: true,
+              height: 12,
+              width: 12,
+              shape: DataMarkerType.diamond,
+              color: activeIndex >= 0 ? accentColor : Colors.white,
+              borderColor: primaryColor,
+              borderWidth: 3,
+            ),
+            dataLabelSettings: DataLabelSettings(
+              isVisible: config.showDataLabels,
+              labelAlignment: ChartDataLabelAlignment.top,
+              textStyle: const TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+              ),
             ),
             onPointTap: handleTap,
           ),

@@ -8,6 +8,7 @@ import '../../widgets/charts/category_sales_chart.dart';
 import '../../widgets/charts/chart_filter_bar.dart';
 import '../../widgets/charts/chart_kpi_cards.dart';
 import '../../widgets/charts/product_distribution_chart.dart';
+import '../../widgets/charts/quarterly_performance_chart.dart';
 import '../../widgets/charts/sales_overview_chart.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
@@ -99,7 +100,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.ios_share_rounded, color: AppTheme.primaryColor),
+            icon: const Icon(Icons.ios_share_rounded,
+                color: AppTheme.primaryColor),
             tooltip: 'Share & Export Reports',
             onSelected: (val) => _handleGlobalExport(val, context),
             itemBuilder: (ctx) => const [
@@ -107,7 +109,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 value: 'pdf',
                 child: Row(
                   children: [
-                    Icon(Icons.picture_as_pdf_outlined, color: Colors.red, size: 18),
+                    Icon(Icons.picture_as_pdf_outlined,
+                        color: Colors.red, size: 18),
                     SizedBox(width: 8),
                     Text('Export PDF Executive Report'),
                   ],
@@ -117,7 +120,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 value: 'csv',
                 child: Row(
                   children: [
-                    Icon(Icons.table_chart_outlined, color: Colors.green, size: 18),
+                    Icon(Icons.table_chart_outlined,
+                        color: Colors.green, size: 18),
                     SizedBox(width: 8),
                     Text('Export Clean CSV Data'),
                   ],
@@ -149,7 +153,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
             );
           }
 
-          if (analyticsState.errorMessage != null && analyticsState.data == null) {
+          if (analyticsState.errorMessage != null &&
+              analyticsState.data == null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -182,12 +187,14 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.filter_alt_off_rounded, size: 48, color: Color(0xFF94A3B8)),
+                  const Icon(Icons.filter_alt_off_rounded,
+                      size: 48, color: Color(0xFF94A3B8)),
                   const SizedBox(height: 12),
                   const Text('No data available for the selected filters.'),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () => ref.read(chartFilterProvider.notifier).reset(),
+                    onPressed: () =>
+                        ref.read(chartFilterProvider.notifier).reset(),
                     child: const Text('Reset Filters'),
                   ),
                 ],
@@ -206,22 +213,32 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 const SizedBox(height: 16),
                 ChartKpiGrid(kpis: filteredResult.kpis),
                 const SizedBox(height: 20),
+
+                // Chart 1: Revenue Velocity Area Chart
                 SalesOverviewChart(
                   data: filteredResult.currentSales,
                   previousData: filteredResult.previousSales,
                   enableNavigation: true,
                 ),
                 const SizedBox(height: 20),
+
+                // Chart 2: Category Breakdown
                 CategorySalesChart(
                   data: filteredResult.categorySales,
                   enableNavigation: true,
                 ),
                 const SizedBox(height: 20),
+
+                // Chart 3: Inventory Allocation Doughnut Chart
                 ProductDistributionChart(
                   data: filteredResult.distribution,
                   enableNavigation: true,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
+
+                // Chart 4: Extracted Modular Performance Widget
+                const QuarterlyPerformanceChart(),
+                const SizedBox(height: 32),
               ],
             ),
           );

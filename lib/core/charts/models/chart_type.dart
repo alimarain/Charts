@@ -1,4 +1,3 @@
-/// Supported visualization rendering styles across the global chart system.
 enum UniversalChartType {
   line,
   column,
@@ -6,4 +5,5 @@ enum UniversalChartType {
   area,
   pie,
   doughnut,
+  stepLine, // New stepped horizon style
 }
