@@ -94,25 +94,25 @@ class ChartFilterNotifier extends Notifier<ChartFilterState> {
 // -------------------------------------------------------------
 // Filtered Analytics Data Provider
 // -------------------------------------------------------------
-class FilteredAnalyticsResult {
-  const FilteredAnalyticsResult({
-    required this.currentSales,
-    required this.previousSales,
-    required this.categorySales,
-    required this.distribution,
-    required this.kpis,
-    required this.categories,
-    required this.hasData,
-  });
+  class FilteredAnalyticsResult {
+    const FilteredAnalyticsResult({
+      required this.currentSales,
+      required this.previousSales,
+      required this.categorySales,
+      required this.distribution,
+      required this.kpis,
+      required this.categories,
+      required this.hasData,
+    });
 
-  final List<SalesData> currentSales;
-  final List<SalesData> previousSales;
-  final List<CategorySalesData> categorySales;
-  final List<ProductDistributionData> distribution;
-  final ComputedKpis kpis;
-  final List<String> categories;
-  final bool hasData;
-}
+    final List<SalesData> currentSales;
+    final List<SalesData> previousSales;
+    final List<CategorySalesData> categorySales;
+    final List<ProductDistributionData> distribution;
+    final ComputedKpis kpis;
+    final List<String> categories;
+    final bool hasData;
+  }
 
 final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
   final analyticsState = ref.watch(analyticsProvider);
@@ -128,9 +128,8 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
 
   // 1. Filter Category Sales
   final filteredCategories = filter.selectedCategory == 'All'
-      ? rawData.categorySales
-      : rawData.categorySales
-            .where((e) => e.category == filter.selectedCategory)
+      ? rawData.categorySales : rawData.categorySales.where(
+        (e) => e.category == filter.selectedCategory)
             .toList();
 
   // 2. Filter Inventory Distribution
@@ -169,11 +168,8 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
       break;
     case ChartDatePreset.custom:
       if (filter.startDate != null && filter.endDate != null) {
-        final days = filter.endDate!
-            .difference(filter.startDate!)
-            .inDays
-            .clamp(1, 365);
-        scaleFactor *= (days / 30.0);
+        final days = filter.endDate!.difference(filter.startDate!)
+            .inDays.clamp(1, 365);scaleFactor *= (days / 30.0);
       }
       break;
   }

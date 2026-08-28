@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_app/presentation/widgets/charts/basic_chart_screen.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
-
 import '../domain/entities/chart_interaction.dart';
 import '../features/maker/dynamic_form_screen.dart';
 import '../features/maker/maker_dashboard_screen.dart';
@@ -11,6 +11,8 @@ import '../presentation/controllers/auth_provider.dart';
 import '../presentation/views/analytics/analytics_screen.dart';
 import '../presentation/views/auth/login_screen.dart';
 import '../presentation/views/dashboard/chart_details_screen.dart';
+import '../presentation/views/dashboard/dashboard_screen.dart';
+import '../presentation/views/dashboard/product_details_screen.dart';
 import '../presentation/views/form/form_screen.dart';
 import '../presentation/views/home/home_screen.dart';
 
@@ -37,17 +39,15 @@ class RouterNotifier extends ChangeNotifier {
           : HomeScreen.routePath;
     }
 
-    if (state.matchedLocation == '/dashboard') {
-      return AnalyticsScreen.routePath;
-    }
-
     final isMakerRoute = state.matchedLocation.startsWith('/maker');
     if (isMakerRoute && userRole != 'maker') {
-      return HomeScreen.routePath;
+      return DashboardScreen.routePath;
     }
 
     final isNormalUserRoute = state.matchedLocation == HomeScreen.routePath ||
+        state.matchedLocation.startsWith(DashboardScreen.routePath) ||
         state.matchedLocation.startsWith(AnalyticsScreen.routePath) ||
+        state.matchedLocation == BasicChartScreen.routePath ||
         state.matchedLocation == FormScreen.routePath;
     if (isNormalUserRoute && userRole == 'maker') {
       return MakerDashboardScreen.routePath;
@@ -82,6 +82,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
+        path: DashboardScreen.routePath,
+        name: DashboardScreen.routeName,
+        builder: (context, state) => const DashboardScreen(),
+        routes: [
+          GoRoute(
+            path: ProductDetailsScreen.routeSubPath,
+            name: ProductDetailsScreen.routeName,
+            builder: (context, state) {
+              final productId = state.pathParameters['id'] ?? 'unknown';
+              return ProductDetailsScreen(productId: productId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
         path: AnalyticsScreen.routePath,
         name: AnalyticsScreen.routeName,
         builder: (context, state) => const AnalyticsScreen(),
@@ -98,11 +113,18 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: FullscreenChartScreen.routeSubPath,
             name: FullscreenChartScreen.routeName,
             builder: (context, state) {
-              final chartId = state.pathParameters['chartId'] ?? 'sales_overview_chart';
+              final chartId =
+                  state.pathParameters['chartId'] ?? 'sales_overview_chart';
               return FullscreenChartScreen(chartId: chartId);
             },
           ),
         ],
+      ),
+      // Standalone Example Route
+      GoRoute(
+        path: BasicChartScreen.routePath,
+        name: BasicChartScreen.routeName,
+        builder: (context, state) => const BasicChartScreen(),
       ),
       GoRoute(
         path: FormScreen.routePath,

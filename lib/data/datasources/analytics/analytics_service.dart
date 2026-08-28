@@ -15,13 +15,13 @@ class AnalyticsService {
       final base = 12000.0 * multiplier;
 
       return [
-        SalesData(label: 'Mon', value: base + random.nextInt(2000)),
-        SalesData(label: 'Tue', value: base + random.nextInt(3000)),
-        SalesData(label: 'Wed', value: base + random.nextInt(2500)),
-        SalesData(label: 'Thu', value: base + random.nextInt(3500)),
-        SalesData(label: 'Fri', value: base + random.nextInt(4500)),
-        SalesData(label: 'Sat', value: base + random.nextInt(5500)),
-        SalesData(label: 'Sun', value: base + random.nextInt(4800)),
+        SalesData(label: 'Mon', value: base + random.nextInt(5600)),
+        SalesData(label: 'Tue', value: base + random.nextInt(45000)),
+        SalesData(label: 'Wed', value: base + random.nextInt(24500)),
+        SalesData(label: 'Thu', value: base + random.nextInt(35500)),
+        SalesData(label: 'Fri', value: base + random.nextInt(400)),
+        SalesData(label: 'Sat', value: base + random.nextInt(500)),
+        SalesData(label: 'Sun', value: base + random.nextInt(8800)),
       ];
     }
 
@@ -32,24 +32,24 @@ class AnalyticsService {
 
       return [
         CategorySalesData(
-          category: 'T-Shirts',
-          sales: (42000 + random.nextInt(4000)) * mult,
+          category: 'Shirts',
+          sales: (32000 + random.nextInt(4000)) * mult,
         ),
         CategorySalesData(
           category: 'Hoodies',
-          sales: (58000 + random.nextInt(5000)) * mult,
+          sales: (68000 + random.nextInt(5000)) * mult,
         ),
         CategorySalesData(
           category: 'Jackets',
-          sales: (64000 + random.nextInt(6000)) * mult,
+          sales: (44000 + random.nextInt(6000)) * mult,
         ),
         CategorySalesData(
           category: 'Jeans',
-          sales: (49000 + random.nextInt(4000)) * mult,
+          sales: (59000 + random.nextInt(4000)) * mult,
         ),
         CategorySalesData(
           category: 'Sneakers',
-          sales: (71000 + random.nextInt(7000)) * mult,
+          sales: (81000 + random.nextInt(7000)) * mult,
         ),
         CategorySalesData(
           category: 'Accessories',
@@ -59,8 +59,8 @@ class AnalyticsService {
     }
 
     const initialDistribution = [
-      ProductDistributionData(category: 'T-Shirts', count: 30),
-      ProductDistributionData(category: 'Hoodies', count: 20),
+      ProductDistributionData(category: 'T-Shirts', count: 33),
+      ProductDistributionData(category: 'Hoodies', count: 25),
       ProductDistributionData(category: 'Jackets', count: 12),
       ProductDistributionData(category: 'Jeans', count: 18),
       ProductDistributionData(category: 'Sneakers', count: 15),
