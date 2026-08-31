@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
@@ -5,59 +6,103 @@ import '../../../core/charts/models/chart_type.dart';
 import '../../../core/charts/widgets/global_chart_widget.dart';
 import '../../../domain/entities/basic_chart_data.dart';
 
-class BasicChartScreen extends StatelessWidget {
+class BasicChartScreen extends StatefulWidget {
   const BasicChartScreen({super.key});
 
   static const routeName = 'basic_chart';
   static const routePath = '/basic-chart';
 
-  // Sample dataset with dedicated accent colors & growth metrics
-  static const List<BasicChartData> _distinctiveSalesData = [
-    BasicChartData(
-      month: 'Jan',
-      sales: 14500,
-      color: Color(0xFF00F2FE),
-      growthTag: '+8%',
+  @override
+  State<BasicChartScreen> createState() => _BasicChartScreenState();
+}
+
+class _BasicChartScreenState extends State<BasicChartScreen> {
+  // 1. Dynamic state-driven dataset
+  List<BasicChartData> _currentData = [
+    const BasicChartData(
+      month: 'January',
+      sales: 12000,
+      color: Color(0xFF4F46E5),
     ),
-    BasicChartData(
-      month: 'Feb',
-      sales: 21200,
-      color: Color(0xFF38BDF8),
-      growthTag: '+16%',
+    const BasicChartData(
+      month: 'February',
+      sales: 18000,
+      color: Color(0xFF4F46E5),
     ),
-    BasicChartData(
-      month: 'Mar',
-      sales: 18400,
-      color: Color(0xFF6366F1),
-      growthTag: '-3%',
+    const BasicChartData(
+      month: 'March',
+      sales: 15000,
+      color: Color(0xFF4F46E5),
     ),
-    BasicChartData(
-      month: 'Apr',
-      sales: 27800,
-      color: Color(0xFF8B5CF6),
-      growthTag: '+24%',
+    const BasicChartData(
+      month: 'April',
+      sales: 22000,
+      color: Color(0xFF4F46E5),
     ),
-    BasicChartData(
+    const BasicChartData(
       month: 'May',
-      sales: 23600,
-      color: Color(0xFFA855F7),
-      growthTag: '+11%',
+      sales: 19000,
+      color: Color(0xFF4F46E5),
     ),
-    BasicChartData(
-      month: 'Jun',
-      sales: 31500,
-      color: Color(0xFF10B981),
-      growthTag: '+32%',
+    const BasicChartData(
+      month: 'June',
+      sales: 25000,
+      color: Color(0xFF4F46E5),
     ),
   ];
 
+  bool _isLoading = false;
+  bool _showEmpty = false;
+
+  void _refreshSampleData() {
+    final random = Random();
+    setState(() {
+      _showEmpty = false;
+      _currentData = [
+        BasicChartData(
+          month: 'January',
+          sales: 10000.0 + random.nextInt(8000),
+          color: const Color(0xFF4F46E5),
+        ),
+        BasicChartData(
+          month: 'February',
+          sales: 12000.0 + random.nextInt(10000),
+          color: const Color(0xFF4F46E5),
+        ),
+        BasicChartData(
+          month: 'March',
+          sales: 14000.0 + random.nextInt(9000),
+          color: const Color(0xFF4F46E5),
+        ),
+        BasicChartData(
+          month: 'April',
+          sales: 18000.0 + random.nextInt(12000),
+          color: const Color(0xFF4F46E5),
+        ),
+        BasicChartData(
+          month: 'May',
+          sales: 16000.0 + random.nextInt(11000),
+          color: const Color(0xFF4F46E5),
+        ),
+        BasicChartData(
+          month: 'June',
+          sales: 20000.0 + random.nextInt(15000),
+          color: const Color(0xFF4F46E5),
+        ),
+      ];
+    });
+  }
+
+  void _toggleLoading() {
+    setState(() => _isLoading = !_isLoading);
+  }
+
+  void _toggleEmpty() {
+    setState(() => _showEmpty = !_showEmpty);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final totalRunRate = _distinctiveSalesData.fold<double>(
-      0.0,
-      (sum, item) => sum + item.sales,
-    );
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -65,7 +110,7 @@ class BasicChartScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Quarterly Performance',
+              'Basic Chart Example',
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -73,238 +118,104 @@ class BasicChartScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'Custom column architecture via GlobalChartWidget',
+              'Configurable global chart integration',
               style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF4F46E5)),
+            tooltip: 'Refresh Data',
+            onPressed: _refreshSampleData,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF0F172A).withValues(alpha: 0.04),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
+            // Controls Bar
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _refreshSampleData,
+                  icon: const Icon(Icons.autorenew_rounded, size: 16),
+                  label: const Text('Refresh Data'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4F46E5),
+                    foregroundColor: Colors.white,
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Card Header with Badge
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF00F2FE), Color(0xFF6366F1)],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.auto_graph_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Monthly Revenue Velocity',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                  fontSize: 16,
-                                  color: Color(0xFF0F172A),
-                                  letterSpacing: -0.3,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Color mapped data points with interactive snackbars',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF64748B),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: const Color(0xFFA7F3D0)),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(
-                              Icons.bolt_rounded,
-                              size: 12,
-                              color: Color(0xFF059669),
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              'LIVE FEED',
-                              style: TextStyle(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF059669),
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _toggleLoading,
+                  icon: const Icon(Icons.hourglass_empty_rounded, size: 16),
+                  label: Text(_isLoading ? 'Stop Loading' : 'Test Loading'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: _toggleEmpty,
+                  icon: const Icon(Icons.block_rounded, size: 16),
+                  label: Text(_showEmpty ? 'Show Data' : 'Test Empty State'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
 
-                  // GlobalChartWidget Execution
-                  GlobalChartWidget<BasicChartData>(
-                    data: _distinctiveSalesData,
-                    mapper: (BasicChartData item) => ChartDataPoint(
-                      label: item.month,
-                      value: item.sales,
-                      color: item.color,
-                    ),
-                    config: const ChartConfig(
-                      chartType: UniversalChartType.column,
-                      height: 280,
-                      showTooltip: true,
-                      showLegend: false,
-                      showDataLabels: true,
-                      enableSelection: true,
-                      enableFullscreen: false,
-                      enableExport: false,
-                      enableChartTypeSwitching: false,
-                      accentColor: Color(0xFFF59E0B),
-                      yAxisLabelFormat: 'Rs.{value}',
-                    ),
-                    onPointTap: (int index, ChartDataPoint point) {
-                      final item = _distinctiveSalesData[index];
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Row(
-                            children: [
-                              Container(
-                                width: 10,
-                                height: 10,
-                                decoration: BoxDecoration(
-                                  color: point.color ?? const Color(0xFF00F2FE),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                '${point.label}: Rs. ${point.value.toStringAsFixed(0)} (Growth: ${item.growthTag})',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          duration: const Duration(seconds: 2),
-                          backgroundColor: const Color(0xFF0F172A),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Bottom Insight Strip
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.insights_rounded,
-                              size: 16,
-                              color: Color(0xFF6366F1),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Quarterly Gross Run Rate:',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF64748B),
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              'Rs. ${(totalRunRate / 1000).toStringAsFixed(1)}K',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF0F172A),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Row(
-                          children: [
-                            Icon(
-                              Icons.arrow_upward_rounded,
-                              size: 14,
-                              color: Color(0xFF10B981),
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              '+22.4% Avg Growth',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF10B981),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            // Standard GlobalChartWidget consumption
+            GlobalChartWidget<BasicChartData>(
+              data: _showEmpty ? const [] : _currentData,
+              isLoading: _isLoading,
+              emptyMessage: 'No monthly sales records found.',
+              mapper: (BasicChartData item) => ChartDataPoint(
+                label: item.month,
+                value: item.sales,
+                color: item.color,
               ),
+              config: ChartConfig(
+                chartType: UniversalChartType.column,
+                title: 'Monthly Sales',
+                subtitle: 'Tap any bar to inspect selection and values',
+                showTooltip: true,
+                showLegend: false,
+                showDataLabels: true,
+                enableSelection: true,
+                enableFullscreen: false,
+                enableExport: true,
+                enableChartTypeSwitching: true,
+                supportedChartTypes: const [
+                  UniversalChartType.column,
+                  UniversalChartType.bar,
+                  UniversalChartType.line,
+                  UniversalChartType.area,
+                ],
+                xAxisTitle: 'Month',
+                yAxisTitle: 'Sales (PKR)',
+                valueFormatter: (double value) =>
+                    'Rs. ${value.toStringAsFixed(0)}',
+                primaryColor: const Color(0xFF4F46E5),
+                accentColor: const Color(0xFFF59E0B),
+              ),
+              onPointTap: (int index, ChartDataPoint point) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${point.label}\nSales: Rs. ${point.value.toStringAsFixed(0)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    duration: const Duration(seconds: 2),
+                    backgroundColor: const Color(0xFF0F172A),
+                  ),
+                );
+              },
             ),
           ],
         ),

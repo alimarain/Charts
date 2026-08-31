@@ -43,7 +43,7 @@ class ChartDetailsScreen extends ConsumerWidget {
       case ChartType.productDistribution:
         screenTitle = 'Inventory Allocation';
         headerIcon = Icons.pie_chart_outline_rounded;
-        themeColor = AppTheme.accentColor;
+        themeColor = const Color.fromARGB(255, 55, 12, 42);
         break;
     }
 

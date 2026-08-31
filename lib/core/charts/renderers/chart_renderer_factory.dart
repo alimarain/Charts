@@ -18,10 +18,10 @@ class ChartRendererFactory {
   }) {
     switch (type) {
       case UniversalChartType.line:
-      case UniversalChartType.stepLine:
       case UniversalChartType.column:
       case UniversalChartType.bar:
       case UniversalChartType.area:
+      case UniversalChartType.stepLine:
         return _buildCartesianChart(
           type: type,
           dataPoints: dataPoints,
@@ -67,19 +67,48 @@ class ChartRendererFactory {
         overflowMode: LegendItemOverflowMode.wrap,
         textStyle: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
       ),
-      primaryXAxis: const CategoryAxis(
-        majorGridLines: MajorGridLines(width: 0),
-        axisLine: AxisLine(width: 0.5, color: Color(0xFFE2E8F0)),
-        labelStyle: TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+      primaryXAxis: CategoryAxis(
+        isVisible: config.showXAxis,
+        title: config.xAxisTitle != null
+            ? AxisTitle(
+                text: config.xAxisTitle,
+                textStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF64748B),
+                ),
+              )
+            : const AxisTitle(),
+        majorGridLines: const MajorGridLines(width: 0),
+        axisLine: const AxisLine(width: 0.5, color: Color(0xFFE2E8F0)),
+        labelStyle: const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
       ),
       primaryYAxis: NumericAxis(
+        isVisible: config.showYAxis,
+        title: config.yAxisTitle != null
+            ? AxisTitle(
+                text: config.yAxisTitle,
+                textStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF64748B),
+                ),
+              )
+            : const AxisTitle(),
         axisLine: const AxisLine(width: 0),
         majorGridLines: const MajorGridLines(
           dashArray: [4, 4],
           color: Color(0xFFE2E8F0),
           width: 0.8,
         ),
-        labelFormat: config.yAxisLabelFormat,
+        labelFormat: config.yAxisLabelFormat ??
+            (config.valueFormatter != null ? null : 'Rs.{value}'),
+        axisLabelFormatter: config.valueFormatter != null
+            ? (AxisLabelRenderDetails details) => ChartAxisLabel(
+                  config.valueFormatter!(details.value.toDouble()),
+                  const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+                )
+            : null,
         labelStyle: const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
         plotBands: config.targetValue != null
             ? [
@@ -106,9 +135,11 @@ class ChartRendererFactory {
       tooltipBehavior: config.showTooltip
           ? TooltipBehavior(
               enable: true,
-              header: '',
+              header: config.tooltipHeader ?? '',
               canShowMarker: true,
-              format: 'point.x : Rs.point.y',
+              format: config.valueFormatter != null
+                  ? 'point.x : point.y'
+                  : 'point.x : Rs.point.y',
               color: const Color(0xFF0F172A),
               textStyle: const TextStyle(
                 color: Colors.white,
@@ -142,7 +173,6 @@ class ChartRendererFactory {
   }) {
     final List<CartesianSeries<ChartDataPoint, String>> seriesList = [];
 
-    // Comparison or multi-series
     for (final extraSeries in multiSeries) {
       seriesList.add(
         SplineSeries<ChartDataPoint, String>(
@@ -163,6 +193,28 @@ class ChartRendererFactory {
       }
     }
 
+    final dataLabelSettings = DataLabelSettings(
+      isVisible: config.showDataLabels,
+      textStyle: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF0F172A),
+      ),
+      builder: config.valueFormatter != null
+          ? (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+              final dp = data as ChartDataPoint;
+              return Text(
+                config.valueFormatter!(dp.value),
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
+                ),
+              );
+            }
+          : null,
+    );
+
     switch (type) {
       case UniversalChartType.line:
         seriesList.add(
@@ -173,43 +225,13 @@ class ChartRendererFactory {
             yValueMapper: (ChartDataPoint p, _) => p.value,
             color: primaryColor,
             width: 3,
+            dataLabelSettings: dataLabelSettings,
             markerSettings: MarkerSettings(
               isVisible: true,
               height: 8,
               width: 8,
               shape: DataMarkerType.circle,
               color: activeIndex >= 0 ? accentColor : primaryColor,
-            ),
-            onPointTap: handleTap,
-          ),
-        );
-        break;
-      case UniversalChartType.stepLine:
-        seriesList.add(
-          StepLineSeries<ChartDataPoint, String>(
-            name: config.title ?? 'Horizon',
-            dataSource: dataPoints,
-            xValueMapper: (ChartDataPoint p, _) => p.label,
-            yValueMapper: (ChartDataPoint p, _) => p.value,
-            color: primaryColor,
-            width: 3.5,
-            markerSettings: MarkerSettings(
-              isVisible: true,
-              height: 12,
-              width: 12,
-              shape: DataMarkerType.diamond,
-              color: activeIndex >= 0 ? accentColor : Colors.white,
-              borderColor: primaryColor,
-              borderWidth: 3,
-            ),
-            dataLabelSettings: DataLabelSettings(
-              isVisible: config.showDataLabels,
-              labelAlignment: ChartDataLabelAlignment.top,
-              textStyle: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF0F172A),
-              ),
             ),
             onPointTap: handleTap,
           ),
@@ -224,6 +246,7 @@ class ChartRendererFactory {
             yValueMapper: (ChartDataPoint p, _) => p.value,
             color: primaryColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+            dataLabelSettings: dataLabelSettings,
             pointColorMapper: (ChartDataPoint p, int idx) =>
                 idx == activeIndex ? accentColor : (p.color ?? primaryColor),
             onPointTap: handleTap,
@@ -239,8 +262,32 @@ class ChartRendererFactory {
             yValueMapper: (ChartDataPoint p, _) => p.value,
             color: primaryColor,
             borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+            dataLabelSettings: dataLabelSettings,
             pointColorMapper: (ChartDataPoint p, int idx) =>
                 idx == activeIndex ? accentColor : (p.color ?? primaryColor),
+            onPointTap: handleTap,
+          ),
+        );
+        break;
+      case UniversalChartType.stepLine:
+        seriesList.add(
+          StepLineSeries<ChartDataPoint, String>(
+            name: config.title ?? 'Horizon',
+            dataSource: dataPoints,
+            xValueMapper: (ChartDataPoint p, _) => p.label,
+            yValueMapper: (ChartDataPoint p, _) => p.value,
+            color: primaryColor,
+            width: 3.5,
+            dataLabelSettings: dataLabelSettings,
+            markerSettings: MarkerSettings(
+              isVisible: true,
+              height: 10,
+              width: 10,
+              shape: DataMarkerType.diamond,
+              color: activeIndex >= 0 ? accentColor : Colors.white,
+              borderColor: primaryColor,
+              borderWidth: 2.5,
+            ),
             onPointTap: handleTap,
           ),
         );
@@ -255,6 +302,7 @@ class ChartRendererFactory {
             yValueMapper: (ChartDataPoint p, _) => p.value,
             borderColor: primaryColor,
             borderWidth: 2.5,
+            dataLabelSettings: dataLabelSettings,
             gradient: LinearGradient(
               colors: [
                 primaryColor.withValues(alpha: 0.35),
@@ -308,7 +356,9 @@ class ChartRendererFactory {
       tooltipBehavior: config.showTooltip
           ? TooltipBehavior(
               enable: true,
-              format: 'point.x: point.y units',
+              format: config.valueFormatter != null
+                  ? 'point.x: point.y'
+                  : 'point.x: point.y units',
               color: const Color(0xFF0F172A),
               textStyle: const TextStyle(
                 color: Colors.white,
@@ -325,15 +375,17 @@ class ChartRendererFactory {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      '${totalUnits.toInt()}',
+                      config.valueFormatter != null
+                          ? config.valueFormatter!(totalUnits)
+                          : '${totalUnits.toInt()}',
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF0F172A),
                       ),
                     ),
                     const Text(
-                      'Total Units',
+                      'Total',
                       style: TextStyle(fontSize: 10, color: Color(0xFF64748B)),
                     ),
                   ],
@@ -346,7 +398,10 @@ class ChartRendererFactory {
                 dataSource: dataPoints,
                 xValueMapper: (ChartDataPoint p, _) => p.label,
                 yValueMapper: (ChartDataPoint p, _) => p.value,
-                dataLabelMapper: (ChartDataPoint p, _) => '${p.value.toInt()}',
+                dataLabelMapper: (ChartDataPoint p, _) =>
+                    config.valueFormatter != null
+                        ? config.valueFormatter!(p.value)
+                        : '${p.value.toInt()}',
                 dataLabelSettings: DataLabelSettings(
                   isVisible: config.showDataLabels,
                   textStyle: const TextStyle(
@@ -371,7 +426,10 @@ class ChartRendererFactory {
                 dataSource: dataPoints,
                 xValueMapper: (ChartDataPoint p, _) => p.label,
                 yValueMapper: (ChartDataPoint p, _) => p.value,
-                dataLabelMapper: (ChartDataPoint p, _) => '${p.value.toInt()}',
+                dataLabelMapper: (ChartDataPoint p, _) =>
+                    config.valueFormatter != null
+                        ? config.valueFormatter!(p.value)
+                        : '${p.value.toInt()}',
                 dataLabelSettings: DataLabelSettings(
                   isVisible: config.showDataLabels,
                   labelPosition: ChartDataLabelPosition.outside,

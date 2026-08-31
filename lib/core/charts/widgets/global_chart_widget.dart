@@ -9,24 +9,6 @@ import '../renderers/chart_renderer_factory.dart';
 import '../../services/analytics_export_service.dart';
 
 /// Single public entry point for rendering all charts across the application.
-///
-/// Converts any strongly typed domain model list [T] into normalized [ChartDataPoint]s
-/// via [mapper], shielding callers from Syncfusion-specific implementations.
-///
-/// Example:
-/// ```dart
-/// GlobalChartWidget<SalesData>(
-///   data: salesDataList,
-///   mapper: (item) => ChartDataPoint(
-///     label: item.label,
-///     value: item.value,
-///   ),
-///   config: const ChartConfig(
-///     chartType: UniversalChartType.area,
-///     title: 'Revenue Velocity',
-///   ),
-/// )
-/// ```
 class GlobalChartWidget<T> extends StatefulWidget {
   const GlobalChartWidget({
     required this.data,
@@ -39,12 +21,14 @@ class GlobalChartWidget<T> extends StatefulWidget {
     this.onPointTap,
     this.onFullscreenTap,
     this.onChartTypeChanged,
-    this.activeIndex = -1,
+    this.activeIndex,
+    this.isLoading = false,
+    this.emptyMessage = 'No chart data available.',
     this.isFullscreenMode = false,
     super.key,
   });
 
-  /// The generic domain dataset.
+  /// Generic domain dataset.
   final List<T> data;
 
   /// Transformation callback converting [T] into a standardized [ChartDataPoint].
@@ -74,8 +58,14 @@ class GlobalChartWidget<T> extends StatefulWidget {
   /// Chart type switch callback.
   final ValueChanged<UniversalChartType>? onChartTypeChanged;
 
-  /// Active highlighted point index.
-  final int activeIndex;
+  /// External active highlighted point index (if null, internal selection is used).
+  final int? activeIndex;
+
+  /// Whether the chart is in a loading state.
+  final bool isLoading;
+
+  /// Custom message displayed when data is empty.
+  final String emptyMessage;
 
   /// Whether the chart is rendered inside a fullscreen viewport.
   final bool isFullscreenMode;
@@ -87,11 +77,13 @@ class GlobalChartWidget<T> extends StatefulWidget {
 class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
   final GlobalKey _boundaryKey = GlobalKey();
   late UniversalChartType _activeChartType;
+  int _internalActiveIndex = -1;
 
   @override
   void initState() {
     super.initState();
     _activeChartType = widget.config.chartType;
+    _internalActiveIndex = widget.activeIndex ?? -1;
   }
 
   @override
@@ -99,6 +91,9 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.config.chartType != widget.config.chartType) {
       _activeChartType = widget.config.chartType;
+    }
+    if (widget.activeIndex != null && widget.activeIndex != oldWidget.activeIndex) {
+      _internalActiveIndex = widget.activeIndex!;
     }
   }
 
@@ -126,23 +121,6 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Transform generic domain data to universal standard
-    final List<ChartDataPoint> dataPoints =
-        widget.data.map(widget.mapper).toList();
-
-    // 2. Transform secondary/comparison data if present
-    final List<ChartSeriesData> multiSeries = [];
-    if (widget.comparisonData != null && widget.comparisonData!.isNotEmpty) {
-      final compMapper = widget.comparisonMapper ?? widget.mapper;
-      multiSeries.add(
-        ChartSeriesData(
-          name: widget.comparisonSeriesName,
-          dataPoints: widget.comparisonData!.map(compMapper).toList(),
-          isSecondary: true,
-        ),
-      );
-    }
-
     final double effectiveHeight =
         widget.isFullscreenMode ? 480.0 : widget.config.height;
 
@@ -265,19 +243,78 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
                 ),
               const SizedBox(height: 16),
 
-              // Rendered Syncfusion Canvas via Factory
+              // Reusable Loading / Empty State or Canvas
               SizedBox(
                 height: effectiveHeight,
-                child: ChartRendererFactory.buildChart(
-                  type: _activeChartType,
-                  dataPoints: dataPoints,
-                  config: widget.config,
-                  activeIndex: widget.activeIndex,
-                  isFullscreen: widget.isFullscreenMode,
-                  multiSeries: multiSeries,
-                  onPointTapped: (index, point) {
-                    HapticFeedback.lightImpact();
-                    widget.onPointTap?.call(index, point);
+                child: Builder(
+                  builder: (context) {
+                    if (widget.isLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Color(0xFF4F46E5),
+                        ),
+                      );
+                    }
+
+                    if (widget.data.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.bar_chart_outlined,
+                              size: 36,
+                              color: Color(0xFF94A3B8),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              widget.emptyMessage,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    // 1. Transform generic domain data to universal standard
+                    final List<ChartDataPoint> dataPoints =
+                        widget.data.map(widget.mapper).toList();
+
+                    // 2. Transform secondary/comparison data if present
+                    final List<ChartSeriesData> multiSeries = [];
+                    if (widget.comparisonData != null &&
+                        widget.comparisonData!.isNotEmpty) {
+                      final compMapper =
+                          widget.comparisonMapper ?? widget.mapper;
+                      multiSeries.add(
+                        ChartSeriesData(
+                          name: widget.comparisonSeriesName,
+                          dataPoints:
+                              widget.comparisonData!.map(compMapper).toList(),
+                          isSecondary: true,
+                        ),
+                      );
+                    }
+
+                    return ChartRendererFactory.buildChart(
+                      type: _activeChartType,
+                      dataPoints: dataPoints,
+                      config: widget.config,
+                      activeIndex: widget.activeIndex ?? _internalActiveIndex,
+                      isFullscreen: widget.isFullscreenMode,
+                      multiSeries: multiSeries,
+                      onPointTapped: (index, point) {
+                        HapticFeedback.lightImpact();
+                        if (widget.config.enableSelection) {
+                          setState(() => _internalActiveIndex = index);
+                        }
+                        widget.onPointTap?.call(index, point);
+                      },
+                    );
                   },
                 ),
               ),

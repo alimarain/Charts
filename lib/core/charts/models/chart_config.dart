@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'chart_type.dart';
 
+/// Formatter callback converting raw numeric values into formatted display strings.
+typedef ChartValueFormatter = String Function(double value);
+
 /// Configuration options for [GlobalChartWidget].
 class ChartConfig {
   const ChartConfig({
@@ -18,7 +21,13 @@ class ChartConfig {
     this.supportedChartTypes = const [],
     this.targetValue,
     this.targetLabel = 'TARGET GOAL',
-    this.yAxisLabelFormat = 'Rs.{value}',
+    this.xAxisTitle,
+    this.yAxisTitle,
+    this.showXAxis = true,
+    this.showYAxis = true,
+    this.valueFormatter,
+    this.tooltipHeader,
+    this.yAxisLabelFormat,
     this.primaryColor,
     this.accentColor,
     this.palette = const [
@@ -45,7 +54,28 @@ class ChartConfig {
   final List<UniversalChartType> supportedChartTypes;
   final double? targetValue;
   final String targetLabel;
-  final String yAxisLabelFormat;
+
+  /// Custom X-axis title text.
+  final String? xAxisTitle;
+
+  /// Custom Y-axis title text.
+  final String? yAxisTitle;
+
+  /// Whether the X-axis should be rendered.
+  final bool showXAxis;
+
+  /// Whether the Y-axis should be rendered.
+  final bool showYAxis;
+
+  /// Reusable value formatting function (e.g. `(val) => 'Rs. ${val.toStringAsFixed(0)}'`).
+  final ChartValueFormatter? valueFormatter;
+
+  /// Optional custom tooltip header string or template.
+  final String? tooltipHeader;
+
+  /// Direct axis number label format string (e.g. `'Rs.{value}'` or `'{value}%'`).
+  final String? yAxisLabelFormat;
+
   final Color? primaryColor;
   final Color? accentColor;
   final List<Color> palette;
@@ -65,6 +95,12 @@ class ChartConfig {
     List<UniversalChartType>? supportedChartTypes,
     double? targetValue,
     String? targetLabel,
+    String? xAxisTitle,
+    String? yAxisTitle,
+    bool? showXAxis,
+    bool? showYAxis,
+    ChartValueFormatter? valueFormatter,
+    String? tooltipHeader,
     String? yAxisLabelFormat,
     Color? primaryColor,
     Color? accentColor,
@@ -86,6 +122,12 @@ class ChartConfig {
       supportedChartTypes: supportedChartTypes ?? this.supportedChartTypes,
       targetValue: targetValue ?? this.targetValue,
       targetLabel: targetLabel ?? this.targetLabel,
+      xAxisTitle: xAxisTitle ?? this.xAxisTitle,
+      yAxisTitle: yAxisTitle ?? this.yAxisTitle,
+      showXAxis: showXAxis ?? this.showXAxis,
+      showYAxis: showYAxis ?? this.showYAxis,
+      valueFormatter: valueFormatter ?? this.valueFormatter,
+      tooltipHeader: tooltipHeader ?? this.tooltipHeader,
       yAxisLabelFormat: yAxisLabelFormat ?? this.yAxisLabelFormat,
       primaryColor: primaryColor ?? this.primaryColor,
       accentColor: accentColor ?? this.accentColor,
