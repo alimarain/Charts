@@ -1,57 +1,79 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/presentation/views/controllers/auth_state.dart';
 
-import '../../core/errors/exceptions.dart';
-import '../../data/datasources/auth/auth_service.dart';
+import '../../core/network/dio_client.dart';
+import '../../data/datasources/auth/api_auth_service.dart';
+import '../../domain/entities/user.dart';
 
-final authServiceProvider = Provider<AuthService>((ref) {
-  return AuthService();
+final authServiceProvider = Provider<ApiAuthService>((ref) {
+  return ApiAuthService(ref.watch(dioProvider));
 });
 
-final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
-  return AuthNotifier();
-});
+class AuthState {
+  final User? user;
+  final String? token;
+  final String? selectedRole;
+  final bool isLoading;
+  final String? errorMessage;
+
+  const AuthState({
+    this.user,
+    this.token,
+    this.selectedRole,
+    this.isLoading = false,
+    this.errorMessage,
+  });
+
+  bool get isAuthenticated => user != null && token != null;
+}
 
 class AuthNotifier extends Notifier<AuthState> {
   @override
-  AuthState build() {
-    return const AuthState(status: AuthStatus.unauthenticated);
-  }
+  AuthState build() => const AuthState();
 
-  Future<void> login(
+  Future<bool> login(
     String email,
     String password, {
-    String selectedRole = 'user',
+    String? selectedRole,
   }) async {
-    state = state.copyWith(status: AuthStatus.loading, clearError: true);
-
+    state = AuthState(isLoading: true, selectedRole: selectedRole);
     try {
-      final authService = ref.read(authServiceProvider);
-      final response = await authService.login(
-        email,
-        password,
-        selectedRole: selectedRole,
-      );
+      final (token, user) = await ref
+          .read(authServiceProvider)
+          .login(email, password);
+
+      await ref
+          .read(tokenStorageProvider)
+          .saveSession(
+            token: token,
+            userId: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          );
 
       state = AuthState(
-        status: AuthStatus.authenticated,
-        user: response.user,
-        token: response.token,
+        user: user,
+        token: token,
+        selectedRole: selectedRole ?? user.role,
+        isLoading: false,
       );
-    } on AuthException catch (e) {
-      state = AuthState(
-        status: AuthStatus.unauthenticated,
-        errorMessage: e.message,
-      );
+      return true;
     } catch (e) {
-      state = const AuthState(
-        status: AuthStatus.unauthenticated,
-        errorMessage: 'An unexpected connection error occurred.',
+      state = AuthState(
+        isLoading: false,
+        selectedRole: selectedRole,
+        errorMessage: e.toString().replaceAll('Exception: ', ''),
       );
+      return false;
     }
   }
 
-  void logout() {
-    state = const AuthState(status: AuthStatus.unauthenticated);
+  Future<void> logout() async {
+    await ref.read(tokenStorageProvider).clearSession();
+    state = const AuthState();
   }
 }
+
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(
+  AuthNotifier.new,
+);

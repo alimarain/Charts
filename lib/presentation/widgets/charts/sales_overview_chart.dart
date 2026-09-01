@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
+
 import '../../../app/app_theme.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
@@ -40,8 +41,8 @@ class SalesOverviewChart extends ConsumerWidget {
     final selectedItem = interactionState.selectedItem;
     final activeIndex =
         (selectedItem != null && selectedItem.chartId == chartId)
-            ? selectedItem.dataIndex
-            : -1;
+        ? selectedItem.dataIndex
+        : -1;
 
     UniversalChartType mapRevenueType(RevenueChartType type) {
       switch (type) {
@@ -50,7 +51,6 @@ class SalesOverviewChart extends ConsumerWidget {
         case RevenueChartType.column:
           return UniversalChartType.column;
         case RevenueChartType.splineArea:
-        default:
           return UniversalChartType.area;
       }
     }
@@ -63,10 +63,8 @@ class SalesOverviewChart extends ConsumerWidget {
       chartId: chartId,
       activeIndex: activeIndex,
       isFullscreenMode: isFullscreenMode,
-      mapper: (SalesData item) => ChartDataPoint(
-        label: item.label,
-        value: item.value,
-      ),
+      mapper: (SalesData item) =>
+          ChartDataPoint(label: item.label, value: item.value),
       config: ChartConfig(
         chartType: mapRevenueType(displayState.revenueChartType),
         title: 'Revenue Velocity & Comparisons',

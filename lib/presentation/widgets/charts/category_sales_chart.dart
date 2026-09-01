@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
+
 import '../../../app/app_theme.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
@@ -35,10 +36,11 @@ class CategorySalesChart extends ConsumerWidget {
     final selectedItem = interactionState.selectedItem;
     final activeIndex =
         (selectedItem != null && selectedItem.chartId == chartId)
-            ? selectedItem.dataIndex
-            : -1;
+        ? selectedItem.dataIndex
+        : -1;
 
-    final universalType = displayState.categoryChartType == CategoryChartType.bar
+    final universalType =
+        displayState.categoryChartType == CategoryChartType.bar
         ? UniversalChartType.bar
         : UniversalChartType.column;
 
@@ -47,10 +49,8 @@ class CategorySalesChart extends ConsumerWidget {
       chartId: chartId,
       activeIndex: activeIndex,
       isFullscreenMode: isFullscreenMode,
-      mapper: (CategorySalesData item) => ChartDataPoint(
-        label: item.category,
-        value: item.sales,
-      ),
+      mapper: (CategorySalesData item) =>
+          ChartDataPoint(label: item.category, value: item.sales),
       config: ChartConfig(
         chartType: universalType,
         title: 'Category Breakdown',
@@ -63,7 +63,9 @@ class CategorySalesChart extends ConsumerWidget {
         ],
       ),
       onChartTypeChanged: (type) {
-        ref.read(chartDisplayProvider.notifier).setCategoryChartType(
+        ref
+            .read(chartDisplayProvider.notifier)
+            .setCategoryChartType(
               type == UniversalChartType.bar
                   ? CategoryChartType.bar
                   : CategoryChartType.column,

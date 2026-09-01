@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -19,11 +19,15 @@ class AnalyticsExportService {
   static Future<Uint8List?> captureBoundaryAsPng(GlobalKey boundaryKey) async {
     try {
       final boundary =
-          boundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) return null;
+          boundaryKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+      if (boundary == null) {
+        return null;
+      }
       final ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-      final ByteData? byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
+      final ByteData? byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
       return byteData?.buffer.asUint8List();
     } catch (e) {
       debugPrint('Error capturing widget boundary: $e');
@@ -50,9 +54,11 @@ class AnalyticsExportService {
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/$chartName-export.png');
       await file.writeAsBytes(imageBytes);
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'VibeFlow Chart Export: $chartName',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: 'VibeFlow Chart Export: $chartName',
+        ),
       );
     }
   }
@@ -77,9 +83,11 @@ class AnalyticsExportService {
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/vibeflow-analytics-report.csv');
       await file.writeAsString(csvString);
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'VibeFlow Analytics Data Export (CSV)',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: 'VibeFlow Analytics Data Export (CSV)',
+        ),
       );
     }
   }
@@ -103,9 +111,11 @@ class AnalyticsExportService {
       final dir = await getTemporaryDirectory();
       final file = File('${dir.path}/vibeflow-analytics-report.pdf');
       await file.writeAsBytes(pdfBytes);
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'VibeFlow Analytics Executive Report (PDF)',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: 'VibeFlow Analytics Executive Report (PDF)',
+        ),
       );
     }
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
 import '../../../core/charts/models/chart_type.dart';
@@ -106,10 +107,7 @@ class QuarterlyPerformanceChart extends StatelessWidget {
                       'Stepped horizontal thresholds across sprints',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF8E88AB),
-                      ),
+                      style: TextStyle(fontSize: 11, color: Color(0xFF8E88AB)),
                     ),
                   ],
                 ),
@@ -141,10 +139,8 @@ class QuarterlyPerformanceChart extends StatelessWidget {
           // Horizontal Stepped Line Chart
           GlobalChartWidget<BasicChartData>(
             data: _milestoneData,
-            mapper: (BasicChartData item) => ChartDataPoint(
-              label: item.month,
-              value: item.sales,
-            ),
+            mapper: (BasicChartData item) =>
+                ChartDataPoint(label: item.month, value: item.sales),
             config: const ChartConfig(
               chartType: UniversalChartType.stepLine,
               height: 230,
@@ -166,7 +162,10 @@ class QuarterlyPerformanceChart extends StatelessWidget {
                 SnackBar(
                   content: Text(
                     '${point.label} Plateau → Rs. ${point.value.toStringAsFixed(0)} (${item.growthTag})',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
                   ),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
@@ -187,7 +186,10 @@ class QuarterlyPerformanceChart extends StatelessWidget {
               children: _milestoneData.map((item) {
                 return Container(
                   margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF140F29),
                     borderRadius: BorderRadius.circular(10),

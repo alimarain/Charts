@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:new_app/features/maker/controller/maker_provider.dart';
 import '../../domain/entities/maker_models.dart';
 import '../../presentation/controllers/auth_provider.dart';
-import '../../presentation/controllers/maker/maker_providers.dart';
 import 'maker_forms_screen.dart';
 
 class MakerDashboardScreen extends ConsumerWidget {

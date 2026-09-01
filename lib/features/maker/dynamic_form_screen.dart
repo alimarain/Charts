@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/features/maker/controller/maker_provider.dart';
 
 import '../../domain/entities/maker_models.dart';
-import '../../presentation/controllers/maker/maker_providers.dart';
 
 class DynamicFormScreen extends ConsumerStatefulWidget {
   const DynamicFormScreen({required this.formId, this.formTitle, super.key});
@@ -25,7 +25,7 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
       final notifier = ref.read(
         dynamicFormControllerProvider(widget.formId).notifier,
       );
-      final success = await notifier.submit(widget.formId);
+      final success = await notifier.submit();
 
       if (success && mounted) {
         final result = ref
@@ -162,9 +162,12 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
               .toList(),
           onChanged: (val) => notifier.updateField(field.key, val),
           validator: isRequired
-              ? (val) => (val == null || val.isEmpty)
-                    ? '${field.label} is required'
-                    : null
+              ? (val) {
+                  if (val == null || val.isEmpty) {
+                    return '${field.label} is required';
+                  }
+                  return null;
+                }
               : null,
         );
 
@@ -265,9 +268,12 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
               notifier.updateField(field.key, num.tryParse(val) ?? val),
           validator: isRequired
               ? (val) {
-                  if (val == null || val.trim().isEmpty)
+                  if (val == null || val.trim().isEmpty) {
                     return '${field.label} is required';
-                  if (num.tryParse(val) == null) return 'Enter a valid number';
+                  }
+                  if (num.tryParse(val) == null) {
+                    return 'Enter a valid number';
+                  }
                   return null;
                 }
               : null,
@@ -283,9 +289,12 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
           ),
           onChanged: (val) => notifier.updateField(field.key, val),
           validator: isRequired
-              ? (val) => (val == null || val.trim().isEmpty)
-                    ? '${field.label} is required'
-                    : null
+              ? (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return '${field.label} is required';
+                  }
+                  return null;
+                }
               : null,
         );
 
@@ -301,9 +310,12 @@ class _DynamicFormScreenState extends ConsumerState<DynamicFormScreen> {
           ),
           onChanged: (val) => notifier.updateField(field.key, val),
           validator: isRequired
-              ? (val) => (val == null || val.trim().isEmpty)
-                    ? '${field.label} is required'
-                    : null
+              ? (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return '${field.label} is required';
+                  }
+                  return null;
+                }
               : null,
         );
     }

@@ -5,7 +5,10 @@ class AnalyticsCsvService {
   static String _escapeCsvValue(dynamic value) {
     if (value == null) return '';
     final str = value.toString();
-    if (str.contains(',') || str.contains('"') || str.contains('\n') || str.contains('\r')) {
+    if (str.contains(',') ||
+        str.contains('"') ||
+        str.contains('\n') ||
+        str.contains('\r')) {
       return '"${str.replaceAll('"', '""')}"';
     }
     return str;
@@ -31,18 +34,18 @@ class AnalyticsCsvService {
     rows.add([
       'Revenue (PKR)',
       result.kpis.currentRevenue,
-      '${result.kpis.revenueGrowthPercent.toStringAsFixed(1)}%'
+      '${result.kpis.revenueGrowthPercent.toStringAsFixed(1)}%',
     ]);
     rows.add([
       'Orders',
       result.kpis.currentOrders,
-      '${result.kpis.ordersGrowthPercent.toStringAsFixed(1)}%'
+      '${result.kpis.ordersGrowthPercent.toStringAsFixed(1)}%',
     ]);
     rows.add(['Active SKUs', result.kpis.activeSkus, 'N/A']);
     rows.add([
       'Target Achievement',
       '${result.kpis.targetAchievementPercent.toStringAsFixed(1)}%',
-      'N/A'
+      'N/A',
     ]);
     rows.add([]);
 

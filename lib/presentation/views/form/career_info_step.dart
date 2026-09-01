@@ -148,9 +148,12 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                     ),
                     onChanged: notifier.updateYearsOfExperience,
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      if (double.tryParse(v.trim()) == null)
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Required';
+                      }
+                      if (double.tryParse(v.trim()) == null) {
                         return 'Must be a number';
+                      }
                       return null;
                     },
                   ),
@@ -167,9 +170,12 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                     ),
                     onChanged: notifier.updateExpectedSalary,
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      if (double.tryParse(v.trim()) == null)
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Required';
+                      }
+                      if (double.tryParse(v.trim()) == null) {
                         return 'Must be a number';
+                      }
                       return null;
                     },
                   ),

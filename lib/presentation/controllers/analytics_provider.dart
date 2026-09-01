@@ -1,68 +1,76 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/datasources/analytics/analytics_service.dart';
-import 'analytics_state.dart';
+import '../../core/network/dio_client.dart';
+import '../../data/datasources/analytics/api_analytics_service.dart';
+import '../../domain/entities/analytics.dart';
+import '../../domain/entities/basic_chart_data.dart';
 
-final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
-  return AnalyticsService();
+final analyticsApiServiceProvider = Provider<ApiAnalyticsService>((ref) {
+  return ApiAnalyticsService(ref.watch(dioProvider));
 });
 
-final analyticsProvider = NotifierProvider<AnalyticsNotifier, AnalyticsState>(
-  () {
-    return AnalyticsNotifier();
-  },
-);
+class AnalyticsState {
+  final AnalyticsData? data;
+  final bool isLoading;
+  final bool isError;
+  final String? errorMessage;
 
-class AnalyticsNotifier extends Notifier<AnalyticsState> {
-  StreamSubscription<dynamic>? _subscription;
+  const AnalyticsState({
+    this.data,
+    this.isLoading = false,
+    this.isError = false,
+    this.errorMessage,
+  });
 
-  @override
-  AnalyticsState build() {
-    ref.onDispose(() {
-      _subscription?.cancel();
-    });
+  double get totalRevenue => data?.totalSales ?? 0.0;
+  bool get hasData => data != null;
 
-    Future.microtask(() => _startStream());
-    return const AnalyticsState(status: AnalyticsStatus.loading);
-  }
-
-  void _startStream() {
-    _subscription?.cancel();
-    if (state.data == null) {
-      state = state.copyWith(status: AnalyticsStatus.loading, clearError: true);
-    }
-
-    final service = ref.read(analyticsServiceProvider);
-
-    _subscription = service
-        .watchAnalytics(state.period)
-        .listen(
-          (analyticsData) {
-            state = state.copyWith(
-              status: AnalyticsStatus.ready,
-              data: analyticsData,
-              clearError: true,
-            );
-          },
-          onError: (dynamic error) {
-            state = state.copyWith(
-              status: AnalyticsStatus.error,
-              errorMessage: 'Unable to connect to live telemetry: $error',
-            );
-          },
-        );
-  }
-
-  void setPeriod(AnalyticsPeriod period) {
-    if (state.period != period) {
-      state = state.copyWith(period: period, status: AnalyticsStatus.loading);
-      _startStream();
-    }
-  }
-
-  void retry() {
-    _startStream();
+  AnalyticsState copyWith({
+    AnalyticsData? data,
+    bool? isLoading,
+    bool? isError,
+    String? errorMessage,
+  }) {
+    return AnalyticsState(
+      data: data ?? this.data,
+      isLoading: isLoading ?? this.isLoading,
+      isError: isError ?? this.isError,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
   }
 }
+
+class AnalyticsNotifier extends Notifier<AnalyticsState> {
+  @override
+  AnalyticsState build() {
+    // Trigger on next microtask so provider finishes initial registration
+    Future.microtask(() => loadAnalytics());
+    return const AnalyticsState(isLoading: true);
+  }
+
+  Future<void> loadAnalytics() async {
+    state = state.copyWith(isLoading: true, isError: false, errorMessage: null);
+    try {
+      final result = await ref.read(analyticsApiServiceProvider).getAnalytics();
+      state = AnalyticsState(data: result, isLoading: false, isError: false);
+    } catch (e) {
+      state = AnalyticsState(
+        data: state.data,
+        isLoading: false,
+        isError: true,
+        errorMessage: e.toString().replaceAll('Exception: ', ''),
+      );
+    }
+  }
+
+  Future<void> refresh() async => loadAnalytics();
+  Future<void> retry() async => loadAnalytics();
+}
+
+final analyticsProvider = NotifierProvider<AnalyticsNotifier, AnalyticsState>(
+  AnalyticsNotifier.new,
+);
+
+final basicChartProvider = FutureProvider<List<BasicChartData>>((ref) async {
+  return ref.watch(analyticsApiServiceProvider).getBasicMonthlySales();
+});

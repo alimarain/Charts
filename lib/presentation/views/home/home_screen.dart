@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_app/presentation/views/controllers/product_provider.dart';
+import 'package:new_app/presentation/controllers/product_provider.dart';
 
 import '../../controllers/auth_provider.dart';
 import '../analytics/analytics_screen.dart';
@@ -68,7 +68,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
 
     try {
-      await ref.read(productServiceProvider).simulateError();
+      ref.read(productServiceProvider).simulateError();
     } catch (e) {
       setState(() {
         _hasError = true;

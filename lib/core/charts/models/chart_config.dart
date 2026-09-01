@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'chart_type.dart';
 
 /// Formatter callback converting raw numeric values into formatted display strings.

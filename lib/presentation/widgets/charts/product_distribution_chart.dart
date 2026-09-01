@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
+
 import '../../../app/app_theme.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
@@ -36,10 +37,11 @@ class ProductDistributionChart extends ConsumerWidget {
     final selectedItem = interactionState.selectedItem;
     final activeIndex =
         (selectedItem != null && selectedItem.chartId == chartId)
-            ? selectedItem.dataIndex
-            : 0;
+        ? selectedItem.dataIndex
+        : 0;
 
-    final universalType = displayState.distributionChartType == DistributionChartType.pie
+    final universalType =
+        displayState.distributionChartType == DistributionChartType.pie
         ? UniversalChartType.pie
         : UniversalChartType.doughnut;
 
@@ -48,10 +50,8 @@ class ProductDistributionChart extends ConsumerWidget {
       chartId: chartId,
       activeIndex: activeIndex,
       isFullscreenMode: isFullscreenMode,
-      mapper: (ProductDistributionData item) => ChartDataPoint(
-        label: item.category,
-        value: item.count.toDouble(),
-      ),
+      mapper: (ProductDistributionData item) =>
+          ChartDataPoint(label: item.category, value: item.count.toDouble()),
       config: ChartConfig(
         chartType: universalType,
         title: 'Inventory Allocation',
@@ -65,7 +65,9 @@ class ProductDistributionChart extends ConsumerWidget {
         ],
       ),
       onChartTypeChanged: (type) {
-        ref.read(chartDisplayProvider.notifier).setDistributionChartType(
+        ref
+            .read(chartDisplayProvider.notifier)
+            .setDistributionChartType(
               type == UniversalChartType.pie
                   ? DistributionChartType.pie
                   : DistributionChartType.doughnut,

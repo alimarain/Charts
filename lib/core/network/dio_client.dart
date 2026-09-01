@@ -1,25 +1,42 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../config/api_config.dart';
+import '../storage/token_storage.dart';
 
-import '../../data/datasources/mock_http_adapter.dart';
-import 'auth_interceptor.dart';
+final tokenStorageProvider = Provider<TokenStorage>((ref) => TokenStorage());
 
 final dioProvider = Provider<Dio>((ref) {
-  final options = BaseOptions(
-    baseUrl: 'https://example-api.com/api',
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 5),
-    sendTimeout: const Duration(seconds: 5),
-    headers: {'Accept': 'application/json', 'Content-Type': 'application/json'},
+  final tokenStorage = ref.watch(tokenStorageProvider);
+
+  final dio = Dio(
+    BaseOptions(
+      baseUrl: ApiConfig.baseUrl,
+      connectTimeout: ApiConfig.connectTimeout,
+      receiveTimeout: ApiConfig.receiveTimeout,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ),
   );
 
-  final dio = Dio(options);
-
-  // Attach the mock adapter to simulate real HTTP requests locally
-  dio.httpClientAdapter = MockHttpAdapter();
-
-  // Attach interceptors for logging and JWT injection
-  dio.interceptors.add(AuthInterceptor(ref));
+  dio.interceptors.add(
+    InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await tokenStorage.getToken();
+        if (token != null && token.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+      onError: (DioException error, handler) async {
+        if (error.response?.statusCode == 401) {
+          await tokenStorage.clearSession();
+        }
+        return handler.next(error);
+      },
+    ),
+  );
 
   return dio;
 });

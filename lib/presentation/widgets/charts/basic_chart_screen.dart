@@ -1,5 +1,7 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
+
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
 import '../../../core/charts/models/chart_type.dart';
@@ -39,16 +41,8 @@ class _BasicChartScreenState extends State<BasicChartScreen> {
       sales: 22000,
       color: Color(0xFF4F46E5),
     ),
-    const BasicChartData(
-      month: 'May',
-      sales: 19000,
-      color: Color(0xFF4F46E5),
-    ),
-    const BasicChartData(
-      month: 'June',
-      sales: 25000,
-      color: Color(0xFF4F46E5),
-    ),
+    const BasicChartData(month: 'May', sales: 19000, color: Color(0xFF4F46E5)),
+    const BasicChartData(month: 'June', sales: 25000, color: Color(0xFF4F46E5)),
   ];
 
   bool _isLoading = false;

@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/data/models/product_model.dart';
 
+import '../../controllers/product_provider.dart';
 import 'dashboard_state.dart';
-import 'product_provider.dart';
 
 // Non-autoDispose notifier preserves state across navigation pushes and pops
 final dashboardProvider = NotifierProvider<DashboardNotifier, DashboardState>(
@@ -13,7 +14,7 @@ final dashboardProvider = NotifierProvider<DashboardNotifier, DashboardState>(
 );
 
 class DashboardNotifier extends Notifier<DashboardState> {
-  StreamSubscription<List<dynamic>>? _subscription;
+  StreamSubscription<dynamic>? _subscription;
 
   @override
   DashboardState build() {
@@ -39,9 +40,22 @@ class DashboardNotifier extends Notifier<DashboardState> {
 
     _subscription = productService.watchProducts().listen(
       (items) {
+        final productModels = items
+            .map(
+              (p) => ProductModel(
+                id: p.id,
+                name: p.name,
+                description: p.description,
+                imageUrl: p.imageUrl,
+                category: p.category,
+                price: p.price,
+              ),
+            )
+            .toList();
+
         state = state.copyWith(
           status: DashboardStatus.ready,
-          products: items,
+          products: productModels,
           clearError: true,
         );
       },

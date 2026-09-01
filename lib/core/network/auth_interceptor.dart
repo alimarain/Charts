@@ -2,7 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/presentation/views/controllers/auth_provider.dart';
+import 'package:new_app/presentation/controllers/auth_provider.dart';
 
 class AuthInterceptor extends Interceptor {
   AuthInterceptor(this._ref);

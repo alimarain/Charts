@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_app/presentation/widgets/charts/basic_chart_screen.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
+
 import '../domain/entities/chart_interaction.dart';
 import '../features/maker/dynamic_form_screen.dart';
 import '../features/maker/maker_dashboard_screen.dart';
@@ -44,7 +45,8 @@ class RouterNotifier extends ChangeNotifier {
       return DashboardScreen.routePath;
     }
 
-    final isNormalUserRoute = state.matchedLocation == HomeScreen.routePath ||
+    final isNormalUserRoute =
+        state.matchedLocation == HomeScreen.routePath ||
         state.matchedLocation.startsWith(DashboardScreen.routePath) ||
         state.matchedLocation.startsWith(AnalyticsScreen.routePath) ||
         state.matchedLocation == BasicChartScreen.routePath ||
@@ -162,10 +164,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Route not found: ${state.uri}'),
-      ),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Route not found: ${state.uri}'))),
   );
 });

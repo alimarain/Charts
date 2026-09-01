@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../controllers/chart_filter_provider.dart';
 import '../../widgets/charts/category_sales_chart.dart';
 import '../../widgets/charts/product_distribution_chart.dart';
 import '../../widgets/charts/sales_overview_chart.dart';
 
 class FullscreenChartScreen extends ConsumerWidget {
-  const FullscreenChartScreen({
-    required this.chartId,
-    super.key,
-  });
+  const FullscreenChartScreen({required this.chartId, super.key});
 
   static const routeName = 'fullscreen_chart';
   static const routeSubPath = 'fullscreen/:chartId';
@@ -25,7 +23,9 @@ class FullscreenChartScreen extends ConsumerWidget {
     if (filteredResult == null || !filteredResult.hasData) {
       return Scaffold(
         appBar: AppBar(title: const Text('Chart View')),
-        body: const Center(child: Text('No telemetry available for this view.')),
+        body: const Center(
+          child: Text('No telemetry available for this view.'),
+        ),
       );
     }
 
@@ -64,7 +64,10 @@ class FullscreenChartScreen extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             Text(
               '${filter.datePreset.name} · Category: ${filter.selectedCategory}',
               style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+
 import '../models/chart_config.dart';
 import '../models/chart_data.dart';
 import '../models/chart_series.dart';
@@ -101,13 +102,14 @@ class ChartRendererFactory {
           color: Color(0xFFE2E8F0),
           width: 0.8,
         ),
-        labelFormat: config.yAxisLabelFormat ??
+        labelFormat:
+            config.yAxisLabelFormat ??
             (config.valueFormatter != null ? null : 'Rs.{value}'),
         axisLabelFormatter: config.valueFormatter != null
             ? (AxisLabelRenderDetails details) => ChartAxisLabel(
-                  config.valueFormatter!(details.value.toDouble()),
-                  const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
-                )
+                config.valueFormatter!(details.value.toDouble()),
+                const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+              )
             : null,
         labelStyle: const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
         plotBands: config.targetValue != null
@@ -188,7 +190,8 @@ class ChartRendererFactory {
     }
 
     void handleTap(ChartPointDetails details) {
-      if (details.pointIndex != null && details.pointIndex! < dataPoints.length) {
+      if (details.pointIndex != null &&
+          details.pointIndex! < dataPoints.length) {
         onPointTapped(details.pointIndex!, dataPoints[details.pointIndex!]);
       }
     }
@@ -201,7 +204,13 @@ class ChartRendererFactory {
         color: Color(0xFF0F172A),
       ),
       builder: config.valueFormatter != null
-          ? (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+          ? (
+              dynamic data,
+              dynamic point,
+              dynamic series,
+              int pointIndex,
+              int seriesIndex,
+            ) {
               final dp = data as ChartDataPoint;
               return Text(
                 config.valueFormatter!(dp.value),
@@ -261,7 +270,9 @@ class ChartRendererFactory {
             xValueMapper: (ChartDataPoint p, _) => p.label,
             yValueMapper: (ChartDataPoint p, _) => p.value,
             color: primaryColor,
-            borderRadius: const BorderRadius.horizontal(right: Radius.circular(6)),
+            borderRadius: const BorderRadius.horizontal(
+              right: Radius.circular(6),
+            ),
             dataLabelSettings: dataLabelSettings,
             pointColorMapper: (ChartDataPoint p, int idx) =>
                 idx == activeIndex ? accentColor : (p.color ?? primaryColor),
@@ -400,8 +411,8 @@ class ChartRendererFactory {
                 yValueMapper: (ChartDataPoint p, _) => p.value,
                 dataLabelMapper: (ChartDataPoint p, _) =>
                     config.valueFormatter != null
-                        ? config.valueFormatter!(p.value)
-                        : '${p.value.toInt()}',
+                    ? config.valueFormatter!(p.value)
+                    : '${p.value.toInt()}',
                 dataLabelSettings: DataLabelSettings(
                   isVisible: config.showDataLabels,
                   textStyle: const TextStyle(
@@ -428,8 +439,8 @@ class ChartRendererFactory {
                 yValueMapper: (ChartDataPoint p, _) => p.value,
                 dataLabelMapper: (ChartDataPoint p, _) =>
                     config.valueFormatter != null
-                        ? config.valueFormatter!(p.value)
-                        : '${p.value.toInt()}',
+                    ? config.valueFormatter!(p.value)
+                    : '${p.value.toInt()}',
                 dataLabelSettings: DataLabelSettings(
                   isVisible: config.showDataLabels,
                   labelPosition: ChartDataLabelPosition.outside,

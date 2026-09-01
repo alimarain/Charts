@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'chart_data.dart';
 
 /// Represents a distinct dataset layer within Cartesian charts.

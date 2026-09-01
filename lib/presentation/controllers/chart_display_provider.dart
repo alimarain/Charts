@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/chart_display_models.dart';
 
 final chartDisplayProvider =
     NotifierProvider<ChartDisplayNotifier, ChartDisplayState>(
-  ChartDisplayNotifier.new,
-);
+      ChartDisplayNotifier.new,
+    );
 
 class ChartDisplayNotifier extends Notifier<ChartDisplayState> {
   @override

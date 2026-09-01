@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../app/app_theme.dart';
 import '../../../core/services/analytics_export_service.dart';
 import '../../controllers/analytics_provider.dart';
@@ -67,9 +68,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         );
       }
     } catch (e) {
-      scaffold.showSnackBar(
-        SnackBar(content: Text('Export error: $e')),
-      );
+      scaffold.showSnackBar(SnackBar(content: Text('Export error: $e')));
     }
   }
 
@@ -100,8 +99,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.ios_share_rounded,
-                color: AppTheme.primaryColor),
+            icon: const Icon(
+              Icons.ios_share_rounded,
+              color: AppTheme.primaryColor,
+            ),
             tooltip: 'Share & Export Reports',
             onSelected: (val) => _handleGlobalExport(val, context),
             itemBuilder: (ctx) => const [
@@ -109,8 +110,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 value: 'pdf',
                 child: Row(
                   children: [
-                    Icon(Icons.picture_as_pdf_outlined,
-                        color: Colors.red, size: 18),
+                    Icon(
+                      Icons.picture_as_pdf_outlined,
+                      color: Colors.red,
+                      size: 18,
+                    ),
                     SizedBox(width: 8),
                     Text('Export PDF Executive Report'),
                   ],
@@ -120,8 +124,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                 value: 'csv',
                 child: Row(
                   children: [
-                    Icon(Icons.table_chart_outlined,
-                        color: Colors.green, size: 18),
+                    Icon(
+                      Icons.table_chart_outlined,
+                      color: Colors.green,
+                      size: 18,
+                    ),
                     SizedBox(width: 8),
                     Text('Export Clean CSV Data'),
                   ],
@@ -187,8 +194,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.filter_alt_off_rounded,
-                      size: 48, color: Color(0xFF94A3B8)),
+                  const Icon(
+                    Icons.filter_alt_off_rounded,
+                    size: 48,
+                    color: Color(0xFF94A3B8),
+                  ),
                   const SizedBox(height: 12),
                   const Text('No data available for the selected filters.'),
                   const SizedBox(height: 12),

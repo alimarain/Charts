@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/presentation/views/controllers/form_provider.dart';
-
 import '../../../core/utils/validators.dart';
 
 class BasicInfoStep extends ConsumerStatefulWidget {
@@ -128,9 +127,9 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
               ),
               onChanged: notifier.updatePhone,
               validator: (v) {
-                if (v == null || v.trim().isEmpty)
+                if (v == null || v.trim().isEmpty) {
                   return 'Phone number is required';
-                if (v.trim().length < 10) return 'Enter a valid phone number';
+                }
                 return null;
               },
             ),

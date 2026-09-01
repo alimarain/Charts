@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../models/chart_config.dart';
 import '../models/chart_data.dart';
 import '../models/chart_series.dart';
@@ -92,7 +93,8 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
     if (oldWidget.config.chartType != widget.config.chartType) {
       _activeChartType = widget.config.chartType;
     }
-    if (widget.activeIndex != null && widget.activeIndex != oldWidget.activeIndex) {
+    if (widget.activeIndex != null &&
+        widget.activeIndex != oldWidget.activeIndex) {
       _internalActiveIndex = widget.activeIndex!;
     }
   }
@@ -121,8 +123,9 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final double effectiveHeight =
-        widget.isFullscreenMode ? 480.0 : widget.config.height;
+    final double effectiveHeight = widget.isFullscreenMode
+        ? 480.0
+        : widget.config.height;
 
     return RepaintBoundary(
       key: _boundaryKey,
@@ -175,27 +178,37 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
                             !widget.isFullscreenMode &&
                             widget.onFullscreenTap != null)
                           IconButton(
-                            icon: const Icon(Icons.fullscreen_rounded,
-                                size: 20, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.fullscreen_rounded,
+                              size: 20,
+                              color: Color(0xFF64748B),
+                            ),
                             tooltip: 'Full Screen View',
                             onPressed: widget.onFullscreenTap,
                           ),
                         if (widget.config.enableChartTypeSwitching ||
                             widget.config.enableExport)
                           PopupMenuButton<String>(
-                            icon: const Icon(Icons.more_vert_rounded,
-                                size: 20, color: Color(0xFF64748B)),
+                            icon: const Icon(
+                              Icons.more_vert_rounded,
+                              size: 20,
+                              color: Color(0xFF64748B),
+                            ),
                             onSelected: (action) {
                               if (action == 'fullscreen') {
                                 widget.onFullscreenTap?.call();
                               } else if (action == 'export_image') {
                                 _exportImage();
                               } else if (action.startsWith('type_')) {
-                                final typeName = action.replaceFirst('type_', '');
-                                final match = UniversalChartType.values.firstWhere(
-                                  (e) => e.name == typeName,
-                                  orElse: () => _activeChartType,
+                                final typeName = action.replaceFirst(
+                                  'type_',
+                                  '',
                                 );
+                                final match = UniversalChartType.values
+                                    .firstWhere(
+                                      (e) => e.name == typeName,
+                                      orElse: () => _activeChartType,
+                                    );
                                 _handleTypeSwitch(match);
                               }
                             },
@@ -213,12 +226,17 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
                                     ],
                                   ),
                                 ),
-                              if (widget.config.supportedChartTypes.isNotEmpty) ...[
+                              if (widget
+                                  .config
+                                  .supportedChartTypes
+                                  .isNotEmpty) ...[
                                 const PopupMenuDivider(),
                                 ...widget.config.supportedChartTypes.map(
                                   (type) => PopupMenuItem(
                                     value: 'type_${type.name}',
-                                    child: Text('Chart Type: ${type.name.toUpperCase()}'),
+                                    child: Text(
+                                      'Chart Type: ${type.name.toUpperCase()}',
+                                    ),
                                   ),
                                 ),
                               ],
@@ -281,8 +299,9 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
                     }
 
                     // 1. Transform generic domain data to universal standard
-                    final List<ChartDataPoint> dataPoints =
-                        widget.data.map(widget.mapper).toList();
+                    final List<ChartDataPoint> dataPoints = widget.data
+                        .map(widget.mapper)
+                        .toList();
 
                     // 2. Transform secondary/comparison data if present
                     final List<ChartSeriesData> multiSeries = [];
@@ -293,8 +312,9 @@ class _GlobalChartWidgetState<T> extends State<GlobalChartWidget<T>> {
                       multiSeries.add(
                         ChartSeriesData(
                           name: widget.comparisonSeriesName,
-                          dataPoints:
-                              widget.comparisonData!.map(compMapper).toList(),
+                          dataPoints: widget.comparisonData!
+                              .map(compMapper)
+                              .toList(),
                           isSecondary: true,
                         ),
                       );

@@ -1,18 +1,8 @@
-enum RevenueChartType {
-  splineArea,
-  line,
-  column,
-}
+enum RevenueChartType { splineArea, line, column }
 
-enum CategoryChartType {
-  column,
-  bar,
-}
+enum CategoryChartType { column, bar }
 
-enum DistributionChartType {
-  doughnut,
-  pie,
-}
+enum DistributionChartType { doughnut, pie }
 
 class ChartDisplayState {
   const ChartDisplayState({
