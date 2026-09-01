@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_app/presentation/views/settings/settings_screen.dart';
 import 'package:new_app/presentation/widgets/charts/basic_chart_screen.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
 
@@ -50,7 +51,8 @@ class RouterNotifier extends ChangeNotifier {
         state.matchedLocation.startsWith(DashboardScreen.routePath) ||
         state.matchedLocation.startsWith(AnalyticsScreen.routePath) ||
         state.matchedLocation == BasicChartScreen.routePath ||
-        state.matchedLocation == FormScreen.routePath;
+        state.matchedLocation == FormScreen.routePath ||
+        state.matchedLocation == SettingsScreen.routePath;
     if (isNormalUserRoute && userRole == 'maker') {
       return MakerDashboardScreen.routePath;
     }
@@ -122,7 +124,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      // Standalone Example Route
+      // Standalone Routes
       GoRoute(
         path: BasicChartScreen.routePath,
         name: BasicChartScreen.routeName,
@@ -132,6 +134,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: FormScreen.routePath,
         name: FormScreen.routeName,
         builder: (context, state) => const FormScreen(),
+      ),
+      GoRoute(
+        path: SettingsScreen.routePath,
+        name: SettingsScreen.routeName,
+        builder: (context, state) => const SettingsScreen(),
       ),
 
       // --- MAKER WORKFLOW ---

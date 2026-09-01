@@ -34,9 +34,11 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
     super.initState();
     final careerInfo = ref.read(formProvider).careerInfo;
     _universityController = TextEditingController(text: careerInfo.university);
-    _jobTitleController = TextEditingController(text: careerInfo.currentJobTitle);
+    _jobTitleController =
+        TextEditingController(text: careerInfo.currentJobTitle);
     _companyController = TextEditingController(text: careerInfo.company);
-    _experienceController = TextEditingController(text: careerInfo.yearsOfExperience);
+    _experienceController =
+        TextEditingController(text: careerInfo.yearsOfExperience);
     _salaryController = TextEditingController(text: careerInfo.expectedSalary);
     _skillsController = TextEditingController(text: careerInfo.skills);
     _goalController = TextEditingController(text: careerInfo.careerGoal);
@@ -72,45 +74,79 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
             title: 'Education Profile',
             subtitle: 'Academic background and credentials.',
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _CareerLabel(label: 'Highest Education', isRequired: true),
-                        const SizedBox(height: 6),
-                        DropdownButtonFormField<String>(
-                          initialValue: careerInfo.highestEducation,
-                          decoration: _inputDecoration(),
-                          items: _educationLevels
-                              .map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 13))))
-                              .toList(),
-                          onChanged: isLocked ? null : (val) => val != null ? notifier.updateHighestEducation(val) : null,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+
+                  final eduField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _CareerLabel(
+                        label: 'Highest Education',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      DropdownButtonFormField<String>(
+                        initialValue: careerInfo.highestEducation,
+                        decoration: _inputDecoration(),
+                        items: _educationLevels
+                            .map((e) => DropdownMenuItem(
+                                  value: e,
+                                  child: Text(e,
+                                      style: const TextStyle(fontSize: 13)),
+                                ))
+                            .toList(),
+                        onChanged: isLocked
+                            ? null
+                            : (val) => val != null
+                                ? notifier.updateHighestEducation(val)
+                                : null,
+                      ),
+                    ],
+                  );
+
+                  final uniField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _CareerLabel(
+                        label: 'University / Institute',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _universityController,
+                        enabled: !isLocked,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(
+                          hint: 'e.g. University of Karachi',
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                        onChanged: notifier.updateUniversity,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'University is required'
+                            : null,
+                      ),
+                    ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
                       children: [
-                        const _CareerLabel(label: 'University / Institute', isRequired: true),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _universityController,
-                          enabled: !isLocked,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'e.g. University of Karachi'),
-                          onChanged: notifier.updateUniversity,
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'University is required' : null,
-                        ),
+                        eduField,
+                        const SizedBox(height: 14),
+                        uniField,
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: eduField),
+                      const SizedBox(width: 16),
+                      Expanded(child: uniField),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -121,94 +157,139 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
             title: 'Professional Details',
             subtitle: 'Employment experience and salary.',
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _CareerLabel(label: 'Current Job Title'),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _jobTitleController,
-                          enabled: !isLocked,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'e.g. Software Engineer'),
-                          onChanged: notifier.updateCurrentJobTitle,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+
+                  final jobField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _CareerLabel(label: 'Current Job Title'),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _jobTitleController,
+                        enabled: !isLocked,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(
+                          hint: 'e.g. Software Engineer',
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                        onChanged: notifier.updateCurrentJobTitle,
+                      ),
+                    ],
+                  );
+
+                  final compField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _CareerLabel(label: 'Company Name'),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _companyController,
+                        enabled: !isLocked,
+                        style: const TextStyle(fontSize: 13),
+                        decoration:
+                            _inputDecoration(hint: 'e.g. Acme Tech'),
+                        onChanged: notifier.updateCompany,
+                      ),
+                    ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
                       children: [
-                        const _CareerLabel(label: 'Company Name'),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _companyController,
-                          enabled: !isLocked,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'e.g. Acme Tech'),
-                          onChanged: notifier.updateCompany,
-                        ),
+                        jobField,
+                        const SizedBox(height: 14),
+                        compField,
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: jobField),
+                      const SizedBox(width: 16),
+                      Expanded(child: compField),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+
+                  final expField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _CareerLabel(
+                        label: 'Years of Experience',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _experienceController,
+                        enabled: !isLocked,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(hint: 'e.g. 3'),
+                        onChanged: notifier.updateYearsOfExperience,
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) return 'Required';
+                          if (double.tryParse(v.trim()) == null) {
+                            return 'Enter number';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  );
+
+                  final salField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _CareerLabel(
+                        label: 'Expected Salary (PKR)',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _salaryController,
+                        enabled: !isLocked,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(hint: 'e.g. 150000'),
+                        onChanged: notifier.updateExpectedSalary,
+                        validator: (v) {
+                          if (v == null || v.trim().isEmpty) return 'Required';
+                          if (double.tryParse(v.trim()) == null) {
+                            return 'Enter number';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
                       children: [
-                        const _CareerLabel(label: 'Years of Experience', isRequired: true),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _experienceController,
-                          enabled: !isLocked,
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'e.g. 3'),
-                          onChanged: notifier.updateYearsOfExperience,
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Required';
-                            if (double.tryParse(v.trim()) == null) return 'Enter number';
-                            return null;
-                          },
-                        ),
+                        expField,
+                        const SizedBox(height: 14),
+                        salField,
                       ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _CareerLabel(label: 'Expected Salary (PKR)', isRequired: true),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _salaryController,
-                          enabled: !isLocked,
-                          keyboardType: TextInputType.number,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'e.g. 150000'),
-                          onChanged: notifier.updateExpectedSalary,
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Required';
-                            if (double.tryParse(v.trim()) == null) return 'Enter number';
-                            return null;
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: expField),
+                      const SizedBox(width: 16),
+                      Expanded(child: salField),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -225,9 +306,13 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                 controller: _skillsController,
                 enabled: !isLocked,
                 style: const TextStyle(fontSize: 13),
-                decoration: _inputDecoration(hint: 'e.g. Flutter, ASP.NET Core, SQL'),
+                decoration: _inputDecoration(
+                  hint: 'e.g. Flutter, ASP.NET Core, SQL',
+                ),
                 onChanged: notifier.updateSkills,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Skills are required' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Skills are required'
+                    : null,
               ),
               const SizedBox(height: 16),
               const _CareerLabel(label: 'Career Goal', isRequired: true),
@@ -237,13 +322,18 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                 enabled: !isLocked,
                 maxLines: 2,
                 style: const TextStyle(fontSize: 13),
-                decoration: _inputDecoration(hint: 'Brief summary of objectives...'),
+                decoration: _inputDecoration(
+                  hint: 'Brief summary of objectives...',
+                ),
                 onChanged: notifier.updateCareerGoal,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Goal is required' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Goal is required'
+                    : null,
               ),
 
               // Upload stream progress
-              if (submissionState.isSubmitting || submissionState.isSuccess) ...[
+              if (submissionState.isSubmitting ||
+                  submissionState.isSuccess) ...[
                 const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -260,11 +350,19 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                         children: [
                           Text(
                             submissionState.message,
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF3730A3)),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF3730A3),
+                            ),
                           ),
                           Text(
                             '${(submissionState.progress * 100).toInt()}%',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF4F46E5)),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF4F46E5),
+                            ),
                           ),
                         ],
                       ),
@@ -272,7 +370,9 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                       LinearProgressIndicator(
                         value: submissionState.progress,
                         backgroundColor: const Color(0xFFE0E7FF),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4F46E5)),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF4F46E5),
+                        ),
                         minHeight: 6,
                         borderRadius: BorderRadius.circular(3),
                       ),
@@ -332,7 +432,11 @@ class _CareerFormSection extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -391,7 +495,10 @@ class _CareerLabel extends StatelessWidget {
           if (isRequired)
             const TextSpan(
               text: ' *',
-              style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Color(0xFFDC2626),
+                fontWeight: FontWeight.bold,
+              ),
             ),
         ],
       ),

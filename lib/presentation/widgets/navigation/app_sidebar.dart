@@ -106,6 +106,15 @@ class AppSidebar extends StatelessWidget {
                       context.push('/form');
                     },
                   ),
+                  _NavItem(
+  icon: Icons.settings_outlined,
+  label: 'Settings',
+  isActive: currentRoute == '/settings',
+  onTap: () {
+    if (isMobileDrawer) Navigator.of(context).pop();
+    context.push('/settings');
+  },
+),
                 ],
               ),
             ),

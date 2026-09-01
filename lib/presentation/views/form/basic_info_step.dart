@@ -81,7 +81,7 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
             title: 'Basic Configuration',
             subtitle: 'Identification and classification details.',
             children: [
-              _FieldLabel(label: 'Full Legal Name', isRequired: true),
+              const _FieldLabel(label: 'Full Legal Name', isRequired: true),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _fullNameController,
@@ -93,62 +93,83 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                     : null,
               ),
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _FieldLabel(label: 'Official Email', isRequired: true),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'name@company.com'),
-                          onChanged: notifier.updateEmail,
-                          validator: Validators.validateEmail,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _FieldLabel(label: 'Gender'),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: _genders.map((g) {
-                            final isSelected = basicInfo.gender == g;
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: ChoiceChip(
-                                label: Text(
-                                  g,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                                    color: isSelected ? Colors.white : const Color(0xFF4B5563),
-                                  ),
-                                ),
-                                selected: isSelected,
-                                selectedColor: const Color(0xFF1B1638),
-                                backgroundColor: const Color(0xFFF3F4F6),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                                onSelected: (sel) {
-                                  if (sel) notifier.updateGender(g);
-                                },
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+
+                  final emailField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _FieldLabel(label: 'Official Email', isRequired: true),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(hint: 'name@company.com'),
+                        onChanged: notifier.updateEmail,
+                        validator: Validators.validateEmail,
+                      ),
+                    ],
+                  );
+
+                  final genderField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _FieldLabel(label: 'Gender'),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: _genders.map((g) {
+                          final isSelected = basicInfo.gender == g;
+                          return ChoiceChip(
+                            label: Text(
+                              g,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: isSelected
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                                color: isSelected
+                                    ? Colors.white
+                                    : const Color(0xFF4B5563),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                            ),
+                            selected: isSelected,
+                            selectedColor: const Color(0xFF1B1638),
+                            backgroundColor: const Color(0xFFF3F4F6),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            onSelected: (sel) {
+                              if (sel) notifier.updateGender(g);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
+                      children: [
+                        emailField,
+                        const SizedBox(height: 14),
+                        genderField,
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: emailField),
+                      const SizedBox(width: 16),
+                      Expanded(child: genderField),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -159,97 +180,150 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
             title: 'Allocation Details',
             subtitle: 'Contact and location parameters.',
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+
+                  final guardianField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _FieldLabel(
+                        label: 'Father / Guardian Name',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _fatherNameController,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(hint: 'Guardian Full Name'),
+                        onChanged: notifier.updateFatherName,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Father name is required'
+                            : null,
+                      ),
+                    ],
+                  );
+
+                  final cityField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _FieldLabel(
+                        label: 'Residential City',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      DropdownButtonFormField<String>(
+                        initialValue: basicInfo.city,
+                        decoration: _inputDecoration(),
+                        items: _cities
+                            .map((c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(c,
+                                      style: const TextStyle(fontSize: 13)),
+                                ))
+                            .toList(),
+                        onChanged: (val) =>
+                            val != null ? notifier.updateCity(val) : null,
+                      ),
+                    ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
                       children: [
-                        const _FieldLabel(label: 'Father / Guardian Name', isRequired: true),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _fatherNameController,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: 'Guardian Full Name'),
-                          onChanged: notifier.updateFatherName,
-                          validator: (v) => (v == null || v.trim().isEmpty)
-                              ? 'Father name is required'
-                              : null,
-                        ),
+                        guardianField,
+                        const SizedBox(height: 14),
+                        cityField,
                       ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _FieldLabel(label: 'Residential City', isRequired: true),
-                        const SizedBox(height: 6),
-                        DropdownButtonFormField<String>(
-                          initialValue: basicInfo.city,
-                          decoration: _inputDecoration(),
-                          items: _cities
-                              .map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(fontSize: 13))))
-                              .toList(),
-                          onChanged: (val) => val != null ? notifier.updateCity(val) : null,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: guardianField),
+                      const SizedBox(width: 16),
+                      Expanded(child: cityField),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _FieldLabel(label: 'Date of Birth', isRequired: true),
-                        const SizedBox(height: 6),
-                        InkWell(
-                          onTap: () => _pickDate(context),
-                          borderRadius: BorderRadius.circular(8),
-                          child: InputDecorator(
-                            decoration: _inputDecoration(
-                              suffixIcon: const Icon(Icons.calendar_today_outlined, size: 16),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+
+                  final dobField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _FieldLabel(
+                        label: 'Date of Birth',
+                        isRequired: true,
+                      ),
+                      const SizedBox(height: 6),
+                      InkWell(
+                        onTap: () => _pickDate(context),
+                        borderRadius: BorderRadius.circular(8),
+                        child: InputDecorator(
+                          decoration: _inputDecoration(
+                            suffixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 16,
                             ),
-                            child: Text(
-                              basicInfo.dateOfBirth != null
-                                  ? '${basicInfo.dateOfBirth!.year}-${basicInfo.dateOfBirth!.month.toString().padLeft(2, '0')}-${basicInfo.dateOfBirth!.day.toString().padLeft(2, '0')}'
-                                  : 'yyyy-mm-dd',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: basicInfo.dateOfBirth != null ? const Color(0xFF111827) : const Color(0xFF9CA3AF),
-                              ),
+                          ),
+                          child: Text(
+                            basicInfo.dateOfBirth != null
+                                ? '${basicInfo.dateOfBirth!.year}-${basicInfo.dateOfBirth!.month.toString().padLeft(2, '0')}-${basicInfo.dateOfBirth!.day.toString().padLeft(2, '0')}'
+                                : 'yyyy-mm-dd',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: basicInfo.dateOfBirth != null
+                                  ? const Color(0xFF111827)
+                                  : const Color(0xFF9CA3AF),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ],
+                  );
+
+                  final phoneField = Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _FieldLabel(label: 'Phone Contact', isRequired: true),
+                      const SizedBox(height: 6),
+                      TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: _inputDecoration(hint: '+92 300 1234567'),
+                        onChanged: notifier.updatePhone,
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Phone is required'
+                            : null,
+                      ),
+                    ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
                       children: [
-                        const _FieldLabel(label: 'Phone Contact', isRequired: true),
-                        const SizedBox(height: 6),
-                        TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          style: const TextStyle(fontSize: 13),
-                          decoration: _inputDecoration(hint: '+92 300 1234567'),
-                          onChanged: notifier.updatePhone,
-                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Phone is required' : null,
-                        ),
+                        dobField,
+                        const SizedBox(height: 14),
+                        phoneField,
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: dobField),
+                      const SizedBox(width: 16),
+                      Expanded(child: phoneField),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -264,13 +338,17 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                 controller: _addressController,
                 maxLines: 3,
                 style: const TextStyle(fontSize: 13),
-                decoration: _inputDecoration(hint: 'Residential address or location details...'),
+                decoration: _inputDecoration(
+                  hint: 'Residential address or location details...',
+                ),
                 onChanged: notifier.updateAddress,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Address is required' : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Address is required' : null,
               ),
               const SizedBox(height: 14),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 decoration: BoxDecoration(
                   color: const Color(0xFFECFDF5),
                   borderRadius: BorderRadius.circular(8),
@@ -278,12 +356,20 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFF059669)),
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: Color(0xFF059669),
+                    ),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Auto-Audit is enabled by default for applicant identity records.',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF047857), fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF047857),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -342,7 +428,11 @@ class _FormSection extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
+              ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -401,7 +491,10 @@ class _FieldLabel extends StatelessWidget {
           if (isRequired)
             const TextSpan(
               text: ' *',
-              style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Color(0xFFDC2626),
+                fontWeight: FontWeight.bold,
+              ),
             ),
         ],
       ),
