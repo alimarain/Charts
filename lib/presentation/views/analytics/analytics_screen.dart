@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/app_theme.dart';
-import '../../../core/services/analytics_export_service.dart';
+import '../../controllers/auth_provider.dart';
 import '../../controllers/analytics_provider.dart';
 import '../../controllers/chart_filter_provider.dart';
 import '../../widgets/charts/category_sales_chart.dart';
@@ -11,6 +10,8 @@ import '../../widgets/charts/chart_kpi_cards.dart';
 import '../../widgets/charts/product_distribution_chart.dart';
 import '../../widgets/charts/quarterly_performance_chart.dart';
 import '../../widgets/charts/sales_overview_chart.dart';
+import '../../widgets/navigation/app_sidebar.dart';
+import 'widgets/analytics_header_bar.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
   const AnalyticsScreen({super.key});
@@ -37,222 +38,180 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     super.dispose();
   }
 
-  Future<void> _handleGlobalExport(String type, BuildContext context) async {
-    final scaffold = ScaffoldMessenger.of(context);
-    final filteredResult = ref.read(filteredAnalyticsProvider);
-    final filter = ref.read(chartFilterProvider);
-
-    if (filteredResult == null || !filteredResult.hasData) {
-      scaffold.showSnackBar(
-        const SnackBar(content: Text('No data available to export.')),
-      );
-      return;
-    }
-
-    try {
-      if (type == 'pdf') {
-        scaffold.showSnackBar(
-          const SnackBar(content: Text('Generating executive PDF report...')),
-        );
-        await AnalyticsExportService.exportAndSharePdf(
-          result: filteredResult,
-          filter: filter,
-        );
-      } else if (type == 'csv') {
-        scaffold.showSnackBar(
-          const SnackBar(content: Text('Exporting analytics CSV data...')),
-        );
-        await AnalyticsExportService.exportAndShareCsv(
-          result: filteredResult,
-          filter: filter,
-        );
-      }
-    } catch (e) {
-      scaffold.showSnackBar(SnackBar(content: Text('Export error: $e')));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
     final analyticsState = ref.watch(analyticsProvider);
     final filteredResult = ref.watch(filteredAnalyticsProvider);
+    final userRole = authState.user?.role == 'maker' ? 'Maker' : 'User';
+    final hasToken = authState.token != null && authState.token!.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Charts & Telemetry',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF0F172A),
-              ),
-            ),
-            Text(
-              'Interactive multi-period telemetry & category comparisons',
-              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
-            ),
-          ],
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(
-              Icons.ios_share_rounded,
-              color: AppTheme.primaryColor,
-            ),
-            tooltip: 'Share & Export Reports',
-            onSelected: (val) => _handleGlobalExport(val, context),
-            itemBuilder: (ctx) => const [
-              PopupMenuItem(
-                value: 'pdf',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.picture_as_pdf_outlined,
-                      color: Colors.red,
-                      size: 18,
-                    ),
-                    SizedBox(width: 8),
-                    Text('Export PDF Executive Report'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'csv',
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.table_chart_outlined,
-                      color: Colors.green,
-                      size: 18,
-                    ),
-                    SizedBox(width: 8),
-                    Text('Export Clean CSV Data'),
-                  ],
-                ),
-              ),
-            ],
+      backgroundColor: const Color(0xFFF8F9FC),
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // 1. Unified System Sidebar
+          AppSidebar(
+            currentRoute: '/charts',
+            hasToken: hasToken,
+            userRole: userRole,
           ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: Builder(
-        builder: (context) {
-          if (analyticsState.isLoading && analyticsState.data == null) {
-            return const Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(
-                    color: AppTheme.primaryColor,
-                    strokeWidth: 2.5,
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Connecting to telemetry stream...',
-                    style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                  ),
-                ],
-              ),
-            );
-          }
 
-          if (analyticsState.errorMessage != null &&
-              analyticsState.data == null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.cloud_off_rounded,
-                      color: Color(0xFFDC2626),
-                      size: 48,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Could not load telemetry: ${analyticsState.errorMessage}',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => ref.refresh(analyticsProvider),
-                      child: const Text('Retry Connection'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (filteredResult == null || !filteredResult.hasData) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.filter_alt_off_rounded,
-                    size: 48,
-                    color: Color(0xFF94A3B8),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text('No data available for the selected filters.'),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () =>
-                        ref.read(chartFilterProvider.notifier).reset(),
-                    child: const Text('Reset Filters'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return SingleChildScrollView(
-            key: const PageStorageKey('charts_analytics_scroll_key'),
-            controller: _scrollController,
-            padding: const EdgeInsets.all(20.0),
+          // 2. Main Executive Canvas
+          Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ChartFilterBar(availableCategories: filteredResult.categories),
-                const SizedBox(height: 16),
-                ChartKpiGrid(kpis: filteredResult.kpis),
-                const SizedBox(height: 20),
+                // Top Global Bar & Date Presets
+                const AnalyticsHeaderBar(),
 
-                // Chart 1: Revenue Velocity Area Chart
-                SalesOverviewChart(
-                  data: filteredResult.currentSales,
-                  previousData: filteredResult.previousSales,
-                  enableNavigation: true,
+                // Scrollable Content View
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      // 1. Loading State
+                      if (analyticsState.isLoading && analyticsState.data == null) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFF1B1638),
+                            strokeWidth: 2.5,
+                          ),
+                        );
+                      }
+
+                      // 2. Error State
+                      if (analyticsState.errorMessage != null &&
+                          analyticsState.data == null) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(24.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.cloud_off_rounded,
+                                  color: Color(0xFFDC2626),
+                                  size: 40,
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Could not load telemetry: ${analyticsState.errorMessage}',
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 14),
+                                ElevatedButton(
+                                  onPressed: () => ref.refresh(analyticsProvider),
+                                  child: const Text('Retry Connection'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+
+                      // 3. Filtered Empty State
+                      if (filteredResult == null || !filteredResult.hasData) {
+                        return Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.filter_alt_off_rounded,
+                                size: 40,
+                                color: Color(0xFF9CA3AF),
+                              ),
+                              const SizedBox(height: 10),
+                              const Text('No telemetry available for selected scope.'),
+                              const SizedBox(height: 12),
+                              ElevatedButton(
+                                onPressed: () =>
+                                    ref.read(chartFilterProvider.notifier).reset(),
+                                child: const Text('Reset Filters'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      // 4. Main Analytics Dashboard (All 4 Charts & Controls)
+                      return SingleChildScrollView(
+                        key: const PageStorageKey('charts_analytics_scroll_key'),
+                        controller: _scrollController,
+                        padding: const EdgeInsets.fromLTRB(28, 0, 28, 32),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1240),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Advanced Filter Bar (Category, Target switch, Range)
+                                ChartFilterBar(availableCategories: filteredResult.categories),
+                                const SizedBox(height: 16),
+
+                                // KPI Metric Cards
+                                ChartKpiGrid(kpis: filteredResult.kpis),
+                                const SizedBox(height: 20),
+
+                                // Responsive Grid for Chart 1 & Chart 3
+                                LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final isDesktop = constraints.maxWidth > 920;
+
+                                    final revenueChart = SalesOverviewChart(
+                                      data: filteredResult.currentSales,
+                                      previousData: filteredResult.previousSales,
+                                      enableNavigation: true,
+                                    );
+
+                                    final distributionChart = ProductDistributionChart(
+                                      data: filteredResult.distribution,
+                                      enableNavigation: true,
+                                    );
+
+                                    if (isDesktop) {
+                                      return Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(flex: 7, child: revenueChart),
+                                          const SizedBox(width: 16),
+                                          Expanded(flex: 5, child: distributionChart),
+                                        ],
+                                      );
+                                    }
+
+                                    return Column(
+                                      children: [
+                                        revenueChart,
+                                        const SizedBox(height: 16),
+                                        distributionChart,
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 20),
+
+                                // Chart 2: Category Breakdown
+                                CategorySalesChart(
+                                  data: filteredResult.categorySales,
+                                  enableNavigation: true,
+                                ),
+                                const SizedBox(height: 20),
+
+                                // Chart 4: Stepped Velocity Milestone Horizon
+                                const QuarterlyPerformanceChart(),
+                                const SizedBox(height: 32),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-                const SizedBox(height: 20),
-
-                // Chart 2: Category Breakdown
-                CategorySalesChart(
-                  data: filteredResult.categorySales,
-                  enableNavigation: true,
-                ),
-                const SizedBox(height: 20),
-
-                // Chart 3: Inventory Allocation Doughnut Chart
-                ProductDistributionChart(
-                  data: filteredResult.distribution,
-                  enableNavigation: true,
-                ),
-                const SizedBox(height: 24),
-
-                // Chart 4: Extracted Modular Performance Widget
-                const QuarterlyPerformanceChart(),
-                const SizedBox(height: 32),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

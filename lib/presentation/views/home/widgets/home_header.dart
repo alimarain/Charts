@@ -6,11 +6,15 @@ class HomeHeader extends StatelessWidget {
     required this.userName,
     required this.userRole,
     required this.onSignOut,
+    this.showMenuButton = false,
+    this.onMenuTap,
   });
 
   final String userName;
   final String userRole;
   final VoidCallback onSignOut;
+  final bool showMenuButton;
+  final VoidCallback? onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +27,19 @@ class HomeHeader extends StatelessWidget {
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final isCompact = constraints.maxWidth < 600;
+          final isNarrow = constraints.maxWidth < 600;
 
           return Row(
             children: [
-              // 1. Flexible Search Box
+              if (showMenuButton) ...[
+                IconButton(
+                  icon: const Icon(Icons.menu_rounded, color: Color(0xFF1B1638)),
+                  onPressed: onMenuTap,
+                ),
+                const SizedBox(width: 6),
+              ],
+
+              // Flexible Search Input
               Expanded(
                 child: Container(
                   height: 36,
@@ -39,36 +51,26 @@ class HomeHeader extends StatelessWidget {
                   ),
                   child: const Row(
                     children: [
-                      Icon(
-                        Icons.search_rounded,
-                        size: 16,
-                        color: Color(0xFF9CA3AF),
-                      ),
+                      Icon(Icons.search_rounded, size: 16, color: Color(0xFF9CA3AF)),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Search...',
+                          'Search resources...',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF9CA3AF),
-                          ),
+                          style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
 
-              // 2. Role Badge (Hidden on very narrow screens)
-              if (!isCompact) ...[
+              // Access Role Badge
+              if (!isNarrow) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF3F4F6),
                     borderRadius: BorderRadius.circular(6),
@@ -84,18 +86,15 @@ class HomeHeader extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
               ],
 
-              // 3. User Avatar & Logout Action
+              // Profile Avatar & Sign Out
               InkWell(
                 onTap: onSignOut,
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 4,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -111,34 +110,14 @@ class HomeHeader extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (!isCompact) ...[
-                        const SizedBox(width: 8),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 100),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                userName,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF111827),
-                                ),
-                              ),
-                              Text(
-                                userRole,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 9,
-                                  color: Color(0xFF6B7280),
-                                ),
-                              ),
-                            ],
+                      if (!isNarrow) ...[
+                        const SizedBox(width: 6),
+                        Text(
+                          userName,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF111827),
                           ),
                         ),
                       ],
