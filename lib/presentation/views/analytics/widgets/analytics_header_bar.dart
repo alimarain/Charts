@@ -7,7 +7,14 @@ import '../../../controllers/auth_provider.dart';
 import '../../../controllers/chart_filter_provider.dart';
 
 class AnalyticsHeaderBar extends ConsumerWidget {
-  const AnalyticsHeaderBar({super.key});
+  const AnalyticsHeaderBar({
+    super.key,
+    this.showMenuButton = false,
+    this.onMenuTap,
+  });
+
+  final bool showMenuButton;
+  final VoidCallback? onMenuTap;
 
   Future<void> _handleGlobalExport(
     String type,
@@ -60,13 +67,20 @@ class AnalyticsHeaderBar extends ConsumerWidget {
         // Top Global Bar
         Container(
           height: 64,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: const BoxDecoration(
             color: Colors.white,
             border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
           ),
           child: Row(
             children: [
+              if (showMenuButton) ...[
+                IconButton(
+                  icon: const Icon(Icons.menu_rounded, color: Color(0xFF1B1638)),
+                  onPressed: onMenuTap,
+                ),
+                const SizedBox(width: 4),
+              ],
               const Text(
                 'Telemetry & Performance',
                 style: TextStyle(
@@ -76,7 +90,6 @@ class AnalyticsHeaderBar extends ConsumerWidget {
                 ),
               ),
               const Spacer(),
-              // Export Actions Menu
               PopupMenuButton<String>(
                 icon: const Icon(
                   Icons.ios_share_rounded,
@@ -116,7 +129,7 @@ class AnalyticsHeaderBar extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               CircleAvatar(
                 radius: 14,
                 backgroundColor: const Color(0xFF1B1638),
@@ -135,7 +148,7 @@ class AnalyticsHeaderBar extends ConsumerWidget {
 
         // Title + Presets Responsive Layout
         Padding(
-          padding: const EdgeInsets.fromLTRB(28, 20, 28, 16),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isNarrow = constraints.maxWidth < 700;
@@ -147,16 +160,16 @@ class AnalyticsHeaderBar extends ConsumerWidget {
                   Text(
                     'Performance Analytics',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF111827),
                       letterSpacing: -0.5,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: 2),
                   Text(
                     'Deep dive into operational metrics and system velocity.',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                    style: TextStyle(fontSize: 11, color: Color(0xFF6B7280)),
                   ),
                 ],
               );
@@ -204,7 +217,7 @@ class AnalyticsHeaderBar extends ConsumerWidget {
                       foregroundColor: const Color(0xFF111827),
                       side: const BorderSide(color: Color(0xFFE5E7EB)),
                       minimumSize: Size.zero,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: () async {
@@ -221,7 +234,7 @@ class AnalyticsHeaderBar extends ConsumerWidget {
                         notifier.setCustomRange(picked.start, picked.end);
                       }
                     },
-                    icon: const Icon(Icons.calendar_today_outlined, size: 13),
+                    icon: const Icon(Icons.calendar_today_outlined, size: 12),
                     label: const Text('Custom Date', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
                   ),
                 ],
@@ -232,7 +245,7 @@ class AnalyticsHeaderBar extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     titleSection,
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     controlsSection,
                   ],
                 );

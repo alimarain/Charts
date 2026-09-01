@@ -73,130 +73,337 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
     return Form(
       key: widget.formKey,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section 1: Basic Identification
+          _FormSection(
+            title: 'Basic Configuration',
+            subtitle: 'Identification and classification details.',
+            children: [
+              _FieldLabel(label: 'Full Legal Name', isRequired: true),
+              const SizedBox(height: 6),
+              TextFormField(
+                controller: _fullNameController,
+                style: const TextStyle(fontSize: 13),
+                decoration: _inputDecoration(hint: 'e.g. Ali Muhammad'),
+                onChanged: notifier.updateFullName,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Full name is required'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _FieldLabel(label: 'Official Email', isRequired: true),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(fontSize: 13),
+                          decoration: _inputDecoration(hint: 'name@company.com'),
+                          onChanged: notifier.updateEmail,
+                          validator: Validators.validateEmail,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _FieldLabel(label: 'Gender'),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: _genders.map((g) {
+                            final isSelected = basicInfo.gender == g;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: ChoiceChip(
+                                label: Text(
+                                  g,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                                    color: isSelected ? Colors.white : const Color(0xFF4B5563),
+                                  ),
+                                ),
+                                selected: isSelected,
+                                selectedColor: const Color(0xFF1B1638),
+                                backgroundColor: const Color(0xFFF3F4F6),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                                onSelected: (sel) {
+                                  if (sel) notifier.updateGender(g);
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const Divider(height: 48, color: Color(0xFFE5E7EB)),
+
+          // Section 2: Allocation & Demographics
+          _FormSection(
+            title: 'Allocation Details',
+            subtitle: 'Contact and location parameters.',
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _FieldLabel(label: 'Father / Guardian Name', isRequired: true),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _fatherNameController,
+                          style: const TextStyle(fontSize: 13),
+                          decoration: _inputDecoration(hint: 'Guardian Full Name'),
+                          onChanged: notifier.updateFatherName,
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Father name is required'
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _FieldLabel(label: 'Residential City', isRequired: true),
+                        const SizedBox(height: 6),
+                        DropdownButtonFormField<String>(
+                          initialValue: basicInfo.city,
+                          decoration: _inputDecoration(),
+                          items: _cities
+                              .map((c) => DropdownMenuItem(value: c, child: Text(c, style: const TextStyle(fontSize: 13))))
+                              .toList(),
+                          onChanged: (val) => val != null ? notifier.updateCity(val) : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _FieldLabel(label: 'Date of Birth', isRequired: true),
+                        const SizedBox(height: 6),
+                        InkWell(
+                          onTap: () => _pickDate(context),
+                          borderRadius: BorderRadius.circular(8),
+                          child: InputDecorator(
+                            decoration: _inputDecoration(
+                              suffixIcon: const Icon(Icons.calendar_today_outlined, size: 16),
+                            ),
+                            child: Text(
+                              basicInfo.dateOfBirth != null
+                                  ? '${basicInfo.dateOfBirth!.year}-${basicInfo.dateOfBirth!.month.toString().padLeft(2, '0')}-${basicInfo.dateOfBirth!.day.toString().padLeft(2, '0')}'
+                                  : 'yyyy-mm-dd',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: basicInfo.dateOfBirth != null ? const Color(0xFF111827) : const Color(0xFF9CA3AF),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _FieldLabel(label: 'Phone Contact', isRequired: true),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                          style: const TextStyle(fontSize: 13),
+                          decoration: _inputDecoration(hint: '+92 300 1234567'),
+                          onChanged: notifier.updatePhone,
+                          validator: (v) => (v == null || v.trim().isEmpty) ? 'Phone is required' : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const Divider(height: 48, color: Color(0xFFE5E7EB)),
+
+          // Section 3: Notes & Location
+          _FormSection(
+            title: 'Notes & Disclosure',
+            subtitle: 'Supplementary address information.',
+            children: [
+              TextFormField(
+                controller: _addressController,
+                maxLines: 3,
+                style: const TextStyle(fontSize: 13),
+                decoration: _inputDecoration(hint: 'Residential address or location details...'),
+                onChanged: notifier.updateAddress,
+                validator: (v) => (v == null || v.trim().isEmpty) ? 'Address is required' : null,
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFA7F3D0)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, size: 16, color: Color(0xFF059669)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Auto-Audit is enabled by default for applicant identity records.',
+                        style: TextStyle(fontSize: 12, color: Color(0xFF047857), fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration({String? hint, Widget? suffixIcon}) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+      filled: true,
+      fillColor: const Color(0xFFF9FAFB),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      suffixIcon: suffixIcon,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF1B1638), width: 1.5),
+      ),
+    );
+  }
+}
+
+class _FormSection extends StatelessWidget {
+  const _FormSection({
+    required this.title,
+    required this.subtitle,
+    required this.children,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth > 700;
+
+        final header = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Basic Details',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _fullNameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name *',
-                prefixIcon: Icon(Icons.person_outline),
-              ),
-              onChanged: notifier.updateFullName,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Full name is required'
-                  : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _fatherNameController,
-              decoration: const InputDecoration(
-                labelText: 'Father Name *',
-                prefixIcon: Icon(Icons.badge_outlined),
-              ),
-              onChanged: notifier.updateFatherName,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Father name is required'
-                  : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Email Address *',
-                prefixIcon: Icon(Icons.email_outlined),
-              ),
-              onChanged: notifier.updateEmail,
-              validator: Validators.validateEmail,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number *',
-                prefixIcon: Icon(Icons.phone_outlined),
-              ),
-              onChanged: notifier.updatePhone,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) {
-                  return 'Phone number is required';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-            InkWell(
-              onTap: () => _pickDate(context),
-              borderRadius: BorderRadius.circular(10),
-              child: InputDecorator(
-                decoration: const InputDecoration(
-                  labelText: 'Date of Birth *',
-                  prefixIcon: Icon(Icons.calendar_today_outlined),
-                ),
-                child: Text(
-                  basicInfo.dateOfBirth != null
-                      ? '${basicInfo.dateOfBirth!.day}/${basicInfo.dateOfBirth!.month}/${basicInfo.dateOfBirth!.year}'
-                      : 'Select Date of Birth',
-                  style: TextStyle(
-                    color: basicInfo.dateOfBirth != null
-                        ? Colors.black87
-                        : Colors.grey.shade600,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: basicInfo.gender,
-                    decoration: const InputDecoration(labelText: 'Gender'),
-                    items: _genders
-                        .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                        .toList(),
-                    onChanged: (val) =>
-                        val != null ? notifier.updateGender(val) : null,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: basicInfo.city,
-                    decoration: const InputDecoration(labelText: 'City'),
-                    items: _cities
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                        .toList(),
-                    onChanged: (val) =>
-                        val != null ? notifier.updateCity(val) : null,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _addressController,
-              maxLines: 2,
-              decoration: const InputDecoration(
-                labelText: 'Residential Address *',
-                prefixIcon: Icon(Icons.home_outlined),
-              ),
-              onChanged: notifier.updateAddress,
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Address is required'
-                  : null,
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280)),
             ),
           ],
+        );
+
+        final formFields = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        );
+
+        if (isDesktop) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 3, child: header),
+              const SizedBox(width: 24),
+              Expanded(flex: 7, child: formFields),
+            ],
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            header,
+            const SizedBox(height: 16),
+            formFields,
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _FieldLabel extends StatelessWidget {
+  const _FieldLabel({required this.label, this.isRequired = false});
+
+  final String label;
+  final bool isRequired;
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: label,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: Color(0xFF374151),
         ),
+        children: [
+          if (isRequired)
+            const TextSpan(
+              text: ' *',
+              style: TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.bold),
+            ),
+        ],
       ),
     );
   }

@@ -23,6 +23,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _statusLog = 'Ready to test networking';
   bool _isLoading = false;
   bool _hasError = false;
@@ -75,59 +76,80 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.user;
-    final userName = user?.name ?? 'Normal User';
+    final userName = user?.name ?? 'Marcus Vance';
     final userRole = user?.role == 'maker' ? 'Maker' : 'User';
     final hasToken = authState.token != null && authState.token!.isNotEmpty;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FC),
-      body: Row(
-        children: [
-          // Sidebar
-          AppSidebar(
-            currentRoute: '/home',
-            hasToken: hasToken,
-            userRole: userRole,
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth >= 800;
 
-          // Main View
-          Expanded(
-            child: Column(
-              children: [
-                HomeHeader(
-                  userName: userName,
-                  userRole: userRole,
-                  onSignOut: () => ref.read(authProvider.notifier).logout(),
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32.0,
-                      vertical: 24.0,
-                    ),
-                    children: [
-                      const HomePortfolioBanner(),
-                      const SizedBox(height: 24),
-                      const HomeKpiGrid(),
-                      const SizedBox(height: 24),
-                      const HomeResourceLedger(),
-                      const SizedBox(height: 24),
-                      HomeTelemetryConsole(
-                        statusLog: _statusLog,
-                        hasError: _hasError,
-                        isLoading: _isLoading,
-                        onTestGet: _fetchProducts,
-                        onTestError: _triggerError,
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+        return Scaffold(
+          key: _scaffoldKey,
+          backgroundColor: const Color(0xFFF8F9FC),
+          drawer: isDesktop
+              ? null
+              : Drawer(
+                  child: AppSidebar(
+                    currentRoute: '/home',
+                    hasToken: hasToken,
+                    userRole: userRole,
+                    isMobileDrawer: true,
                   ),
                 ),
-              ],
-            ),
+          body: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Persistent Desktop Sidebar
+              if (isDesktop)
+                AppSidebar(
+                  currentRoute: '/home',
+                  hasToken: hasToken,
+                  userRole: userRole,
+                ),
+
+              // Main Canvas
+              Expanded(
+                child: Column(
+                  children: [
+                    HomeHeader(
+                      userName: userName,
+                      userRole: userRole,
+                      showMenuButton: !isDesktop,
+                      onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+                      onSignOut: () => ref.read(authProvider.notifier).logout(),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isDesktop ? 28.0 : 16.0,
+                          vertical: 20.0,
+                        ),
+                        children: [
+                          const HomePortfolioBanner(),
+                          const SizedBox(height: 20),
+                          const HomeKpiGrid(),
+                          const SizedBox(height: 20),
+                          const HomeResourceLedger(),
+                          const SizedBox(height: 20),
+                          HomeTelemetryConsole(
+                            statusLog: _statusLog,
+                            hasError: _hasError,
+                            isLoading: _isLoading,
+                            onTestGet: _fetchProducts,
+                            onTestError: _triggerError,
+                          ),
+                          const SizedBox(height: 28),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
