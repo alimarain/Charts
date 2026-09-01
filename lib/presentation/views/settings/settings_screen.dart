@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/auth_provider.dart';
+import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
 import 'widgets/settings_action_tiles.dart';
 import 'widgets/settings_personal_info_card.dart';
@@ -87,41 +88,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    // Top App Bar
-                    Container(
-                      height: 64,
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
-                      ),
-                      child: Row(
-                        children: [
-                          if (!isDesktop) ...[
-                            IconButton(
-                              icon: const Icon(Icons.menu_rounded, color: Color(0xFF1B1638)),
-                              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          const Text(
-                            'Configuration Console',
-                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF6B7280)),
-                          ),
-                          const Spacer(),
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: const Color(0xFF1B1638),
-                            child: Text(
-                              _nameController.text.isNotEmpty ? _nameController.text[0].toUpperCase() : 'U',
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
+                    AppHeader(
+                      title: 'System Configuration',
+                      showMenuButton: !isDesktop,
+                      onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
                     ),
-
-                    // Scrollable Content
                     Expanded(
                       child: SingleChildScrollView(
                         padding: EdgeInsets.symmetric(
@@ -134,7 +105,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Title Header
                                 const Text(
                                   'System Configuration',
                                   style: TextStyle(
@@ -150,8 +120,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
                                 ),
                                 const SizedBox(height: 24),
-
-                                // Main Split Section
                                 LayoutBuilder(
                                   builder: (context, innerConstraints) {
                                     final isWide = innerConstraints.maxWidth > 850;

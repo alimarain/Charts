@@ -5,8 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/presentation/controllers/product_provider.dart';
 
 import '../../controllers/auth_provider.dart';
+import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
-import 'widgets/home_header.dart';
 import 'widgets/home_kpi_grid.dart';
 import 'widgets/home_portfolio_banner.dart';
 import 'widgets/home_resource_ledger.dart';
@@ -76,7 +76,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final user = authState.user;
-    final userName = user?.name ?? 'Marcus Vance';
     final userRole = user?.role == 'maker' ? 'Maker' : 'User';
     final hasToken = authState.token != null && authState.token!.isNotEmpty;
 
@@ -100,24 +99,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Persistent Desktop Sidebar
               if (isDesktop)
                 AppSidebar(
                   currentRoute: '/home',
                   hasToken: hasToken,
                   userRole: userRole,
                 ),
-
-              // Main Canvas
               Expanded(
                 child: Column(
                   children: [
-                    HomeHeader(
-                      userName: userName,
-                      userRole: userRole,
+                    AppHeader(
                       showMenuButton: !isDesktop,
                       onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
-                      onSignOut: () => ref.read(authProvider.notifier).logout(),
                     ),
                     Expanded(
                       child: ListView(

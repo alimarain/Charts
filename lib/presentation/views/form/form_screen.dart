@@ -6,6 +6,7 @@ import 'package:new_app/presentation/views/controllers/submission_provider.dart'
 import 'package:new_app/presentation/views/controllers/submission_state.dart';
 
 import '../../controllers/auth_provider.dart';
+import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
 import '../dashboard/dashboard_screen.dart';
 import 'basic_info_step.dart';
@@ -49,7 +50,6 @@ class _FormScreenState extends ConsumerState<FormScreen> {
     final authState = ref.watch(authProvider);
     final userRole = authState.user?.role == 'maker' ? 'Maker' : 'User';
     final hasToken = authState.token != null && authState.token!.isNotEmpty;
-    final userName = authState.user?.name ?? 'Marcus Vance';
 
     ref.listen<SubmissionState>(submissionProvider, (previous, next) {
       if (next.isSuccess) {
@@ -91,48 +91,11 @@ class _FormScreenState extends ConsumerState<FormScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    // Top App Header
-                    Container(
-                      height: 64,
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
-                      ),
-                      child: Row(
-                        children: [
-                          if (!isDesktop) ...[
-                            IconButton(
-                              icon: const Icon(Icons.menu_rounded, color: Color(0xFF1B1638)),
-                              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          const Text(
-                            'Resources',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF6B7280), fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(width: 6),
-                          const Icon(Icons.chevron_right_rounded, size: 14, color: Color(0xFF9CA3AF)),
-                          const SizedBox(width: 6),
-                          const Text(
-                            'New Resource Creation',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF111827), fontWeight: FontWeight.w700),
-                          ),
-                          const Spacer(),
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: const Color(0xFF1B1638),
-                            child: Text(
-                              userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
+                    AppHeader(
+                      title: 'New Resource Creation',
+                      showMenuButton: !isDesktop,
+                      onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
                     ),
-
-                    // Main Scrollable Surface
                     Expanded(
                       child: SingleChildScrollView(
                         padding: EdgeInsets.symmetric(
@@ -145,7 +108,6 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Title Header
                                 const Text(
                                   'Create New Resource',
                                   style: TextStyle(
@@ -161,8 +123,6 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                                   style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
                                 ),
                                 const SizedBox(height: 20),
-
-                                // Enterprise Form Card
                                 Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -178,15 +138,13 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                                             : CareerInfoStep(formKey: _step2FormKey),
                                       ),
                                       const Divider(height: 1, color: Color(0xFFE5E7EB)),
-
-                                      // Card Footer & Submission Controls
                                       Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                                         child: Row(
                                           children: [
                                             const Expanded(
                                               child: Text(
-                                                'Changes will be logged to Master Ledger ID: #LOG-8821',
+                                                'Changes logged to Master Ledger ID: #LOG-8821',
                                                 style: TextStyle(
                                                   fontStyle: FontStyle.italic,
                                                   fontSize: 11,
