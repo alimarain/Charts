@@ -1,13 +1,37 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/data/datasources/analytics/realtime_analytics_service.dart';
 
 import '../../core/network/dio_client.dart';
+import '../../core/storage/token_storage.dart';
 import '../../data/datasources/analytics/api_analytics_service.dart';
 import '../../domain/entities/analytics.dart';
-import '../../domain/entities/basic_chart_data.dart';
+import '../../domain/entities/basic_chart_data.dart'; 
+
+// --- API & REAL-TIME SERVICES ---
 
 final analyticsApiServiceProvider = Provider<ApiAnalyticsService>((ref) {
   return ApiAnalyticsService(ref.watch(dioProvider));
 });
+
+final tokenStorageProvider = Provider<TokenStorage>((ref) {
+  return TokenStorage();
+});
+
+final realtimeAnalyticsServiceProvider = Provider<RealtimeAnalyticsService>((ref) {
+  final service = RealtimeAnalyticsService(ref.watch(tokenStorageProvider));
+  service.connect();
+  ref.onDispose(() => service.dispose());
+  return service;
+});
+
+// Reactive Telemetry Stream Provider
+final realtimeAnalyticsStreamProvider = StreamProvider<AnalyticsData>((ref) {
+  final service = ref.watch(realtimeAnalyticsServiceProvider);
+  return service.telemetryStream;
+});
+
+// --- STATE DEFINITION ---
 
 class AnalyticsState {
   final AnalyticsData? data;
@@ -40,11 +64,41 @@ class AnalyticsState {
   }
 }
 
+// --- RIVERPOD 3.X NOTIFIER ---
+
 class AnalyticsNotifier extends Notifier<AnalyticsState> {
+  StreamSubscription<AnalyticsData>? _streamSub;
+
   @override
   AnalyticsState build() {
-    // Trigger on next microtask so provider finishes initial registration
+    // Clean up active subscriptions on provider disposal
+    ref.onDispose(() {
+      _streamSub?.cancel();
+    });
+
+    // 1. Initial REST data load
     Future.microtask(() => loadAnalytics());
+
+    // 2. Subscribe to the real-time stream service
+    final realtimeService = ref.watch(realtimeAnalyticsServiceProvider);
+    _streamSub?.cancel();
+    _streamSub = realtimeService.telemetryStream.listen(
+      (liveUpdate) {
+        state = state.copyWith(
+          data: liveUpdate,
+          isLoading: false,
+          isError: false,
+          errorMessage: null,
+        );
+      },
+      onError: (err) {
+        state = state.copyWith(
+          isError: true,
+          errorMessage: err.toString(),
+        );
+      },
+    );
+
     return const AnalyticsState(isLoading: true);
   }
 
