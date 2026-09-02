@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/presentation/widgets/charts/resource_pyramid_chart.dart';
 
 import '../../../../core/services/analytics_export_service.dart';
 import '../../controllers/analytics_provider.dart';
@@ -128,7 +129,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                             color: Color(0xFF6B7280),
                           ),
                           tooltip: 'Export Reports',
-                          onSelected: (val) => _handleGlobalExport(val, context),
+                          onSelected: (val) =>
+                              _handleGlobalExport(val, context),
                           itemBuilder: (ctx) => const [
                             PopupMenuItem(
                               value: 'pdf',
@@ -140,8 +142,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     size: 16,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('Export PDF Report',
-                                      style: TextStyle(fontSize: 12)),
+                                  Text(
+                                    'Export PDF Report',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
                                 ],
                               ),
                             ),
@@ -155,8 +159,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     size: 16,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('Export Clean CSV',
-                                      style: TextStyle(fontSize: 12)),
+                                  Text(
+                                    'Export Clean CSV',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
                                 ],
                               ),
                             ),
@@ -209,7 +215,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                             );
                           }
 
-                          if (filteredResult == null || !filteredResult.hasData) {
+                          if (filteredResult == null ||
+                              !filteredResult.hasData) {
                             return Center(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -253,18 +260,18 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                 child: Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
-                                  children: [
-                                    // 1. Performance Analytics Title + Date Pill Controls
+                                  children: <Widget>[
+                                    // 1. Performance Analytics Title
                                     const AnalyticsTitleStrip(),
 
-                                    // 2. Advanced Analytics Controls (Date Range dropdown, Category, Target Goal, Reset)
+                                    // 2. Advanced Analytics Controls
                                     ChartFilterBar(
                                       availableCategories:
                                           filteredResult.categories,
                                     ),
                                     const SizedBox(height: 16),
 
-                                    // 3. KPI Metric Cards (Total Revenue, Order Volume, Active SKUs, Target Pace)
+                                    // 3. KPI Metric Cards
                                     ChartKpiGrid(kpis: filteredResult.kpis),
                                     const SizedBox(height: 20),
 
@@ -274,7 +281,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                         final isWide =
                                             boxConstraints.maxWidth > 920;
 
-                                        final revenueChart = SalesOverviewChart(
+                                        final revenueChart =
+                                            SalesOverviewChart(
                                           data: filteredResult.currentSales,
                                           previousData:
                                               filteredResult.previousSales,
@@ -323,7 +331,18 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
                                     ),
                                     const SizedBox(height: 20),
 
-                                    // 6. Quarterly Horizon Stepped Chart
+                                    // 6. Triangular Resource Pyramid Chart (Dynamic)
+                                    if (filteredResult.pyramidMetrics.isNotEmpty) ...[
+                                      ResourcePyramidChart(
+                                        data: filteredResult.pyramidMetrics,
+                                        title: 'Category Volume Hierarchy',
+                                        subtitle:
+                                            'Dynamic category hierarchy based on active filter scope.',
+                                      ),
+                                      const SizedBox(height: 20),
+                                    ],
+
+                                    // 7. Quarterly Horizon Stepped Chart
                                     const QuarterlyPerformanceChart(),
                                     const SizedBox(height: 32),
                                   ],

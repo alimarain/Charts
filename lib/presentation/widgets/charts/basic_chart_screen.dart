@@ -1,218 +1,341 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../../core/charts/models/chart_config.dart';
-import '../../../core/charts/models/chart_data.dart';
-import '../../../core/charts/models/chart_type.dart';
-import '../../../core/charts/widgets/global_chart_widget.dart';
 import '../../../domain/entities/basic_chart_data.dart';
+import '../../controllers/analytics_provider.dart';
+import '../navigation/app_header.dart';
 
-class BasicChartScreen extends StatefulWidget {
+enum ChartVisualizationType { spline, column, stepLine }
+
+class BasicChartScreen extends ConsumerStatefulWidget {
   const BasicChartScreen({super.key});
 
-  static const routeName = 'basic_chart';
+  static const routeName = 'basic-chart';
   static const routePath = '/basic-chart';
 
   @override
-  State<BasicChartScreen> createState() => _BasicChartScreenState();
+  ConsumerState<BasicChartScreen> createState() => _BasicChartScreenState();
 }
 
-class _BasicChartScreenState extends State<BasicChartScreen> {
-  // 1. Dynamic state-driven dataset
-  List<BasicChartData> _currentData = [
-    const BasicChartData(
-      month: 'January',
-      sales: 12000,
-      color: Color(0xFF4F46E5),
-    ),
-    const BasicChartData(
-      month: 'February',
-      sales: 18000,
-      color: Color(0xFF4F46E5),
-    ),
-    const BasicChartData(
-      month: 'March',
-      sales: 15000,
-      color: Color(0xFF4F46E5),
-    ),
-    const BasicChartData(
-      month: 'April',
-      sales: 22000,
-      color: Color(0xFF4F46E5),
-    ),
-    const BasicChartData(month: 'May', sales: 19000, color: Color(0xFF4F46E5)),
-    const BasicChartData(month: 'June', sales: 25000, color: Color(0xFF4F46E5)),
-  ];
+class _BasicChartScreenState extends ConsumerState<BasicChartScreen> {
+  ChartVisualizationType _chartType = ChartVisualizationType.spline;
+  bool _isStreamPaused = false;
+  List<BasicChartData>? _pausedSnapshot;
+  late final TrackballBehavior _trackballBehavior;
 
-  bool _isLoading = false;
-  bool _showEmpty = false;
-
-  void _refreshSampleData() {
-    final random = Random();
-    setState(() {
-      _showEmpty = false;
-      _currentData = [
-        BasicChartData(
-          month: 'January',
-          sales: 10000.0 + random.nextInt(8000),
-          color: const Color(0xFF4F46E5),
-        ),
-        BasicChartData(
-          month: 'February',
-          sales: 12000.0 + random.nextInt(10000),
-          color: const Color(0xFF4F46E5),
-        ),
-        BasicChartData(
-          month: 'March',
-          sales: 14000.0 + random.nextInt(9000),
-          color: const Color(0xFF4F46E5),
-        ),
-        BasicChartData(
-          month: 'April',
-          sales: 18000.0 + random.nextInt(12000),
-          color: const Color(0xFF4F46E5),
-        ),
-        BasicChartData(
-          month: 'May',
-          sales: 16000.0 + random.nextInt(11000),
-          color: const Color(0xFF4F46E5),
-        ),
-        BasicChartData(
-          month: 'June',
-          sales: 20000.0 + random.nextInt(15000),
-          color: const Color(0xFF4F46E5),
-        ),
-      ];
-    });
+  @override
+  void initState() {
+    super.initState();
+    _trackballBehavior = TrackballBehavior(
+      enable: true,
+      activationMode: ActivationMode.singleTap,
+      tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+      lineType: TrackballLineType.vertical,
+      lineColor: const Color(0xFF4F46E5).withValues(alpha: 0.5),
+      lineWidth: 1.5,
+    );
   }
 
-  void _toggleLoading() {
-    setState(() => _isLoading = !_isLoading);
-  }
+  void _showPointDetails(BasicChartData point) {
+    final variance = point.sales - point.target;
+    final isPositive = variance >= 0;
 
-  void _toggleEmpty() {
-    setState(() => _showEmpty = !_showEmpty);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Metric Details: ${point.month}',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF111827)),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isPositive ? const Color(0xFFDCFCE7) : const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      point.growthTag,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: isPositive ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _DetailRow(label: 'Actual Volume', value: 'PKR ${point.sales.toStringAsFixed(0)}'),
+              _DetailRow(label: 'Target Baseline', value: 'PKR ${point.target.toStringAsFixed(0)}'),
+              _DetailRow(
+                label: 'Variance',
+                value: '${isPositive ? "+" : ""}PKR ${variance.toStringAsFixed(0)}',
+                valueColor: isPositive ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final chartState = ref.watch(basicChartProvider);
+
+    // Keep static snapshot if stream inspection is paused
+    final points = _isStreamPaused
+        ? _pausedSnapshot ?? chartState.value ?? []
+        : chartState.value ?? [];
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Basic Chart Example',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF0F172A),
+      backgroundColor: const Color(0xFFF8F9FC),
+      body: Column(
+        children: [
+          const AppHeader(title: 'Live Telemetry Monitor'),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 1080),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Header & Interactive Controls Strip
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Monthly Performance Stream',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Live operational telemetry pushed via WebSockets.',
+                                style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              // Pause / Resume Stream
+                              IconButton(
+                                tooltip: _isStreamPaused ? 'Resume live updates' : 'Freeze frame for analysis',
+                                icon: Icon(
+                                  _isStreamPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                                  color: _isStreamPaused ? const Color(0xFF059669) : const Color(0xFF6B7280),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isStreamPaused = !_isStreamPaused;
+                                    if (_isStreamPaused) {
+                                      _pausedSnapshot = chartState.value;
+                                    }
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 8),
+
+                              // Visualization Switcher
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF3F4F6),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    _TypeButton(
+                                      icon: Icons.show_chart_rounded,
+                                      isSelected: _chartType == ChartVisualizationType.spline,
+                                      onTap: () => setState(() => _chartType = ChartVisualizationType.spline),
+                                    ),
+                                    _TypeButton(
+                                      icon: Icons.bar_chart_rounded,
+                                      isSelected: _chartType == ChartVisualizationType.column,
+                                      onTap: () => setState(() => _chartType = ChartVisualizationType.column),
+                                    ),
+                                    _TypeButton(
+                                      icon: Icons.stacked_line_chart_rounded,
+                                      isSelected: _chartType == ChartVisualizationType.stepLine,
+                                      onTap: () => setState(() => _chartType = ChartVisualizationType.stepLine),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Chart Canvas
+                      SizedBox(
+                        height: 400,
+                        child: chartState.when(
+                          loading: () => const Center(
+                            child: CircularProgressIndicator(color: Color(0xFF1B1638), strokeWidth: 2),
+                          ),
+                          error: (err, _) => Center(
+                            child: Text('Telemetry error: $err', style: const TextStyle(fontSize: 12)),
+                          ),
+                          data: (_) => SfCartesianChart(
+                            trackballBehavior: _trackballBehavior,
+                            primaryXAxis: const CategoryAxis(
+                              majorGridLines: MajorGridLines(width: 0),
+                              labelStyle: TextStyle(fontSize: 11, color: Color(0xFF6B7280)),
+                            ),
+                            primaryYAxis: NumericAxis(
+                              axisLine: const AxisLine(width: 0),
+                              majorGridLines: const MajorGridLines(color: Color(0xFFF3F4F6)),
+                              // Visual threshold baseline
+                              plotBands: <PlotBand>[
+                                PlotBand(
+                                  start: 20000,
+                                  end: 20000,
+                                  borderColor: const Color(0xFFEF4444).withValues(alpha: 0.6),
+                                  borderWidth: 1.5,
+                                  dashArray: const <double>[4, 4],
+                                  text: 'Target Baseline (20K)',
+                                  textStyle: const TextStyle(fontSize: 10, color: Color(0xFFEF4444)),
+                                  horizontalTextAlignment: TextAnchor.end,
+                                ),
+                              ],
+                            ),
+                            series: _buildSeries(points),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-            Text(
-              'Configurable global chart integration',
-              style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF4F46E5)),
-            tooltip: 'Refresh Data',
-            onPressed: _refreshSampleData,
           ),
-          const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Controls Bar
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _refreshSampleData,
-                  icon: const Icon(Icons.autorenew_rounded, size: 16),
-                  label: const Text('Refresh Data'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4F46E5),
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: _toggleLoading,
-                  icon: const Icon(Icons.hourglass_empty_rounded, size: 16),
-                  label: Text(_isLoading ? 'Stop Loading' : 'Test Loading'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: _toggleEmpty,
-                  icon: const Icon(Icons.block_rounded, size: 16),
-                  label: Text(_showEmpty ? 'Show Data' : 'Test Empty State'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
+    );
+  }
 
-            // Standard GlobalChartWidget consumption
-            GlobalChartWidget<BasicChartData>(
-              data: _showEmpty ? const [] : _currentData,
-              isLoading: _isLoading,
-              emptyMessage: 'No monthly sales records found.',
-              mapper: (BasicChartData item) => ChartDataPoint(
-                label: item.month,
-                value: item.sales,
-                color: item.color,
-              ),
-              config: ChartConfig(
-                chartType: UniversalChartType.column,
-                title: 'Monthly Sales',
-                subtitle: 'Tap any bar to inspect selection and values',
-                showTooltip: true,
-                showLegend: false,
-                showDataLabels: true,
-                enableSelection: true,
-                enableFullscreen: false,
-                enableExport: true,
-                enableChartTypeSwitching: true,
-                supportedChartTypes: const [
-                  UniversalChartType.column,
-                  UniversalChartType.bar,
-                  UniversalChartType.line,
-                  UniversalChartType.area,
-                ],
-                xAxisTitle: 'Month',
-                yAxisTitle: 'Sales (PKR)',
-                valueFormatter: (double value) =>
-                    'Rs. ${value.toStringAsFixed(0)}',
-                primaryColor: const Color(0xFF4F46E5),
-                accentColor: const Color(0xFFF59E0B),
-              ),
-              onPointTap: (int index, ChartDataPoint point) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      '${point.label}\nSales: Rs. ${point.value.toStringAsFixed(0)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    duration: const Duration(seconds: 2),
-                    backgroundColor: const Color(0xFF0F172A),
-                  ),
-                );
-              },
+  List<CartesianSeries<BasicChartData, String>> _buildSeries(List<BasicChartData> points) {
+    switch (_chartType) {
+      case ChartVisualizationType.column:
+        return [
+          ColumnSeries<BasicChartData, String>(
+            dataSource: points,
+            xValueMapper: (BasicChartData d, _) => d.month,
+            yValueMapper: (BasicChartData d, _) => d.sales,
+            pointColorMapper: (BasicChartData d, _) => d.sales >= d.target ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+            onPointTap: (ChartPointDetails details) {
+              if (details.pointIndex != null) _showPointDetails(points[details.pointIndex!]);
+            },
+          ),
+        ];
+
+      case ChartVisualizationType.stepLine:
+        return [
+          StepLineSeries<BasicChartData, String>(
+            dataSource: points,
+            xValueMapper: (BasicChartData d, _) => d.month,
+            yValueMapper: (BasicChartData d, _) => d.sales,
+            color: const Color(0xFF4F46E5),
+            width: 2.5,
+            markerSettings: const MarkerSettings(isVisible: true),
+            onPointTap: (ChartPointDetails details) {
+              if (details.pointIndex != null) _showPointDetails(points[details.pointIndex!]);
+            },
+          ),
+        ];
+
+      case ChartVisualizationType.spline:
+        return [
+          SplineAreaSeries<BasicChartData, String>(
+            dataSource: points,
+            xValueMapper: (BasicChartData d, _) => d.month,
+            yValueMapper: (BasicChartData d, _) => d.sales,
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF4F46E5).withValues(alpha: 0.35),
+                const Color(0xFF4F46E5).withValues(alpha: 0.0),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-          ],
+            borderColor: const Color(0xFF4F46E5),
+            borderWidth: 2.5,
+            markerSettings: const MarkerSettings(isVisible: true, width: 6, height: 6),
+            onPointTap: (ChartPointDetails details) {
+              if (details.pointIndex != null) _showPointDetails(points[details.pointIndex!]);
+            },
+          ),
+        ];
+    }
+  }
+}
+
+class _TypeButton extends StatelessWidget {
+  const _TypeButton({required this.icon, required this.isSelected, required this.onTap});
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
         ),
+        child: Icon(icon, size: 16, color: isSelected ? const Color(0xFF111827) : const Color(0xFF6B7280)),
+      ),
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({required this.label, required this.value, this.valueColor});
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+          Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: valueColor ?? const Color(0xFF111827))),
+        ],
       ),
     );
   }

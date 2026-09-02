@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/analytics.dart';
 import '../../domain/entities/chart_filter_models.dart';
+import '../../domain/entities/pyramid_metric.dart';
 import 'analytics_provider.dart';
 
 final chartFilterProvider =
@@ -92,7 +94,7 @@ class ChartFilterNotifier extends Notifier<ChartFilterState> {
 }
 
 // -------------------------------------------------------------
-// Filtered Analytics Data Provider
+// Filtered Analytics Data Result Model
 // -------------------------------------------------------------
 class FilteredAnalyticsResult {
   const FilteredAnalyticsResult({
@@ -100,6 +102,7 @@ class FilteredAnalyticsResult {
     required this.previousSales,
     required this.categorySales,
     required this.distribution,
+    required this.pyramidMetrics,
     required this.kpis,
     required this.categories,
     required this.hasData,
@@ -109,11 +112,18 @@ class FilteredAnalyticsResult {
   final List<SalesData> previousSales;
   final List<CategorySalesData> categorySales;
   final List<ProductDistributionData> distribution;
+  final List<PyramidMetric> pyramidMetrics;
   final ComputedKpis kpis;
   final List<String> categories;
   final bool hasData;
+
+  // Convenience alias in case pyramidTiers is referenced elsewhere
+  List<PyramidMetric> get pyramidTiers => pyramidMetrics;
 }
 
+// -------------------------------------------------------------
+// Filtered Analytics Provider
+// -------------------------------------------------------------
 final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
   final analyticsState = ref.watch(analyticsProvider);
   final filter = ref.watch(chartFilterProvider);
@@ -221,11 +231,46 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
     targetAchievementPercent: achievement,
   );
 
+  // 5. Dynamically Generate Real Pyramid Tiers from Telemetry
+  const pyramidTierColors = [
+    Color(0xFF1E1B4B), // Apex: Indigo 950
+    Color(0xFF312E81), // Tier 2: Indigo 900
+    Color(0xFF4338CA), // Tier 3: Indigo 700
+    Color(0xFF4F46E5), // Tier 4: Indigo 600
+    Color(0xFF6366F1), // Tier 5: Indigo 500
+    Color(0xFF818CF8), // Base: Indigo 400
+  ];
+
+  // Helper local function to extract numeric sales value across common model naming
+  double extractCategorySales(CategorySalesData data) {
+    return (data.sales).toDouble(); 
+  }
+
+  // Map real category sales (scaled by active date filter) into pyramid hierarchy
+  final sortedCategories = List<CategorySalesData>.from(filteredCategories)
+    ..sort((a, b) {
+      final aVal = extractCategorySales(a) * scaleFactor;
+      final bVal = extractCategorySales(b) * scaleFactor;
+      return bVal.compareTo(aVal);
+    });
+
+  final pyramidMetrics = sortedCategories.asMap().entries.map((entry) {
+    final index = entry.key;
+    final item = entry.value;
+    final scaledValue = (extractCategorySales(item) * scaleFactor).roundToDouble();
+    return PyramidMetric(
+      stage: item.category,
+      value: scaledValue > 0 ? scaledValue : 1.0,
+      color: pyramidTierColors[index % pyramidTierColors.length],
+    );
+  }).toList();
+
   return FilteredAnalyticsResult(
     currentSales: currentSales,
     previousSales: previousSales,
     categorySales: filteredCategories,
     distribution: filteredDist,
+    pyramidMetrics: pyramidMetrics,
     kpis: kpis,
     categories: allCategories,
     hasData: currentSales.isNotEmpty && filteredCategories.isNotEmpty,

@@ -125,6 +125,45 @@ final analyticsProvider = NotifierProvider<AnalyticsNotifier, AnalyticsState>(
   AnalyticsNotifier.new,
 );
 
-final basicChartProvider = FutureProvider<List<BasicChartData>>((ref) async {
-  return ref.watch(analyticsApiServiceProvider).getBasicMonthlySales();
+// Stream provider for the basic chart channel
+final basicChartStreamProvider = StreamProvider<List<BasicChartData>>((ref) {
+  final service = ref.watch(realtimeAnalyticsServiceProvider);
+  return service.basicChartStream;
 });
+
+// Real-time dynamic notifier for BasicChart
+class BasicChartNotifier extends AsyncNotifier<List<BasicChartData>> {
+  StreamSubscription<List<BasicChartData>>? _sub;
+
+  @override
+  Future<List<BasicChartData>> build() async {
+    ref.onDispose(() => _sub?.cancel());
+
+    // 1. Subscribe to real-time incoming points
+    final realtimeService = ref.watch(realtimeAnalyticsServiceProvider);
+    _sub?.cancel();
+    _sub = realtimeService.basicChartStream.listen(
+      (livePoints) {
+        state = AsyncData(livePoints);
+      },
+      onError: (err, stack) {
+        state = AsyncError(err, stack);
+      },
+    );
+
+    // 2. Fetch initial baseline via REST API
+    return ref.read(analyticsApiServiceProvider).getBasicMonthlySales();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(analyticsApiServiceProvider).getBasicMonthlySales(),
+    );
+  }
+}
+
+final basicChartProvider =
+    AsyncNotifierProvider<BasicChartNotifier, List<BasicChartData>>(
+  BasicChartNotifier.new,
+);
