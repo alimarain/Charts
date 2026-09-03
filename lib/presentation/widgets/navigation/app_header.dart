@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_app/presentation/views/controllers/dashboard_provider.dart';
+import 'package:new_app/presentation/controllers/dashboard_provider.dart';
 
 import '../../controllers/auth_provider.dart';
 
@@ -53,11 +53,14 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
     _removeOverlay();
 
     final products = ref.read(dashboardProvider).products;
-    final matchedProducts = products.where((p) {
-      return p.name.toLowerCase().contains(query) ||
-          p.category.toLowerCase().contains(query) ||
-          p.description.toLowerCase().contains(query);
-    }).take(4).toList();
+    final matchedProducts = products
+        .where((p) {
+          return p.name.toLowerCase().contains(query) ||
+              p.category.toLowerCase().contains(query) ||
+              p.description.toLowerCase().contains(query);
+        })
+        .take(4)
+        .toList();
 
     final List<_QuickSearchResult> quickResults = [
       if ('analytics'.contains(query) ||
@@ -129,13 +132,19 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
                         child: Center(
                           child: Text(
                             'No matching resources or screens found.',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF9CA3AF),
+                            ),
                           ),
                         ),
                       ),
                     if (quickResults.isNotEmpty) ...[
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 4,
+                        ),
                         child: Text(
                           'SYSTEM MODULES',
                           style: TextStyle(
@@ -146,31 +155,43 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
                           ),
                         ),
                       ),
-                      ...quickResults.map((res) => ListTile(
-                            dense: true,
-                            leading: Icon(res.icon, size: 16, color: const Color(0xFF4F46E5)),
-                            title: Text(
-                              res.title,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF111827),
-                              ),
+                      ...quickResults.map(
+                        (res) => ListTile(
+                          dense: true,
+                          leading: Icon(
+                            res.icon,
+                            size: 16,
+                            color: const Color(0xFF4F46E5),
+                          ),
+                          title: Text(
+                            res.title,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF111827),
                             ),
-                            subtitle: Text(
-                              res.subtitle,
-                              style: const TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
+                          ),
+                          subtitle: Text(
+                            res.subtitle,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xFF6B7280),
                             ),
-                            onTap: () {
-                              _removeOverlay();
-                              _searchController.clear();
-                              context.push(res.route);
-                            },
-                          )),
+                          ),
+                          onTap: () {
+                            _removeOverlay();
+                            _searchController.clear();
+                            context.push(res.route);
+                          },
+                        ),
+                      ),
                     ],
                     if (matchedProducts.isNotEmpty) ...[
                       const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 4,
+                        ),
                         child: Text(
                           'MATCHED CATALOG ITEMS',
                           style: TextStyle(
@@ -181,31 +202,36 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
                           ),
                         ),
                       ),
-                      ...matchedProducts.map((p) => ListTile(
-                            dense: true,
-                            leading: const Icon(
-                              Icons.inventory_2_outlined,
-                              size: 16,
-                              color: Color(0xFF059669),
+                      ...matchedProducts.map(
+                        (p) => ListTile(
+                          dense: true,
+                          leading: const Icon(
+                            Icons.inventory_2_outlined,
+                            size: 16,
+                            color: Color(0xFF059669),
+                          ),
+                          title: Text(
+                            p.name,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF111827),
                             ),
-                            title: Text(
-                              p.name,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF111827),
-                              ),
+                          ),
+                          subtitle: Text(
+                            '${p.category} · PKR ${(p.price * 280).toStringAsFixed(0)}',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xFF6B7280),
                             ),
-                            subtitle: Text(
-                              '${p.category} · PKR ${(p.price * 280).toStringAsFixed(0)}',
-                              style: const TextStyle(fontSize: 10, color: Color(0xFF6B7280)),
-                            ),
-                            onTap: () {
-                              _removeOverlay();
-                              _searchController.clear();
-                              context.push('/dashboard/product/${p.id}');
-                            },
-                          )),
+                          ),
+                          onTap: () {
+                            _removeOverlay();
+                            _searchController.clear();
+                            context.push('/dashboard/product/${p.id}');
+                          },
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -241,7 +267,10 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
             children: [
               if (widget.showMenuButton) ...[
                 IconButton(
-                  icon: const Icon(Icons.menu_rounded, color: Color(0xFF1B1638)),
+                  icon: const Icon(
+                    Icons.menu_rounded,
+                    color: Color(0xFF1B1638),
+                  ),
                   onPressed: widget.onMenuTap,
                 ),
                 const SizedBox(width: 4),
@@ -277,7 +306,11 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.search_rounded, size: 16, color: Color(0xFF9CA3AF)),
+                        const Icon(
+                          Icons.search_rounded,
+                          size: 16,
+                          color: Color(0xFF9CA3AF),
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
@@ -290,19 +323,32 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
                             },
                             style: const TextStyle(fontSize: 12),
                             decoration: const InputDecoration(
-                              hintText: 'Search resources, products, analytics...',
-                              hintStyle: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                              hintText:
+                                  'Search resources, products, analytics...',
+                              hintStyle: TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF9CA3AF),
+                              ),
                               border: InputBorder.none,
                               isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: 10,
+                              ),
                             ),
                           ),
                         ),
                         if (_searchController.text.isNotEmpty)
                           IconButton(
-                            icon: const Icon(Icons.clear, size: 14, color: Color(0xFF9CA3AF)),
+                            icon: const Icon(
+                              Icons.clear,
+                              size: 14,
+                              color: Color(0xFF9CA3AF),
+                            ),
                             padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(minWidth: 20, minHeight: 20),
+                            constraints: const BoxConstraints(
+                              minWidth: 20,
+                              minHeight: 20,
+                            ),
                             onPressed: () {
                               _searchController.clear();
                               _removeOverlay();
@@ -323,7 +369,10 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
               // Role Badge
               if (!isNarrow) ...[
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF3F4F6),
                     borderRadius: BorderRadius.circular(6),
@@ -347,7 +396,10 @@ class _AppHeaderState extends ConsumerState<AppHeader> {
                 onTap: () => ref.read(authProvider.notifier).logout(),
                 borderRadius: BorderRadius.circular(8),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 4,
+                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

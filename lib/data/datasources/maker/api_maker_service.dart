@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:new_app/domain/entities/maker_models.dart';
+
 import '../../../core/network/api_response.dart';
 
 class ApiMakerService {
@@ -33,7 +34,9 @@ class ApiMakerService {
       if (e.response?.statusCode == 403) {
         throw Exception('Unauthorized access. Maker role required.');
       }
-      throw Exception(e.response?.data?['message'] ?? 'Failed to load Maker products.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to load Maker products.',
+      );
     }
   }
 
@@ -80,7 +83,8 @@ class ApiMakerService {
             key: map['key'] as String,
             type: map['type'] as String,
             required: map['required'] as bool,
-            options: (map['options'] as List<dynamic>?)
+            options:
+                (map['options'] as List<dynamic>?)
                     ?.map((o) => o.toString())
                     .toList() ??
                 [],
@@ -89,7 +93,9 @@ class ApiMakerService {
       }
       throw Exception(apiResponse.message);
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['message'] ?? 'Failed to load form fields.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to load form fields.',
+      );
     }
   }
 
@@ -113,7 +119,9 @@ class ApiMakerService {
       }
       throw Exception(apiResponse.message);
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['message'] ?? 'Application submission failed.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Application submission failed.',
+      );
     }
   }
 }

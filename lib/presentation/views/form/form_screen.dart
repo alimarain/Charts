@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_app/presentation/views/controllers/form_provider.dart';
-import 'package:new_app/presentation/views/controllers/submission_provider.dart';
-import 'package:new_app/presentation/views/controllers/submission_state.dart';
+import 'package:new_app/presentation/controllers/form_provider.dart';
+import 'package:new_app/presentation/controllers/submission_provider.dart';
+import 'package:new_app/presentation/controllers/submission_state.dart';
 
 import '../../controllers/auth_provider.dart';
 import '../../widgets/navigation/app_header.dart';
@@ -120,26 +120,41 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                                 const SizedBox(height: 4),
                                 const Text(
                                   'Define operational parameters for a new enterprise project.',
-                                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF6B7280),
+                                  ),
                                 ),
                                 const SizedBox(height: 20),
                                 Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                                    border: Border.all(
+                                      color: const Color(0xFFE5E7EB),
+                                    ),
                                   ),
                                   child: Column(
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(28.0),
                                         child: currentStep == 0
-                                            ? BasicInfoStep(formKey: _step1FormKey)
-                                            : CareerInfoStep(formKey: _step2FormKey),
+                                            ? BasicInfoStep(
+                                                formKey: _step1FormKey,
+                                              )
+                                            : CareerInfoStep(
+                                                formKey: _step2FormKey,
+                                              ),
                                       ),
-                                      const Divider(height: 1, color: Color(0xFFE5E7EB)),
+                                      const Divider(
+                                        height: 1,
+                                        color: Color(0xFFE5E7EB),
+                                      ),
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 16,
+                                        ),
                                         child: Row(
                                           children: [
                                             const Expanded(
@@ -155,41 +170,83 @@ class _FormScreenState extends ConsumerState<FormScreen> {
                                             if (currentStep > 0) ...[
                                               OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
-                                                  foregroundColor: const Color(0xFF374151),
-                                                  side: const BorderSide(color: Color(0xFFE5E7EB)),
+                                                  foregroundColor: const Color(
+                                                    0xFF374151,
+                                                  ),
+                                                  side: const BorderSide(
+                                                    color: Color(0xFFE5E7EB),
+                                                  ),
                                                   minimumSize: Size.zero,
-                                                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 18,
+                                                        vertical: 12,
+                                                      ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
                                                 ),
-                                                onPressed: submissionState.isSubmitting ? null : _onBack,
-                                                child: const Text('Discard / Back', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                                onPressed:
+                                                    submissionState.isSubmitting
+                                                    ? null
+                                                    : _onBack,
+                                                child: const Text(
+                                                  'Discard / Back',
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
                                               ),
                                               const SizedBox(width: 10),
                                             ],
                                             ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                backgroundColor: const Color(0xFF1B1638),
+                                                backgroundColor: const Color(
+                                                  0xFF1B1638,
+                                                ),
                                                 foregroundColor: Colors.white,
                                                 elevation: 0,
                                                 minimumSize: Size.zero,
-                                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 12,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
                                               ),
-                                              onPressed: submissionState.isSubmitting
+                                              onPressed:
+                                                  submissionState.isSubmitting
                                                   ? null
-                                                  : (currentStep == 0 ? _onNext : _onSubmit),
-                                              child: submissionState.isSubmitting
+                                                  : (currentStep == 0
+                                                        ? _onNext
+                                                        : _onSubmit),
+                                              child:
+                                                  submissionState.isSubmitting
                                                   ? const SizedBox(
                                                       height: 16,
                                                       width: 16,
-                                                      child: CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                        color: Colors.white,
-                                                      ),
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                            color: Colors.white,
+                                                          ),
                                                     )
                                                   : Text(
-                                                      currentStep == 0 ? 'Continue to Career Info' : 'Finalize & Create',
-                                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                                      currentStep == 0
+                                                          ? 'Continue to Career Info'
+                                                          : 'Finalize & Create',
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
                                                     ),
                                             ),
                                           ],

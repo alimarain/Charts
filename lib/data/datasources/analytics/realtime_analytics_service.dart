@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
+
 import 'package:new_app/core/config/api_config.dart';
 import 'package:new_app/core/storage/token_storage.dart';
 import 'package:new_app/domain/entities/analytics.dart';
@@ -15,11 +16,13 @@ class RealtimeAnalyticsService {
 
   // Broadcast stream controllers
   final _analyticsController = StreamController<AnalyticsData>.broadcast();
-  final _basicChartController = StreamController<List<BasicChartData>>.broadcast();
+  final _basicChartController =
+      StreamController<List<BasicChartData>>.broadcast();
 
   // Public streams exposed to Riverpod providers and UI widgets
   Stream<AnalyticsData> get telemetryStream => _analyticsController.stream;
-  Stream<List<BasicChartData>> get basicChartStream => _basicChartController.stream;
+  Stream<List<BasicChartData>> get basicChartStream =>
+      _basicChartController.stream;
 
   /// Establishes the WebSocket connection with the ASP.NET Core SignalR hub.
   Future<void> connect() async {
@@ -48,12 +51,18 @@ class RealtimeAnalyticsService {
     _hubConnection!.on('ReceiveBasicChartUpdate', _handleBasicChartData);
 
     _hubConnection!.onclose(({error}) {
-      developer.log('SignalR connection closed: $error', name: 'RealtimeService');
+      developer.log(
+        'SignalR connection closed: $error',
+        name: 'RealtimeService',
+      );
     });
 
     try {
       await _hubConnection!.start();
-      developer.log('SignalR Connected to Telemetry Hub.', name: 'RealtimeService');
+      developer.log(
+        'SignalR Connected to Telemetry Hub.',
+        name: 'RealtimeService',
+      );
     } catch (e) {
       developer.log('Error connecting to Hub: $e', name: 'RealtimeService');
     }
@@ -72,7 +81,10 @@ class RealtimeAnalyticsService {
       final liveUpdate = AnalyticsData.fromJson(jsonMap);
       _analyticsController.add(liveUpdate);
     } catch (e, stack) {
-      developer.log('Failed to parse live telemetry stream: $e\n$stack', name: 'RealtimeService');
+      developer.log(
+        'Failed to parse live telemetry stream: $e\n$stack',
+        name: 'RealtimeService',
+      );
     }
   }
 
@@ -87,15 +99,18 @@ class RealtimeAnalyticsService {
           : rawData as List<dynamic>;
 
       final dataPoints = list.asMap().entries.map((entry) {
-          final index = entry.key;
-      final map = entry.value as Map<String, dynamic>;
-      return BasicChartData.fromJson(map, index);
-    }).toList();
+        final index = entry.key;
+        final map = entry.value as Map<String, dynamic>;
+        return BasicChartData.fromJson(map, index);
+      }).toList();
 
-    _basicChartController.add(dataPoints);
-  } catch (e, stack) {
-    developer.log('Failed to parse live basic chart update: $e\n$stack', name: 'RealtimeService');
-  }
+      _basicChartController.add(dataPoints);
+    } catch (e, stack) {
+      developer.log(
+        'Failed to parse live basic chart update: $e\n$stack',
+        name: 'RealtimeService',
+      );
+    }
   }
 
   /// Closes the socket session and frees all stream controllers.

@@ -107,14 +107,14 @@ class AppSidebar extends StatelessWidget {
                     },
                   ),
                   _NavItem(
-  icon: Icons.settings_outlined,
-  label: 'Settings',
-  isActive: currentRoute == '/settings',
-  onTap: () {
-    if (isMobileDrawer) Navigator.of(context).pop();
-    context.push('/settings');
-  },
-),
+                    icon: Icons.settings_outlined,
+                    label: 'Settings',
+                    isActive: currentRoute == '/settings',
+                    onTap: () {
+                      if (isMobileDrawer) Navigator.of(context).pop();
+                      context.push('/settings');
+                    },
+                  ),
                 ],
               ),
             ),

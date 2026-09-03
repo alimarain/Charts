@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/presentation/widgets/analytics/analytics_dual_chart_row.dart';
+import 'package:new_app/presentation/widgets/analytics/analytics_export_menu.dart';
 import 'package:new_app/presentation/widgets/charts/resource_pyramid_chart.dart';
 
 import '../../../../core/services/analytics_export_service.dart';
@@ -9,12 +11,11 @@ import '../../controllers/chart_filter_provider.dart';
 import '../../widgets/charts/category_sales_chart.dart';
 import '../../widgets/charts/chart_filter_bar.dart';
 import '../../widgets/charts/chart_kpi_cards.dart';
-import '../../widgets/charts/product_distribution_chart.dart';
 import '../../widgets/charts/quarterly_performance_chart.dart';
-import '../../widgets/charts/sales_overview_chart.dart';
+import '../../widgets/common/app_state_views.dart';
 import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
-import 'widgets/analytics_title_strip.dart';
+import '../../widgets/analytics/analytics_title_strip.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
   const AnalyticsScreen({super.key});
@@ -42,7 +43,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
     super.dispose();
   }
 
-  Future<void> _handleGlobalExport(String type, BuildContext context) async {
+  Future<void> _handleGlobalExport(String type) async {
     final scaffold = ScaffoldMessenger.of(context);
     final filteredResult = ref.read(filteredAnalyticsProvider);
     final filter = ref.read(chartFilterProvider);
@@ -105,252 +106,29 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Single Persistent Sidebar on Desktop
               if (isDesktop)
                 AppSidebar(
                   currentRoute: '/charts',
                   hasToken: hasToken,
                   userRole: userRole,
                 ),
-
-              // Main Canvas
               Expanded(
                 child: Column(
                   children: [
-                    // Single Common Universal AppHeader across all pages
                     AppHeader(
                       showMenuButton: !isDesktop,
                       onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
                       actions: [
-                        PopupMenuButton<String>(
-                          icon: const Icon(
-                            Icons.ios_share_rounded,
-                            size: 18,
-                            color: Color(0xFF6B7280),
-                          ),
-                          tooltip: 'Export Reports',
-                          onSelected: (val) =>
-                              _handleGlobalExport(val, context),
-                          itemBuilder: (ctx) => const [
-                            PopupMenuItem(
-                              value: 'pdf',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.picture_as_pdf_outlined,
-                                    color: Colors.red,
-                                    size: 16,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Export PDF Report',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: 'csv',
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.table_chart_outlined,
-                                    color: Colors.green,
-                                    size: 16,
-                                  ),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    'Export Clean CSV',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        AnalyticsExportMenu(
+                          onExportSelected: _handleGlobalExport,
                         ),
                       ],
                     ),
-
-                    // Main Analytics Content
                     Expanded(
-                      child: Builder(
-                        builder: (context) {
-                          if (analyticsState.isLoading &&
-                              analyticsState.data == null) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF1B1638),
-                                strokeWidth: 2.5,
-                              ),
-                            );
-                          }
-
-                          if (analyticsState.errorMessage != null &&
-                              analyticsState.data == null) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.cloud_off_rounded,
-                                      color: Color(0xFFDC2626),
-                                      size: 40,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      'Could not load telemetry: ${analyticsState.errorMessage}',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                    const SizedBox(height: 14),
-                                    ElevatedButton(
-                                      onPressed: () =>
-                                          ref.refresh(analyticsProvider),
-                                      child: const Text('Retry Connection'),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }
-
-                          if (filteredResult == null ||
-                              !filteredResult.hasData) {
-                            return Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.filter_alt_off_rounded,
-                                    size: 40,
-                                    color: Color(0xFF9CA3AF),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    'No telemetry available for selected scope.',
-                                  ),
-                                  const SizedBox(height: 12),
-                                  ElevatedButton(
-                                    onPressed: () => ref
-                                        .read(chartFilterProvider.notifier)
-                                        .reset(),
-                                    child: const Text('Reset Filters'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          return SingleChildScrollView(
-                            key: const PageStorageKey(
-                              'charts_analytics_scroll_key',
-                            ),
-                            controller: _scrollController,
-                            padding: EdgeInsets.fromLTRB(
-                              isDesktop ? 28 : 16,
-                              24,
-                              isDesktop ? 28 : 16,
-                              32,
-                            ),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints:
-                                    const BoxConstraints(maxWidth: 1240),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    // 1. Performance Analytics Title
-                                    const AnalyticsTitleStrip(),
-
-                                    // 2. Advanced Analytics Controls
-                                    ChartFilterBar(
-                                      availableCategories:
-                                          filteredResult.categories,
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    // 3. KPI Metric Cards
-                                    ChartKpiGrid(kpis: filteredResult.kpis),
-                                    const SizedBox(height: 20),
-
-                                    // 4. Sales Overview & Product Distribution Charts
-                                    LayoutBuilder(
-                                      builder: (context, boxConstraints) {
-                                        final isWide =
-                                            boxConstraints.maxWidth > 920;
-
-                                        final revenueChart =
-                                            SalesOverviewChart(
-                                          data: filteredResult.currentSales,
-                                          previousData:
-                                              filteredResult.previousSales,
-                                          enableNavigation: true,
-                                        );
-
-                                        final distributionChart =
-                                            ProductDistributionChart(
-                                          data: filteredResult.distribution,
-                                          enableNavigation: true,
-                                        );
-
-                                        if (isWide) {
-                                          return Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                flex: 7,
-                                                child: revenueChart,
-                                              ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                flex: 5,
-                                                child: distributionChart,
-                                              ),
-                                            ],
-                                          );
-                                        }
-
-                                        return Column(
-                                          children: [
-                                            revenueChart,
-                                            const SizedBox(height: 16),
-                                            distributionChart,
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    // 5. Category Breakdown Column Chart
-                                    CategorySalesChart(
-                                      data: filteredResult.categorySales,
-                                      enableNavigation: true,
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    // 6. Triangular Resource Pyramid Chart (Dynamic)
-                                    if (filteredResult.pyramidMetrics.isNotEmpty) ...[
-                                      ResourcePyramidChart(
-                                        data: filteredResult.pyramidMetrics,
-                                        title: 'Category Volume Hierarchy',
-                                        subtitle:
-                                            'Dynamic category hierarchy based on active filter scope.',
-                                      ),
-                                      const SizedBox(height: 20),
-                                    ],
-
-                                    // 7. Quarterly Horizon Stepped Chart
-                                    const QuarterlyPerformanceChart(),
-                                    const SizedBox(height: 32),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
+                      child: _buildBody(
+                        analyticsState,
+                        filteredResult,
+                        isDesktop,
                       ),
                     ),
                   ],
@@ -360,6 +138,76 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildBody(
+    AnalyticsState analyticsState,
+    FilteredAnalyticsResult? filteredResult,
+    bool isDesktop,
+  ) {
+    if (analyticsState.isLoading && analyticsState.data == null) {
+      return const AppLoadingView();
+    }
+
+    if (analyticsState.errorMessage != null && analyticsState.data == null) {
+      return AppErrorView(
+        message: 'Could not load telemetry: ${analyticsState.errorMessage}',
+        onRetry: () => ref.refresh(analyticsProvider),
+      );
+    }
+
+    if (filteredResult == null || !filteredResult.hasData) {
+      return AppEmptyScopeView(
+        onReset: () => ref.read(chartFilterProvider.notifier).reset(),
+      );
+    }
+
+    return SingleChildScrollView(
+      key: const PageStorageKey('charts_analytics_scroll_key'),
+      controller: _scrollController,
+      padding: EdgeInsets.fromLTRB(
+        isDesktop ? 28 : 16,
+        24,
+        isDesktop ? 28 : 16,
+        32,
+      ),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1240),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const AnalyticsTitleStrip(),
+              ChartFilterBar(availableCategories: filteredResult.categories),
+              const SizedBox(height: 16),
+              ChartKpiGrid(kpis: filteredResult.kpis),
+              const SizedBox(height: 20),
+              AnalyticsDualChartRow(
+                currentSales: filteredResult.currentSales,
+                previousSales: filteredResult.previousSales,
+                distribution: filteredResult.distribution,
+              ),
+              const SizedBox(height: 20),
+              CategorySalesChart(
+                data: filteredResult.categorySales,
+                enableNavigation: true,
+              ),
+              const SizedBox(height: 20),
+              if (filteredResult.pyramidMetrics.isNotEmpty) ...[
+                ResourcePyramidChart(
+                  data: filteredResult.pyramidMetrics,
+                  title: 'Category Volume Hierarchy',
+                  subtitle: 'Dynamic category hierarchy based on active filter scope.',
+                ),
+                const SizedBox(height: 20),
+              ],
+              const QuarterlyPerformanceChart(),
+              const SizedBox(height: 32),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -69,7 +69,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 32.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 32.0,
+            ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 440),
               child: Column(
@@ -113,7 +116,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       border: Border.all(color: const Color(0xFFE2E8F0)),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                          color: const Color(0xFF0F172A)
+                              .withValues(alpha: 0.04),
                           blurRadius: 24,
                           offset: const Offset(0, 10),
                         ),
@@ -370,7 +374,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            onPressed: authState.isLoading ? null : _handleLogin,
+                            onPressed: authState.isLoading
+                                ? null
+                                : _handleLogin,
                             child: authState.isLoading
                                 ? const SizedBox(
                                     height: 20,
@@ -466,7 +472,9 @@ class _RoleOptionCard extends StatelessWidget {
           color: isSelected ? const Color(0xFFF5F3FF) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF6366F1) : const Color(0xFFE2E8F0),
+            color: isSelected
+                ? const Color(0xFF6366F1)
+                : const Color(0xFFE2E8F0),
             width: isSelected ? 1.8 : 1.0,
           ),
         ),
@@ -475,7 +483,9 @@ class _RoleOptionCard extends StatelessWidget {
             Icon(
               icon,
               size: 22,
-              color: isSelected ? const Color(0xFF4F46E5) : const Color(0xFF94A3B8),
+              color: isSelected
+                  ? const Color(0xFF4F46E5)
+                  : const Color(0xFF94A3B8),
             ),
             const SizedBox(height: 8),
             Text(
@@ -483,7 +493,9 @@ class _RoleOptionCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
-                color: isSelected ? const Color(0xFF1E1B4B) : const Color(0xFF334155),
+                color: isSelected
+                    ? const Color(0xFF1E1B4B)
+                    : const Color(0xFF334155),
               ),
             ),
             const SizedBox(height: 2),
@@ -493,7 +505,9 @@ class _RoleOptionCard extends StatelessWidget {
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 0.5,
-                color: isSelected ? const Color(0xFF6366F1) : const Color(0xFF94A3B8),
+                color: isSelected
+                    ? const Color(0xFF6366F1)
+                    : const Color(0xFF94A3B8),
               ),
             ),
           ],

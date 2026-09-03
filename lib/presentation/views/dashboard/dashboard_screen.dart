@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_app/presentation/views/controllers/dashboard_provider.dart';
+import 'package:new_app/presentation/controllers/dashboard_provider.dart';
 
 import '../../controllers/auth_provider.dart';
+import '../../widgets/common/app_state_views.dart';
+import '../../widgets/dashboard/dashboard_ledger_table.dart';
 import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
 import '../form/form_screen.dart';
-import 'widgets/dashboard_ledger_table.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -137,56 +138,47 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             foregroundColor: Colors.white,
                             elevation: 0,
                             minimumSize: Size.zero,
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 9,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
                           ),
-                          onPressed: () => context.pushNamed(FormScreen.routeName),
-                          child: const Text('New Resource', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                          onPressed: () =>
+                              context.pushNamed(FormScreen.routeName),
+                          child: const Text(
+                            'New Resource',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                     Expanded(
                       child: Builder(
                         builder: (context) {
-                          if (dashboardState.isLoading && dashboardState.products.isEmpty) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFF1B1638),
-                                strokeWidth: 2.5,
-                              ),
-                            );
+                          if (dashboardState.isLoading &&
+                              dashboardState.products.isEmpty) {
+                            return const AppLoadingView();
                           }
 
-                          if (dashboardState.isError && dashboardState.products.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(24.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.cloud_off_rounded,
-                                      color: Color(0xFFDC2626),
-                                      size: 40,
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      'Could not load catalog: ${dashboardState.errorMessage}',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                    const SizedBox(height: 14),
-                                    ElevatedButton(
-                                      onPressed: () => notifier.retry(),
-                                      child: const Text('Retry Connection'),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                          if (dashboardState.isError &&
+                              dashboardState.products.isEmpty) {
+                            return AppErrorView(
+                              message:
+                                  'Could not load catalog: ${dashboardState.errorMessage}',
+                              onRetry: () => notifier.retry(),
                             );
                           }
 
                           return SingleChildScrollView(
-                            key: const PageStorageKey('main_dashboard_ledger_scroll_key'),
+                            key: const PageStorageKey(
+                              'main_dashboard_ledger_scroll_key',
+                            ),
                             controller: _scrollController,
                             padding: EdgeInsets.symmetric(
                               horizontal: isDesktop ? 28.0 : 16.0,
@@ -194,17 +186,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             child: Center(
                               child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 1240),
+                                constraints: const BoxConstraints(
+                                  maxWidth: 1240,
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     DashboardLedgerTable(
                                       products: filteredItems,
                                       searchController: _searchController,
-                                      selectedCategory: dashboardState.selectedCategory,
+                                      selectedCategory:
+                                          dashboardState.selectedCategory,
                                       categories: _categories,
-                                      onSearchChanged: notifier.updateSearchQuery,
-                                      onCategorySelected: notifier.selectCategory,
+                                      onSearchChanged:
+                                          notifier.updateSearchQuery,
+                                      onCategorySelected:
+                                          notifier.selectCategory,
                                     ),
                                     const SizedBox(height: 28),
                                   ],

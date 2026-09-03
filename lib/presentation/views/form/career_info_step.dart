@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/presentation/views/controllers/form_provider.dart';
-import 'package:new_app/presentation/views/controllers/submission_provider.dart';
+import 'package:new_app/presentation/controllers/form_provider.dart';
+import 'package:new_app/presentation/controllers/submission_provider.dart';
 
 class CareerInfoStep extends ConsumerStatefulWidget {
   const CareerInfoStep({required this.formKey, super.key});
@@ -34,11 +34,13 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
     super.initState();
     final careerInfo = ref.read(formProvider).careerInfo;
     _universityController = TextEditingController(text: careerInfo.university);
-    _jobTitleController =
-        TextEditingController(text: careerInfo.currentJobTitle);
+    _jobTitleController = TextEditingController(
+      text: careerInfo.currentJobTitle,
+    );
     _companyController = TextEditingController(text: careerInfo.company);
-    _experienceController =
-        TextEditingController(text: careerInfo.yearsOfExperience);
+    _experienceController = TextEditingController(
+      text: careerInfo.yearsOfExperience,
+    );
     _salaryController = TextEditingController(text: careerInfo.expectedSalary);
     _skillsController = TextEditingController(text: careerInfo.skills);
     _goalController = TextEditingController(text: careerInfo.careerGoal);
@@ -90,17 +92,21 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                         initialValue: careerInfo.highestEducation,
                         decoration: _inputDecoration(),
                         items: _educationLevels
-                            .map((e) => DropdownMenuItem(
-                                  value: e,
-                                  child: Text(e,
-                                      style: const TextStyle(fontSize: 13)),
-                                ))
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e,
+                                child: Text(
+                                  e,
+                                  style: const TextStyle(fontSize: 13),
+                                ),
+                              ),
+                            )
                             .toList(),
                         onChanged: isLocked
                             ? null
                             : (val) => val != null
-                                ? notifier.updateHighestEducation(val)
-                                : null,
+                                  ? notifier.updateHighestEducation(val)
+                                  : null,
                       ),
                     ],
                   );
@@ -187,8 +193,7 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                         controller: _companyController,
                         enabled: !isLocked,
                         style: const TextStyle(fontSize: 13),
-                        decoration:
-                            _inputDecoration(hint: 'e.g. Acme Tech'),
+                        decoration: _inputDecoration(hint: 'e.g. Acme Tech'),
                         onChanged: notifier.updateCompany,
                       ),
                     ],
@@ -326,9 +331,8 @@ class _CareerInfoStepState extends ConsumerState<CareerInfoStep> {
                   hint: 'Brief summary of objectives...',
                 ),
                 onChanged: notifier.updateCareerGoal,
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Goal is required'
-                    : null,
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? 'Goal is required' : null,
               ),
 
               // Upload stream progress
@@ -464,11 +468,7 @@ class _CareerFormSection extends StatelessWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            header,
-            const SizedBox(height: 16),
-            fields,
-          ],
+          children: [header, const SizedBox(height: 16), fields],
         );
       },
     );

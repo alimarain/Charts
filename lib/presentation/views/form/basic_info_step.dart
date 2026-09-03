@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/presentation/views/controllers/form_provider.dart';
+import 'package:new_app/presentation/controllers/form_provider.dart';
+
 import '../../../core/utils/validators.dart';
 
 class BasicInfoStep extends ConsumerStatefulWidget {
@@ -100,7 +101,10 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                   final emailField = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _FieldLabel(label: 'Official Email', isRequired: true),
+                      const _FieldLabel(
+                        label: 'Official Email',
+                        isRequired: true,
+                      ),
                       const SizedBox(height: 6),
                       TextFormField(
                         controller: _emailController,
@@ -195,7 +199,9 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                       TextFormField(
                         controller: _fatherNameController,
                         style: const TextStyle(fontSize: 13),
-                        decoration: _inputDecoration(hint: 'Guardian Full Name'),
+                        decoration: _inputDecoration(
+                          hint: 'Guardian Full Name',
+                        ),
                         onChanged: notifier.updateFatherName,
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Father name is required'
@@ -216,11 +222,15 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                         initialValue: basicInfo.city,
                         decoration: _inputDecoration(),
                         items: _cities
-                            .map((c) => DropdownMenuItem(
-                                  value: c,
-                                  child: Text(c,
-                                      style: const TextStyle(fontSize: 13)),
-                                ))
+                            .map(
+                              (c) => DropdownMenuItem(
+                                value: c,
+                                child: Text(
+                                  c,
+                                  style: const TextStyle(fontSize: 13),
+                                ),
+                              ),
+                            )
                             .toList(),
                         onChanged: (val) =>
                             val != null ? notifier.updateCity(val) : null,
@@ -290,7 +300,10 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                   final phoneField = Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const _FieldLabel(label: 'Phone Contact', isRequired: true),
+                      const _FieldLabel(
+                        label: 'Phone Contact',
+                        isRequired: true,
+                      ),
                       const SizedBox(height: 6),
                       TextFormField(
                         controller: _phoneController,
@@ -342,13 +355,16 @@ class _BasicInfoStepState extends ConsumerState<BasicInfoStep> {
                   hint: 'Residential address or location details...',
                 ),
                 onChanged: notifier.updateAddress,
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'Address is required' : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Address is required'
+                    : null,
               ),
               const SizedBox(height: 14),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFECFDF5),
                   borderRadius: BorderRadius.circular(8),
@@ -460,11 +476,7 @@ class _FormSection extends StatelessWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            header,
-            const SizedBox(height: 16),
-            formFields,
-          ],
+          children: [header, const SizedBox(height: 16), formFields],
         );
       },
     );

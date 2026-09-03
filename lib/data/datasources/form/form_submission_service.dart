@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:new_app/presentation/views/controllers/form_state.dart';
-import 'package:new_app/presentation/views/controllers/submission_state.dart';
+import 'package:new_app/presentation/controllers/form_state.dart';
+import 'package:new_app/presentation/controllers/submission_state.dart';
 
 import '../../../core/errors/api_exception.dart';
 

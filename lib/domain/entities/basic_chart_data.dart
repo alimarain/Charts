@@ -45,7 +45,8 @@ class BasicChartData {
         : (double.tryParse(rawTarget.toString()) ?? 20000.0);
 
     // 4. Parse growth tag
-    final growthTag = (json['growthTag'] ?? json['GrowthTag'] ?? '+12%').toString();
+    final growthTag = (json['growthTag'] ?? json['GrowthTag'] ?? '+12%')
+        .toString();
 
     // 5. Parse or compute Color
     Color color = _defaultPalette[index % _defaultPalette.length];

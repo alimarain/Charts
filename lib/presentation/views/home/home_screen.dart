@@ -1,16 +1,14 @@
-import 'dart:developer' as developer;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/presentation/controllers/product_provider.dart';
 
 import '../../controllers/auth_provider.dart';
+import '../../controllers/home_telemetry_controller.dart';
+import '../../widgets/home/home_kpi_grid.dart';
+import '../../widgets/home/home_portfolio_banner.dart';
+import '../../widgets/home/home_resource_ledger.dart';
+import '../../widgets/home/home_telemetry_console.dart';
 import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
-import 'widgets/home_kpi_grid.dart';
-import 'widgets/home_portfolio_banner.dart';
-import 'widgets/home_resource_ledger.dart';
-import 'widgets/home_telemetry_console.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -24,57 +22,13 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  String _statusLog = 'Ready to test networking';
-  bool _isLoading = false;
-  bool _hasError = false;
-
-  Future<void> _fetchProducts() async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-      _statusLog = 'Requesting products via Dio client...';
-    });
-
-    try {
-      final products = await ref.read(productServiceProvider).getProducts();
-      setState(() {
-        _statusLog =
-            'Success! Fetched ${products.length} products from backend API.\nCheck console for Dio logs.';
-      });
-    } catch (e) {
-      setState(() {
-        _hasError = true;
-        _statusLog = 'Error caught: $e';
-      });
-      developer.log('UI caught error: $e', name: 'HomeScreen');
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _triggerError() async {
-    setState(() {
-      _isLoading = true;
-      _hasError = false;
-      _statusLog = 'Triggering 404 test endpoint...';
-    });
-
-    try {
-      ref.read(productServiceProvider).simulateError();
-    } catch (e) {
-      setState(() {
-        _hasError = true;
-        _statusLog = 'Successfully caught converted ApiException:\n$e';
-      });
-      developer.log('UI caught converted ApiException: $e', name: 'HomeScreen');
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final telemetryState = ref.watch(homeTelemetryProvider);
+    final telemetryNotifier = ref.read(homeTelemetryProvider.notifier);
+
     final user = authState.user;
     final userRole = user?.role == 'maker' ? 'Maker' : 'User';
     final hasToken = authState.token != null && authState.token!.isNotEmpty;
@@ -126,11 +80,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const HomeResourceLedger(),
                           const SizedBox(height: 20),
                           HomeTelemetryConsole(
-                            statusLog: _statusLog,
-                            hasError: _hasError,
-                            isLoading: _isLoading,
-                            onTestGet: _fetchProducts,
-                            onTestError: _triggerError,
+                            statusLog: telemetryState.statusLog,
+                            hasError: telemetryState.hasError,
+                            isLoading: telemetryState.isLoading,
+                            onTestGet: telemetryNotifier.fetchProducts,
+                            onTestError: telemetryNotifier.triggerError,
                           ),
                           const SizedBox(height: 28),
                         ],

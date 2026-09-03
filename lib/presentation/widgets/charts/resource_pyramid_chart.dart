@@ -55,10 +55,7 @@ class _ResourcePyramidChartState extends State<ResourcePyramidChart> {
           const SizedBox(height: 2),
           Text(
             widget.subtitle,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFF6B7280),
-            ),
+            style: const TextStyle(fontSize: 11, color: Color(0xFF6B7280)),
           ),
           const SizedBox(height: 16),
 
@@ -78,8 +75,9 @@ class _ResourcePyramidChartState extends State<ResourcePyramidChart> {
                 xValueMapper: (PyramidMetric item, _) => item.stage,
                 yValueMapper: (PyramidMetric item, _) => item.value,
                 pointColorMapper: (PyramidMetric item, _) => item.color,
-                gapRatio: 0.04, // Creates sleek card-like spacing between slices
-                explode: true,  // Pops out segment on user tap
+                gapRatio:
+                    0.04, // Creates sleek card-like spacing between slices
+                explode: true, // Pops out segment on user tap
                 pyramidMode: PyramidMode.linear,
                 dataLabelSettings: const DataLabelSettings(
                   isVisible: true,

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
 import '../../../core/network/api_response.dart';
 import '../../../domain/entities/analytics.dart';
 import '../../../domain/entities/basic_chart_data.dart';
@@ -20,24 +21,30 @@ class ApiAnalyticsService {
         final data = apiResponse.data!;
 
         final sales = (data['salesData'] as List<dynamic>)
-            .map((e) => SalesData(
-                  label: e['label'] as String,
-                  value: (e['value'] as num).toDouble(),
-                ))
+            .map(
+              (e) => SalesData(
+                label: e['label'] as String,
+                value: (e['value'] as num).toDouble(),
+              ),
+            )
             .toList();
 
         final categorySales = (data['categorySales'] as List<dynamic>)
-            .map((e) => CategorySalesData(
-                  category: e['category'] as String,
-                  sales: (e['sales'] as num).toDouble(),
-                ))
+            .map(
+              (e) => CategorySalesData(
+                category: e['category'] as String,
+                sales: (e['sales'] as num).toDouble(),
+              ),
+            )
             .toList();
 
         final distribution = (data['distribution'] as List<dynamic>)
-            .map((e) => ProductDistributionData(
-                  category: e['category'] as String,
-                  count: (e['count'] as num).toInt(),
-                ))
+            .map(
+              (e) => ProductDistributionData(
+                category: e['category'] as String,
+                count: (e['count'] as num).toInt(),
+              ),
+            )
             .toList();
 
         return AnalyticsData(
@@ -50,7 +57,9 @@ class ApiAnalyticsService {
       }
       throw Exception(apiResponse.message);
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['message'] ?? 'Failed to load analytics.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to load analytics.',
+      );
     }
   }
 
@@ -66,7 +75,9 @@ class ApiAnalyticsService {
         return apiResponse.data!.map((item) {
           final map = item as Map<String, dynamic>;
           final hexColor = map['colorHex'] as String? ?? '#38BDF8';
-          final parsedColor = Color(int.parse(hexColor.replaceFirst('#', '0xFF')));
+          final parsedColor = Color(
+            int.parse(hexColor.replaceFirst('#', '0xFF')),
+          );
 
           return BasicChartData(
             month: map['month'] as String,
@@ -78,7 +89,9 @@ class ApiAnalyticsService {
       }
       throw Exception(apiResponse.message);
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['message'] ?? 'Failed to load chart data.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to load chart data.',
+      );
     }
   }
 }

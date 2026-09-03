@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/auth_provider.dart';
 import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
-import 'widgets/settings_action_tiles.dart';
-import 'widgets/settings_personal_info_card.dart';
-import 'widgets/settings_tab_menu.dart';
+import '../../widgets/settings/settings_action_tiles.dart';
+import '../../widgets/settings/settings_personal_info_card.dart';
+import '../../widgets/settings/settings_tab_menu.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -32,8 +32,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     super.initState();
     final user = ref.read(authProvider).user;
     _nameController = TextEditingController(text: user?.name ?? 'Marcus Vance');
-    _emailController = TextEditingController(text: user?.email ?? 'm.vance@enterpriseflow.io');
-    _departmentController = TextEditingController(text: 'Operations & Strategy');
+    _emailController = TextEditingController(
+      text: user?.email ?? 'm.vance@enterpriseflow.io',
+    );
+    _departmentController = TextEditingController(
+      text: 'Operations & Strategy',
+    );
   }
 
   @override
@@ -117,16 +121,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 const SizedBox(height: 4),
                                 const Text(
                                   'Manage organizational preferences and security protocols.',
-                                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFF6B7280),
+                                  ),
                                 ),
                                 const SizedBox(height: 24),
                                 LayoutBuilder(
                                   builder: (context, innerConstraints) {
-                                    final isWide = innerConstraints.maxWidth > 850;
+                                    final isWide =
+                                        innerConstraints.maxWidth > 850;
 
                                     final tabMenu = SettingsTabMenu(
                                       selectedTab: _selectedTab,
-                                      onTabSelected: (tab) => setState(() => _selectedTab = tab),
+                                      onTabSelected: (tab) =>
+                                          setState(() => _selectedTab = tab),
                                     );
 
                                     final detailsContent = Column(
@@ -134,11 +143,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         SettingsPersonalInfoCard(
                                           nameController: _nameController,
                                           emailController: _emailController,
-                                          departmentController: _departmentController,
+                                          departmentController:
+                                              _departmentController,
                                           selectedRegion: _selectedRegion,
                                           userRole: userRole,
                                           onRegionChanged: (val) {
-                                            if (val != null) setState(() => _selectedRegion = val);
+                                            if (val != null) {
+                                              setState(
+                                                () => _selectedRegion = val,
+                                              );
+                                            }
                                           },
                                           onSave: _handleSave,
                                         ),
@@ -149,7 +163,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                                     if (isWide) {
                                       return Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           SizedBox(width: 220, child: tabMenu),
                                           const SizedBox(width: 24),
@@ -159,7 +174,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                     }
 
                                     return Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                       children: [
                                         tabMenu,
                                         const SizedBox(height: 16),

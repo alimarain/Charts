@@ -243,7 +243,7 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
 
   // Helper local function to extract numeric sales value across common model naming
   double extractCategorySales(CategorySalesData data) {
-    return (data.sales).toDouble(); 
+    return (data.sales).toDouble();
   }
 
   // Map real category sales (scaled by active date filter) into pyramid hierarchy
@@ -257,7 +257,8 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
   final pyramidMetrics = sortedCategories.asMap().entries.map((entry) {
     final index = entry.key;
     final item = entry.value;
-    final scaledValue = (extractCategorySales(item) * scaleFactor).roundToDouble();
+    final scaledValue = (extractCategorySales(item) * scaleFactor)
+        .roundToDouble();
     return PyramidMetric(
       stage: item.category,
       value: scaledValue > 0 ? scaledValue : 1.0,

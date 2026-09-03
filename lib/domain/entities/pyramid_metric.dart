@@ -1,30 +1,26 @@
 import 'package:flutter/material.dart';
 
 class PyramidMetric {
+  const PyramidMetric({required this.stage, required this.value, this.color});
+
   final String stage;
   final double value;
   final Color? color;
 
-  const PyramidMetric({
-    required this.stage,
-    required this.value,
-    this.color,
-  });
-
-  /// Factory constructor to parse backend JSON from REST or SignalR
   factory PyramidMetric.fromJson(Map<String, dynamic> json) {
-    return PyramidMetric(
-      stage: (json['stage'] ?? json['Stage'] ?? '').toString(),
-      value: (json['value'] ?? json['Value'] ?? 0.0) is num
-          ? (json['value'] ?? json['Value'] as num).toDouble()
-          : double.tryParse((json['value'] ?? json['Value'] ?? '0').toString()) ?? 0.0,
-    );
+    // 1. Strict String Rule: Dual-case lookup + explicit stringification + fallback
+    final stage = (json['stage'] ?? json['Stage'] ?? '').toString();
+
+    // 2. Strict double Rule: 3-tier extraction without direct casts
+    final rawValue = json['value'] ?? json['Value'] ?? 0.0;
+    final double value = rawValue is num
+        ? rawValue.toDouble()
+        : (double.tryParse(rawValue.toString()) ?? 0.0);
+
+    return PyramidMetric(stage: stage, value: value);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'stage': stage,
-      'value': value,
-    };
+    return {'stage': stage, 'value': value};
   }
 }

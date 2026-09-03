@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import '../../../core/network/api_response.dart';
 import '../../../domain/entities/user.dart';
 
@@ -10,10 +11,7 @@ class ApiAuthService {
     try {
       final response = await _dio.post(
         '/auth/login',
-        data: {
-          'email': email.trim(),
-          'password': password,
-        },
+        data: {'email': email.trim(), 'password': password},
       );
 
       final apiResponse = ApiResponse<Map<String, dynamic>>.fromJson(

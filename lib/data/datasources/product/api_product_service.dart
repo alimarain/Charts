@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import '../../../core/network/api_response.dart';
 import '../../../domain/entities/product.dart';
 
@@ -29,7 +30,9 @@ class ApiProductService {
       }
       throw Exception(apiResponse.message);
     } on DioException catch (e) {
-      throw Exception(e.response?.data?['message'] ?? 'Failed to load products.');
+      throw Exception(
+        e.response?.data?['message'] ?? 'Failed to load products.',
+      );
     }
   }
 

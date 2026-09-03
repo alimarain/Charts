@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/data/datasources/analytics/realtime_analytics_service.dart';
 
@@ -6,7 +7,7 @@ import '../../core/network/dio_client.dart';
 import '../../core/storage/token_storage.dart';
 import '../../data/datasources/analytics/api_analytics_service.dart';
 import '../../domain/entities/analytics.dart';
-import '../../domain/entities/basic_chart_data.dart'; 
+import '../../domain/entities/basic_chart_data.dart';
 
 // --- API & REAL-TIME SERVICES ---
 
@@ -18,7 +19,9 @@ final tokenStorageProvider = Provider<TokenStorage>((ref) {
   return TokenStorage();
 });
 
-final realtimeAnalyticsServiceProvider = Provider<RealtimeAnalyticsService>((ref) {
+final realtimeAnalyticsServiceProvider = Provider<RealtimeAnalyticsService>((
+  ref,
+) {
   final service = RealtimeAnalyticsService(ref.watch(tokenStorageProvider));
   service.connect();
   ref.onDispose(() => service.dispose());
@@ -92,10 +95,7 @@ class AnalyticsNotifier extends Notifier<AnalyticsState> {
         );
       },
       onError: (err) {
-        state = state.copyWith(
-          isError: true,
-          errorMessage: err.toString(),
-        );
+        state = state.copyWith(isError: true, errorMessage: err.toString());
       },
     );
 
@@ -165,5 +165,5 @@ class BasicChartNotifier extends AsyncNotifier<List<BasicChartData>> {
 
 final basicChartProvider =
     AsyncNotifierProvider<BasicChartNotifier, List<BasicChartData>>(
-  BasicChartNotifier.new,
-);
+      BasicChartNotifier.new,
+    );

@@ -6,9 +6,9 @@ import 'package:new_app/presentation/widgets/charts/basic_chart_screen.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
 
 import '../domain/entities/chart_interaction.dart';
-import '../features/maker/dynamic_form_screen.dart';
-import '../features/maker/maker_dashboard_screen.dart';
-import '../features/maker/maker_forms_screen.dart';
+import '../presentation/views/maker/dynamic_form_screen.dart';
+import '../presentation/views/maker/maker_dashboard_screen.dart';
+import '../presentation/views/maker/maker_forms_screen.dart';
 import '../presentation/controllers/auth_provider.dart';
 import '../presentation/views/analytics/analytics_screen.dart';
 import '../presentation/views/auth/login_screen.dart';

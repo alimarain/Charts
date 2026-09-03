@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/app/app_theme.dart';
-import 'package:new_app/presentation/views/controllers/dashboard_provider.dart';
+import 'package:new_app/presentation/controllers/dashboard_provider.dart';
 
 class ProductDetailsScreen extends ConsumerStatefulWidget {
   const ProductDetailsScreen({required this.productId, super.key});
