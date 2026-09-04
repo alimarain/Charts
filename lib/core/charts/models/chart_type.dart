@@ -1,3 +1,5 @@
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
 enum UniversalChartType {
   line,
   column,
@@ -5,5 +7,6 @@ enum UniversalChartType {
   area,
   pie,
   doughnut,
-  stepLine, // New stepped horizon style
-}
+  stepLine, 
+  sparkWinLoss
+  }

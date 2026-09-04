@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/core/charts/models/chart_data.dart';
 
 import '../../domain/entities/analytics.dart';
 import '../../domain/entities/chart_filter_models.dart';
@@ -103,6 +104,7 @@ class FilteredAnalyticsResult {
     required this.categorySales,
     required this.distribution,
     required this.pyramidMetrics,
+    required this.monthlyBalances,
     required this.kpis,
     required this.categories,
     required this.hasData,
@@ -113,6 +115,7 @@ class FilteredAnalyticsResult {
   final List<CategorySalesData> categorySales;
   final List<ProductDistributionData> distribution;
   final List<PyramidMetric> pyramidMetrics;
+  final List<ChartDataPoint> monthlyBalances;
   final ComputedKpis kpis;
   final List<String> categories;
   final bool hasData;
@@ -241,12 +244,10 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
     Color(0xFF818CF8), // Base: Indigo 400
   ];
 
-  // Helper local function to extract numeric sales value across common model naming
   double extractCategorySales(CategorySalesData data) {
-    return (data.sales).toDouble();
+    return data.sales.toDouble();
   }
 
-  // Map real category sales (scaled by active date filter) into pyramid hierarchy
   final sortedCategories = List<CategorySalesData>.from(filteredCategories)
     ..sort((a, b) {
       final aVal = extractCategorySales(a) * scaleFactor;
@@ -266,12 +267,78 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
     );
   }).toList();
 
+// 6. 12-Month High-Volume Net Cashflow Balance Metrics
+  // 6. 12-Month Dual Cash-In / Cash-Out Balance Metrics
+  final List<ChartDataPoint> monthlyBalances = [
+    ChartDataPoint(
+      label: 'Jan',
+      value: (24450000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-9880000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Feb',
+      value: (18800000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-4200000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Mar',
+      value: (91200000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-14400000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Apr',
+      value: (4200000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-850000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'May',
+      value: (1600000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-2900000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Jun',
+      value: (4800000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-1500000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Jul',
+      value: (2100000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-3200000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Aug',
+      value: (3500000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-1200000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Sep',
+      value: (3900000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-1800000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Oct',
+      value: (2200000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-2600000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Nov',
+      value: (3400000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-1100000 * scaleFactor).roundToDouble(),
+    ),
+    ChartDataPoint(
+      label: 'Dec',
+      value: (4600000 * scaleFactor).roundToDouble(),
+      secondaryValue: (-1950000 * scaleFactor).roundToDouble(),
+    ),
+  ];
+
   return FilteredAnalyticsResult(
     currentSales: currentSales,
     previousSales: previousSales,
     categorySales: filteredCategories,
     distribution: filteredDist,
     pyramidMetrics: pyramidMetrics,
+    monthlyBalances: monthlyBalances,
     kpis: kpis,
     categories: allCategories,
     hasData: currentSales.isNotEmpty && filteredCategories.isNotEmpty,

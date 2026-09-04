@@ -6,6 +6,7 @@ import '../models/chart_series.dart';
 import '../models/chart_type.dart';
 import 'cartesian_chart_renderer.dart';
 import 'circular_chart_renderer.dart';
+import 'spark_chart_renderer.dart';
 
 class ChartRendererFactory {
   static Widget buildChart({
@@ -32,6 +33,7 @@ class ChartRendererFactory {
           multiSeries: multiSeries,
           isFullscreen: isFullscreen,
         );
+
       case UniversalChartType.pie:
       case UniversalChartType.doughnut:
         return CircularChartRenderer.build(
@@ -41,6 +43,14 @@ class ChartRendererFactory {
           activeIndex: activeIndex,
           onPointTapped: onPointTapped,
           isFullscreen: isFullscreen,
+        );
+
+      case UniversalChartType.sparkWinLoss:
+        return SparkChartRenderer.build(
+          type: type,
+          dataPoints: dataPoints,
+          config: config,
+          onPointTapped: onPointTapped,
         );
     }
   }

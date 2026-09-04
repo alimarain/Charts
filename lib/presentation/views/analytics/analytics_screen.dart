@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/presentation/widgets/analytics/analytics_dual_chart_row.dart';
 import 'package:new_app/presentation/widgets/analytics/analytics_export_menu.dart';
+import 'package:new_app/presentation/widgets/charts/net_balance_win_loss_card.dart';
 import 'package:new_app/presentation/widgets/charts/resource_pyramid_chart.dart';
 
 import '../../../../core/services/analytics_export_service.dart';
@@ -183,6 +184,22 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               const SizedBox(height: 16),
               ChartKpiGrid(kpis: filteredResult.kpis),
               const SizedBox(height: 20),
+NetBalanceWinLossCard(
+                dataPoints: filteredResult.monthlyBalances,
+              ),
+              const SizedBox(height: 20),
+
+              AnalyticsDualChartRow(
+                currentSales: filteredResult.currentSales,
+                previousSales: filteredResult.previousSales,
+                distribution: filteredResult.distribution,
+              ),
+
+              AnalyticsDualChartRow(
+                currentSales: filteredResult.currentSales,
+                previousSales: filteredResult.previousSales,
+                distribution: filteredResult.distribution,
+              ),
               AnalyticsDualChartRow(
                 currentSales: filteredResult.currentSales,
                 previousSales: filteredResult.previousSales,
