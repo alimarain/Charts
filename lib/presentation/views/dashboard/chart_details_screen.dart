@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/app/app_theme.dart';
+import 'package:new_app/app/app_colors.dart';
 
 import '../../../domain/entities/chart_interaction.dart';
 import '../../controllers/chart_interaction_provider.dart';
@@ -33,22 +33,22 @@ class ChartDetailsScreen extends ConsumerWidget {
       case ChartType.salesOverview:
         screenTitle = 'Revenue Details';
         headerIcon = Icons.trending_up_rounded;
-        themeColor = AppTheme.primaryColor;
+        themeColor = AppColors.brandPrimary;
         break;
       case ChartType.categoryPerformance:
         screenTitle = 'Department Performance';
         headerIcon = Icons.bar_chart_rounded;
-        themeColor = AppTheme.secondaryColor;
+        themeColor = AppColors.secondaryColor;
         break;
       case ChartType.productDistribution:
         screenTitle = 'Inventory Allocation';
         headerIcon = Icons.pie_chart_outline_rounded;
-        themeColor = const Color.fromARGB(255, 55, 12, 42);
+        themeColor = AppColors.accentColor;
         break;
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(title: Text(screenTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -59,9 +59,9 @@ class ChartDetailsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surfaceColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.borderColor),
+                border: Border.all(color: AppColors.borderColor),
               ),
               child: Row(
                 children: [
@@ -83,7 +83,7 @@ class ChartDetailsScreen extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -91,7 +91,7 @@ class ChartDetailsScreen extends ConsumerWidget {
                           'Data Index: #${activeItem.dataIndex + 1}',
                           style: const TextStyle(
                             fontSize: 12,
-                            color: AppTheme.textSecondary,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -117,7 +117,7 @@ class ChartDetailsScreen extends ConsumerWidget {
                   child: _DetailMetricBox(
                     label: 'Status / Metric',
                     value: activeItem.secondaryMetric ?? 'Operational',
-                    color: AppTheme.textPrimary,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -129,9 +129,9 @@ class ChartDetailsScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppColors.surfaceColor,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppTheme.borderColor),
+                  border: Border.all(color: AppColors.borderColor),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,7 +141,7 @@ class ChartDetailsScreen extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
-                        color: AppTheme.textSecondary,
+                        color: AppColors.textSecondary,
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -150,7 +150,7 @@ class ChartDetailsScreen extends ConsumerWidget {
                       activeItem.description!,
                       style: const TextStyle(
                         fontSize: 13,
-                        color: AppTheme.textPrimary,
+                        color: AppColors.textPrimary,
                         height: 1.4,
                       ),
                     ),
@@ -189,9 +189,9 @@ class _DetailMetricBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderColor),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +201,7 @@ class _DetailMetricBox extends StatelessWidget {
             style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,
-              color: AppTheme.textSecondary,
+              color: AppColors.textSecondary,
               letterSpacing: 0.8,
             ),
           ),

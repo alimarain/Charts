@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../controllers/auth_provider.dart';
 import '../../controllers/home_telemetry_controller.dart';
@@ -74,6 +75,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         children: [
                           const HomePortfolioBanner(),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 12,
+                            runSpacing: 10,
+                            children: [
+                              FilledButton.icon(
+                                onPressed: () => context.push('/insights'),
+                                icon: const Icon(Icons.insights_rounded, size: 18),
+                                label: const Text('Open Insights'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFF6347D1),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                              FilledButton.icon(
+                                onPressed: () => context.push('/net-cashflow'),
+                                icon: const Icon(
+                                  Icons.account_balance_wallet_outlined,
+                                  size: 18,
+                                ),
+                                label: const Text('View Net Cashflow'),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFF4F46E5),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 20),
                           const HomeKpiGrid(),
                           const SizedBox(height: 20),

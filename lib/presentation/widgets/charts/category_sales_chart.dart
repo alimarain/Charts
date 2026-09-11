@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_app/app/app_colors.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
 
-import '../../../app/app_theme.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
 import '../../../core/charts/models/chart_type.dart';
@@ -51,17 +51,17 @@ class CategorySalesChart extends ConsumerWidget {
       isFullscreenMode: isFullscreenMode,
       mapper: (CategorySalesData item) =>
           ChartDataPoint(label: item.category, value: item.sales),
-      config: ChartConfig(
-        chartType: universalType,
+      config: const ChartConfig(
+        chartType: UniversalChartType.column,
         title: 'Category Breakdown',
         subtitle: 'Tap bars to view department telemetry',
-        primaryColor: const Color(0xFF059669),
-        accentColor: AppTheme.accentColor,
-        supportedChartTypes: const [
+        primaryColor: AppColors.secondaryColor,
+        accentColor: AppColors.accentColor,
+        supportedChartTypes: [
           UniversalChartType.column,
           UniversalChartType.bar,
         ],
-      ),
+      ).copyWith(chartType: universalType),
       onChartTypeChanged: (type) {
         ref
             .read(chartDisplayProvider.notifier)

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_app/app/app_colors.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
 
-import '../../../app/app_theme.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
 import '../../../core/charts/models/chart_type.dart';
@@ -72,8 +72,8 @@ class SalesOverviewChart extends ConsumerWidget {
             ? 'Target: Rs. ${(filter.targetRevenue / 1000).toStringAsFixed(0)}K · Tap point to inspect'
             : 'Tap point to inspect',
         targetValue: filter.isTargetEnabled ? filter.targetRevenue : null,
-        primaryColor: AppTheme.primaryColor,
-        accentColor: AppTheme.accentColor,
+        primaryColor: AppColors.brandPrimary,
+        accentColor: AppColors.accentColor,
         supportedChartTypes: const [
           UniversalChartType.area,
           UniversalChartType.line,

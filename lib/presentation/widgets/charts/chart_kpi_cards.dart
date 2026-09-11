@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:new_app/app/app_colors.dart';
 
-import '../../../app/app_theme.dart';
 import '../../../domain/entities/chart_filter_models.dart';
 
 class ChartKpiGrid extends StatelessWidget {
@@ -29,7 +29,7 @@ class ChartKpiGrid extends StatelessWidget {
                     'Rs. ${(kpis.currentRevenue / 1000).toStringAsFixed(1)}K',
                 growth: kpis.revenueGrowthPercent,
                 icon: Icons.payments_rounded,
-                color: AppTheme.primaryColor,
+                color: AppColors.brandPrimary,
               ),
             ),
             SizedBox(
@@ -39,7 +39,7 @@ class ChartKpiGrid extends StatelessWidget {
                 value: '${kpis.currentOrders}',
                 growth: kpis.ordersGrowthPercent,
                 icon: Icons.shopping_bag_rounded,
-                color: AppTheme.secondaryColor,
+                color: AppColors.secondaryColor,
               ),
             ),
             SizedBox(
@@ -48,7 +48,7 @@ class ChartKpiGrid extends StatelessWidget {
                 title: 'Active SKUs',
                 value: '${kpis.activeSkus} Units',
                 icon: Icons.inventory_2_rounded,
-                color: AppTheme.accentColor,
+                color: AppColors.accentColor,
               ),
             ),
             SizedBox(
@@ -61,8 +61,8 @@ class ChartKpiGrid extends StatelessWidget {
                     : 'Below Target',
                 icon: Icons.track_changes_rounded,
                 color: kpis.targetAchievementPercent >= 100
-                    ? const Color(0xFF059669)
-                    : const Color(0xFFD97706),
+                    ? AppColors.secondaryColor
+                    : AppColors.accentColor,
               ),
             ),
           ],
@@ -96,9 +96,9 @@ class _KpiMetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceColor,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.borderColor),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,7 +111,7 @@ class _KpiMetricCard extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textSecondary,
+                  color: AppColors.textSecondary,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -124,7 +124,7 @@ class _KpiMetricCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -137,7 +137,7 @@ class _KpiMetricCard extends StatelessWidget {
                       : Icons.trending_down_rounded,
                   size: 14,
                   color: isPositive
-                      ? const Color(0xFF059669)
+                      ? AppColors.secondaryColor
                       : const Color(0xFFDC2626),
                 ),
                 const SizedBox(width: 4),
@@ -147,7 +147,7 @@ class _KpiMetricCard extends StatelessWidget {
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: isPositive
-                        ? const Color(0xFF059669)
+                        ? AppColors.secondaryColor
                         : const Color(0xFFDC2626),
                   ),
                 ),

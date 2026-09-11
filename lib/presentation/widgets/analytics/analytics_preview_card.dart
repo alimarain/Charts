@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/app/app_theme.dart';
+import 'package:new_app/app/app_colors.dart';
 
 import '../../controllers/analytics_provider.dart';
 
@@ -15,6 +15,7 @@ class AnalyticsPreviewCard extends ConsumerWidget {
     final revenue = analyticsState.totalRevenue;
 
     return Card(
+      color: AppColors.surfaceColor,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -25,12 +26,12 @@ class AnalyticsPreviewCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withValues(alpha: 0.1),
+                  color: AppColors.brandPrimary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.insights_rounded,
-                  color: AppTheme.primaryColor,
+                  color: AppColors.brandPrimary,
                   size: 26,
                 ),
               ),
@@ -46,13 +47,13 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: AppTheme.textSecondary,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                         SizedBox(width: 6),
                         CircleAvatar(
                           radius: 3,
-                          backgroundColor: AppTheme.secondaryColor,
+                          backgroundColor: AppColors.secondaryColor,
                         ),
                       ],
                     ),
@@ -64,7 +65,7 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -73,7 +74,7 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: AppTheme.secondaryColor,
+                        color: AppColors.secondaryColor,
                       ),
                     ),
                   ],
@@ -86,14 +87,14 @@ class AnalyticsPreviewCard extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryColor,
+                      color: AppColors.brandPrimary,
                     ),
                   ),
                   SizedBox(width: 4),
                   Icon(
                     Icons.arrow_forward_rounded,
                     size: 16,
-                    color: AppTheme.primaryColor,
+                    color: AppColors.brandPrimary,
                   ),
                 ],
               ),

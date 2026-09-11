@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:new_app/app/app_colors.dart';
 
-import '../../../app/app_theme.dart';
 import '../../../domain/entities/chart_filter_models.dart';
 import '../../controllers/chart_filter_provider.dart';
 
@@ -18,9 +18,9 @@ class ChartFilterBar extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surfaceColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.borderColor),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +33,7 @@ class ChartFilterBar extends ConsumerWidget {
                   Icon(
                     Icons.tune_rounded,
                     size: 18,
-                    color: AppTheme.primaryColor,
+                    color: AppColors.brandPrimary,
                   ),
                   SizedBox(width: 8),
                   Text(
@@ -41,7 +41,7 @@ class ChartFilterBar extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: AppTheme.textPrimary,
+                      color: AppColors.textPrimary,
                       letterSpacing: 1.0,
                     ),
                   ),
@@ -60,7 +60,6 @@ class ChartFilterBar extends ConsumerWidget {
             runSpacing: 12,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              // 1. Date Range Dropdown
               _FilterDropdown<ChartDatePreset>(
                 label: 'Date Range',
                 value: filter.datePreset,
@@ -120,8 +119,6 @@ class ChartFilterBar extends ConsumerWidget {
                   }
                 },
               ),
-
-              // 2. Category Dropdown
               _FilterDropdown<String>(
                 label: 'Category',
                 value: filter.selectedCategory,
@@ -134,8 +131,6 @@ class ChartFilterBar extends ConsumerWidget {
                   if (val != null) notifier.setCategory(val);
                 },
               ),
-
-              // 3. Comparison Dropdown
               _FilterDropdown<ComparisonPeriod>(
                 label: 'Compare',
                 value: filter.comparisonPeriod,
@@ -153,8 +148,6 @@ class ChartFilterBar extends ConsumerWidget {
                   if (val != null) notifier.setComparison(val);
                 },
               ),
-
-              // 4. Target Toggle
               FilterChip(
                 label: const Text(
                   'Target Goal',
@@ -162,8 +155,8 @@ class ChartFilterBar extends ConsumerWidget {
                 ),
                 selected: filter.isTargetEnabled,
                 onSelected: notifier.toggleTarget,
-                selectedColor: AppTheme.primaryLight,
-                checkmarkColor: AppTheme.primaryColor,
+                selectedColor: AppColors.brandPrimaryLight,
+                checkmarkColor: AppColors.brandPrimary,
               ),
             ],
           ),
@@ -191,9 +184,9 @@ class _FilterDropdown<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: AppColors.backgroundColor,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppTheme.borderColor),
+        border: Border.all(color: AppColors.borderColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -203,7 +196,7 @@ class _FilterDropdown<T> extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textSecondary,
+              color: AppColors.textSecondary,
             ),
           ),
           DropdownButtonHideUnderline(
@@ -214,7 +207,7 @@ class _FilterDropdown<T> extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+                color: AppColors.textPrimary,
               ),
               isDense: true,
             ),

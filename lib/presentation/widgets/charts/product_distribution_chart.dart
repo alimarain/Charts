@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_app/app/app_colors.dart';
 import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
 
-import '../../../app/app_theme.dart';
 import '../../../core/charts/models/chart_config.dart';
 import '../../../core/charts/models/chart_data.dart';
 import '../../../core/charts/models/chart_type.dart';
@@ -52,18 +52,18 @@ class ProductDistributionChart extends ConsumerWidget {
       isFullscreenMode: isFullscreenMode,
       mapper: (ProductDistributionData item) =>
           ChartDataPoint(label: item.category, value: item.count.toDouble()),
-      config: ChartConfig(
-        chartType: universalType,
+      config: const ChartConfig(
+        chartType: UniversalChartType.doughnut,
         title: 'Inventory Allocation',
         subtitle: 'Tap slices to inspect unit distribution',
         showLegend: true,
         showDataLabels: true,
-        accentColor: AppTheme.accentColor,
-        supportedChartTypes: const [
+        accentColor: AppColors.accentColor,
+        supportedChartTypes: [
           UniversalChartType.doughnut,
           UniversalChartType.pie,
         ],
-      ),
+      ).copyWith(chartType: universalType),
       onChartTypeChanged: (type) {
         ref
             .read(chartDisplayProvider.notifier)

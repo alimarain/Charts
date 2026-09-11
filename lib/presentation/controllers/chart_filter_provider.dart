@@ -296,7 +296,7 @@ final filteredAnalyticsProvider = Provider<FilteredAnalyticsResult?>((ref) {
       secondaryValue: (-2900000 * scaleFactor).roundToDouble(),
     ),
     ChartDataPoint(
-      label: 'Jun',
+      label: 'June',
       value: (4800000 * scaleFactor).roundToDouble(),
       secondaryValue: (-1500000 * scaleFactor).roundToDouble(),
     ),

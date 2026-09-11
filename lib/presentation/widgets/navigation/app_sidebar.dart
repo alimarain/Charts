@@ -98,6 +98,26 @@ class AppSidebar extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   _NavItem(
+                    icon: Icons.lightbulb_outline_rounded,
+                    label: 'Insights',
+                    isActive: currentRoute.startsWith('/insights'),
+                    onTap: () {
+                      if (isMobileDrawer) Navigator.of(context).pop();
+                      context.push('/insights');
+                    },
+                  ),
+                  const SizedBox(height: 4),
+                  _NavItem(
+                    icon: Icons.waterfall_chart_rounded,
+                    label: 'Net Cashflow',
+                    isActive: currentRoute.startsWith('/net-cashflow'),
+                    onTap: () {
+                      if (isMobileDrawer) Navigator.of(context).pop();
+                      context.push('/net-cashflow');
+                    },
+                  ),
+                  const SizedBox(height: 4),
+                  _NavItem(
                     icon: Icons.assignment_outlined,
                     label: 'Onboarding',
                     isActive: currentRoute == '/form',
@@ -106,6 +126,7 @@ class AppSidebar extends StatelessWidget {
                       context.push('/form');
                     },
                   ),
+                  const SizedBox(height: 4),
                   _NavItem(
                     icon: Icons.settings_outlined,
                     label: 'Settings',
@@ -191,7 +212,7 @@ class _NavItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF2C2654) : Colors.transparent,
+          color: isActive ? AppSidebar.activePillBg : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

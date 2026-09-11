@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:new_app/app/app_theme.dart';
+import 'package:new_app/app/app_colors.dart';
 
 import '../../../domain/entities/product.dart';
 
@@ -19,6 +19,7 @@ class _ProductCardState extends State<ProductCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.surfaceColor,
       elevation: 0,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -40,7 +41,7 @@ class _ProductCardState extends State<ProductCard> {
                       child: const Center(
                         child: Icon(
                           Icons.checkroom,
-                          color: AppTheme.textSecondary,
+                          color: AppColors.textSecondary,
                           size: 36,
                         ),
                       ),
@@ -50,7 +51,7 @@ class _ProductCardState extends State<ProductCard> {
                     top: 8,
                     right: 8,
                     child: Material(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: AppColors.surfaceColor.withValues(alpha: 0.9),
                       shape: const CircleBorder(),
                       child: InkWell(
                         customBorder: const CircleBorder(),
@@ -64,7 +65,7 @@ class _ProductCardState extends State<ProductCard> {
                             size: 16,
                             color: _isFavorite
                                 ? const Color(0xFFEF4444)
-                                : AppTheme.textPrimary,
+                                : AppColors.textPrimary,
                           ),
                         ),
                       ),
@@ -83,7 +84,7 @@ class _ProductCardState extends State<ProductCard> {
                     style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
-                      color: AppTheme.textSecondary,
+                      color: AppColors.textSecondary,
                       letterSpacing: 0.8,
                     ),
                   ),
@@ -95,7 +96,7 @@ class _ProductCardState extends State<ProductCard> {
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
-                      color: AppTheme.textPrimary,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -107,7 +108,7 @@ class _ProductCardState extends State<ProductCard> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: AppTheme.primaryColor,
+                          color: AppColors.brandPrimary,
                         ),
                       ),
                       const Row(

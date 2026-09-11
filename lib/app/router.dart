@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_app/presentation/views/settings/settings_screen.dart';
-import 'package:new_app/presentation/widgets/charts/basic_chart_screen.dart';
-import 'package:new_app/presentation/widgets/charts/fullscreen_chart_screen.dart';
 
 import '../domain/entities/chart_interaction.dart';
-import '../presentation/views/maker/dynamic_form_screen.dart';
-import '../presentation/views/maker/maker_dashboard_screen.dart';
-import '../presentation/views/maker/maker_forms_screen.dart';
 import '../presentation/controllers/auth_provider.dart';
 import '../presentation/views/analytics/analytics_screen.dart';
+import '../presentation/views/analytics/insights_screen.dart';
+import '../presentation/views/analytics/net_cashflow_screen.dart';
 import '../presentation/views/auth/login_screen.dart';
 import '../presentation/views/dashboard/chart_details_screen.dart';
 import '../presentation/views/dashboard/dashboard_screen.dart';
 import '../presentation/views/dashboard/product_details_screen.dart';
 import '../presentation/views/form/form_screen.dart';
 import '../presentation/views/home/home_screen.dart';
+import '../presentation/views/maker/dynamic_form_screen.dart';
+import '../presentation/views/maker/maker_dashboard_screen.dart';
+import '../presentation/views/maker/maker_forms_screen.dart';
+import '../presentation/views/settings/settings_screen.dart';
+import '../presentation/widgets/charts/basic_chart_screen.dart';
+import '../presentation/widgets/charts/fullscreen_chart_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._ref) {
@@ -50,9 +52,12 @@ class RouterNotifier extends ChangeNotifier {
         state.matchedLocation == HomeScreen.routePath ||
         state.matchedLocation.startsWith(DashboardScreen.routePath) ||
         state.matchedLocation.startsWith(AnalyticsScreen.routePath) ||
+        state.matchedLocation == NetCashflowScreen.routePath ||
+        state.matchedLocation == InsightsScreen.routePath ||
         state.matchedLocation == BasicChartScreen.routePath ||
         state.matchedLocation == FormScreen.routePath ||
         state.matchedLocation == SettingsScreen.routePath;
+
     if (isNormalUserRoute && userRole == 'maker') {
       return MakerDashboardScreen.routePath;
     }
@@ -124,7 +129,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
       // Standalone Routes
+      GoRoute(
+        path: NetCashflowScreen.routePath,
+        name: NetCashflowScreen.routeName,
+        builder: (context, state) => const NetCashflowScreen(),
+      ),
+      GoRoute(
+        path: InsightsScreen.routePath,
+        name: InsightsScreen.routeName,
+        builder: (context, state) => const InsightsScreen(),
+      ),
       GoRoute(
         path: BasicChartScreen.routePath,
         name: BasicChartScreen.routeName,

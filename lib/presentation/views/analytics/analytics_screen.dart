@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_app/presentation/widgets/analytics/analytics_dual_chart_row.dart';
 import 'package:new_app/presentation/widgets/analytics/analytics_export_menu.dart';
-import 'package:new_app/presentation/widgets/charts/net_balance_win_loss_card.dart';
+import 'package:new_app/presentation/widgets/analytics/analytics_title_strip.dart';
 import 'package:new_app/presentation/widgets/charts/resource_pyramid_chart.dart';
 
 import '../../../../core/services/analytics_export_service.dart';
@@ -12,11 +12,9 @@ import '../../controllers/chart_filter_provider.dart';
 import '../../widgets/charts/category_sales_chart.dart';
 import '../../widgets/charts/chart_filter_bar.dart';
 import '../../widgets/charts/chart_kpi_cards.dart';
-import '../../widgets/charts/quarterly_performance_chart.dart';
 import '../../widgets/common/app_state_views.dart';
 import '../../widgets/navigation/app_header.dart';
 import '../../widgets/navigation/app_sidebar.dart';
-import '../../widgets/analytics/analytics_title_strip.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
   const AnalyticsScreen({super.key});
@@ -184,43 +182,33 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
               const SizedBox(height: 16),
               ChartKpiGrid(kpis: filteredResult.kpis),
               const SizedBox(height: 20),
-NetBalanceWinLossCard(
-                dataPoints: filteredResult.monthlyBalances,
-              ),
-              const SizedBox(height: 20),
+              // const SizedBox(height: 20),
 
-              AnalyticsDualChartRow(
-                currentSales: filteredResult.currentSales,
-                previousSales: filteredResult.previousSales,
-                distribution: filteredResult.distribution,
-              ),
-
-              AnalyticsDualChartRow(
-                currentSales: filteredResult.currentSales,
-                previousSales: filteredResult.previousSales,
-                distribution: filteredResult.distribution,
-              ),
+              // 2. Dual Chart Row (Revenue Velocity Area Chart & Inventory Donut Chart)
               AnalyticsDualChartRow(
                 currentSales: filteredResult.currentSales,
                 previousSales: filteredResult.previousSales,
                 distribution: filteredResult.distribution,
               ),
               const SizedBox(height: 20),
+
+              // 3. Category Breakdown Column / Bar Chart
               CategorySalesChart(
                 data: filteredResult.categorySales,
                 enableNavigation: true,
               ),
               const SizedBox(height: 20),
+
+              // 4. Category Volume Pyramid Hierarchy (when available)
               if (filteredResult.pyramidMetrics.isNotEmpty) ...[
                 ResourcePyramidChart(
                   data: filteredResult.pyramidMetrics,
                   title: 'Category Volume Hierarchy',
-                  subtitle: 'Dynamic category hierarchy based on active filter scope.',
+                  subtitle:
+                      'Dynamic category hierarchy based on active filter scope.',
                 ),
                 const SizedBox(height: 20),
               ],
-              const QuarterlyPerformanceChart(),
-              const SizedBox(height: 32),
             ],
           ),
         ),

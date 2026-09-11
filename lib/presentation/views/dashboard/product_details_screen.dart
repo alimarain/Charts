@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:new_app/app/app_theme.dart';
+import 'package:new_app/app/app_colors.dart';
 import 'package:new_app/presentation/controllers/dashboard_provider.dart';
 
 class ProductDetailsScreen extends ConsumerStatefulWidget {
@@ -36,6 +36,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         title: Text(product.name),
         actions: [
@@ -46,7 +47,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   : Icons.favorite_border_rounded,
               color: _isFavorite
                   ? const Color(0xFFEF4444)
-                  : AppTheme.textPrimary,
+                  : AppColors.textPrimary,
             ),
             onPressed: () => setState(() => _isFavorite = !_isFavorite),
           ),
@@ -69,7 +70,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                     child: const Icon(
                       Icons.checkroom,
                       size: 60,
-                      color: AppTheme.textSecondary,
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ),
@@ -85,7 +86,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
+                    color: AppColors.brandPrimary,
                   ),
                 ),
               ],
@@ -96,7 +97,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -105,7 +106,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: AppTheme.textPrimary,
+                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 6),
@@ -113,7 +114,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               product.description,
               style: const TextStyle(
                 fontSize: 14,
-                color: AppTheme.textSecondary,
+                color: AppColors.textSecondary,
                 height: 1.5,
               ),
             ),
@@ -122,7 +123,10 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
               children: [
                 const Text(
                   'Quantity:',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 IconButton.outlined(
@@ -138,6 +142,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -153,7 +158,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Added $_quantity x ${product.name} to cart'),
-                    backgroundColor: AppTheme.primaryColor,
+                    backgroundColor: AppColors.brandPrimary,
                   ),
                 );
               },
